@@ -1,179 +1,129 @@
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
 import { Link, useParams } from "wouter";
-import { News } from "@shared/schema";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { News } from "@shared/schema";
 
 export default function NewsPage() {
-  const params = useParams();
-  const isDetailView = !!params.slug;
+  const { slug } = useParams<{ slug?: string }>();
 
-  const { data: news = [], isLoading: newsLoading } = useQuery<News[]>({
+  const { data: news = [] } = useQuery<News[]>({
     queryKey: ["/api/news"],
   });
 
-  const { data: article, isLoading: articleLoading } = useQuery<News>({
-    queryKey: ["/api/news", params.slug],
-    enabled: isDetailView,
+  const { data: article } = useQuery<News>({
+    queryKey: [`/api/news/${slug}`],
+    enabled: !!slug,
   });
 
-  if (isDetailView) {
-    if (articleLoading) {
-      return (
-        <div className="min-h-screen bg-background">
-          <Header />
-          <div className="max-w-4xl mx-auto px-4 py-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-muted rounded w-3/4 mb-4" />
-              <div className="h-4 bg-muted rounded w-1/2 mb-8" />
-              <div className="h-64 bg-muted rounded mb-6" />
-              <div className="space-y-3">
-                <div className="h-4 bg-muted rounded" />
-                <div className="h-4 bg-muted rounded" />
-                <div className="h-4 bg-muted rounded w-3/4" />
-              </div>
-            </div>
-          </div>
-          <Footer />
-        </div>
-      );
-    }
-
-    if (!article) {
-      return (
-        <div className="min-h-screen bg-background">
-          <Header />
-          <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Articolo non trovato</h1>
-            <Link href="/news">
-              <Button variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Torna alle news
-              </Button>
-            </Link>
-          </div>
-          <Footer />
-        </div>
-      );
-    }
-
+  // If viewing a specific article
+  if (slug && article) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
         
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Link href="/news">
-            <Button variant="ghost" className="mb-6">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <Button variant="outline" className="mb-6">
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Torna alle news
             </Button>
           </Link>
 
-          <header className="mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <Badge variant="secondary">{article.category}</Badge>
-              <div className="flex items-center text-muted-foreground">
-                <Calendar className="h-4 w-4 mr-2" />
-                {new Date(article.date).toLocaleDateString('it-IT')}
-              </div>
-            </div>
-            <h1 className="text-4xl font-bold text-foreground mb-4">{article.title}</h1>
-            <p className="text-xl text-muted-foreground">{article.excerpt}</p>
-          </header>
-
-          {article.featuredImage && (
-            <div className="mb-8">
-              <img
-                src={article.featuredImage}
+          <article>
+            {article.featuredImage && (
+              <img 
+                src={article.featuredImage} 
                 alt={article.title}
-                className="w-full h-96 object-cover rounded-lg shadow-lg"
+                className="w-full h-64 object-cover rounded-lg mb-6"
               />
-            </div>
-          )}
+            )}
 
-          <div className="prose prose-lg max-w-none">
-            <div className="whitespace-pre-wrap text-foreground leading-relaxed">
-              {article.content}
+            <div className="mb-6">
+              <div className="flex items-center text-sm text-gray-500 mb-4">
+                <Calendar className="h-4 w-4 mr-2" />
+                <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('it-IT') : ''}</span>
+                <span className="mx-2">•</span>
+                <Badge variant="secondary">{article.category}</Badge>
+              </div>
+              
+              <h1 className="text-4xl font-serif font-bold text-neutral-800 mb-4">
+                {article.title}
+              </h1>
+              
+              <p className="text-xl text-gray-600 mb-6">
+                {article.excerpt}
+              </p>
             </div>
-          </div>
-        </article>
+
+            <div className="prose prose-lg max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br>') }} />
+            </div>
+          </article>
+        </div>
 
         <Footer />
       </div>
     );
   }
 
+  // News listing page
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-4">Notizie e Aggiornamenti</h1>
-          <p className="text-muted-foreground">
-            Rimani aggiornato sulle ultime novità di Enal Caccia
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-serif font-bold text-neutral-800 mb-4">
+            Tutte le Notizie
+          </h1>
+          <p className="text-lg text-gray-600">
+            Rimani aggiornato sulle attività di Enal Caccia
           </p>
         </div>
 
-        {newsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <div className="h-48 bg-muted" />
-                <CardContent className="p-6">
-                  <div className="h-4 bg-muted rounded w-1/3 mb-2" />
-                  <div className="h-6 bg-muted rounded w-3/4 mb-3" />
-                  <div className="space-y-2 mb-4">
-                    <div className="h-4 bg-muted rounded" />
-                    <div className="h-4 bg-muted rounded w-2/3" />
-                  </div>
-                  <div className="h-4 bg-muted rounded w-1/4" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : news.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((article) => (
-              <Card key={article.id} className="hover:shadow-lg transition-shadow overflow-hidden">
-                {article.featuredImage && (
-                  <img 
-                    src={article.featuredImage} 
-                    alt={article.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="secondary">{article.category}</Badge>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {new Date(article.date).toLocaleDateString('it-IT')}
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3 hover:text-primary">
-                    <Link href={`/news/${article.slug}`}>{article.title}</Link>
-                  </h3>
-                  <p className="text-muted-foreground mb-4">{article.excerpt}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {news.map((article) => (
+            <Card key={article.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+              {article.featuredImage && (
+                <img 
+                  src={article.featuredImage} 
+                  alt={article.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              <CardHeader>
+                <div className="flex items-center text-sm text-gray-500 mb-2">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('it-IT') : ''}</span>
+                  <span className="mx-2">•</span>
+                  <Badge variant="secondary">{article.category}</Badge>
+                </div>
+                <CardTitle className="text-xl hover:text-primary">
                   <Link href={`/news/${article.slug}`}>
-                    <Button variant="ghost" className="text-primary p-0">
-                      Leggi tutto →
-                    </Button>
+                    {article.title}
                   </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{article.excerpt}</p>
+                <Link href={`/news/${article.slug}`}>
+                  <Button variant="outline" size="sm">
+                    Leggi tutto →
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {news.length === 0 && (
           <div className="text-center py-12">
-            <h3 className="text-lg font-semibold mb-2">Nessuna notizia disponibile</h3>
-            <p className="text-muted-foreground">
-              Al momento non ci sono notizie da visualizzare. Torna presto per gli aggiornamenti!
-            </p>
+            <p className="text-gray-600 text-lg">Nessuna notizia disponibile al momento.</p>
           </div>
         )}
       </div>

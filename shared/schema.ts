@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -13,10 +13,9 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   role: text("role").notNull().default("utente"),
+  approved: boolean("approved").default(false),
   approvedAt: timestamp("approved_at"),
   createdAt: timestamp("created_at").defaultNow(),
-  stripeCustomerId: text("stripe_customer_id"),
-  stripeSubscriptionId: text("stripe_subscription_id"),
 });
 
 export const pendingUsers = pgTable("pending_users", {
@@ -29,74 +28,78 @@ export const pendingUsers = pgTable("pending_users", {
   numeroLicenza: text("numero_licenza").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
-  role: text("role").notNull().default("utente"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const news = pgTable("news", {
   id: serial("id").primaryKey(),
-  title: text("title").notNull(),
+  titolo: text("titolo").notNull(),
   slug: text("slug").notNull().unique(),
-  content: text("content").notNull(),
-  excerpt: text("excerpt"),
-  category: text("category"),
-  publishedAt: timestamp("published_at").defaultNow(),
-  createdAt: timestamp("created_at").defaultNow(),
+  contenuto: text("contenuto").notNull(),
+  data: timestamp("data").defaultNow(),
+  autore: text("autore").notNull(),
+  categoria: text("categoria").notNull().default("generale"),
+  pubblicato: boolean("pubblicato").default(true),
 });
 
 export const competitions = pgTable("competitions", {
   id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  location: text("location").notNull(),
-  eventDate: timestamp("event_date").notNull(),
-  discipline: text("discipline").notNull(),
-  cost: decimal("cost", { precision: 10, scale: 2 }).notNull(),
-  description: text("description"),
-  registrationDocument: text("registration_document"),
+  titolo: text("titolo").notNull(),
+  dataEvento: timestamp("data_evento").notNull(),
+  luogo: text("luogo").notNull(),
+  disciplina: text("disciplina").notNull(),
+  costo: integer("costo").notNull(),
+  bandoUrl: text("bando_url"),
+  descrizione: text("descrizione"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const memberships = pgTable("memberships", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
-  features: text("features").array(),
-  isPopular: boolean("is_popular").default(false),
+  nome: text("nome").notNull(),
+  descrizione: text("descrizione").notNull(),
+  costo: integer("costo").notNull(),
+  vantaggi: text("vantaggi").array(),
+  attivo: boolean("attivo").default(true),
 });
 
 export const membershipPurchases = pgTable("membership_purchases", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  membershipId: integer("membership_id").notNull(),
-  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
-  paymentIntentId: text("payment_intent_id").notNull(),
-  status: text("status").notNull().default("pending"),
-  createdAt: timestamp("created_at").defaultNow(),
+  userId: integer("user_id").references(() => users.id),
+  membershipId: integer("membership_id").references(() => memberships.id),
+  amount: integer("amount").notNull(),
+  paymentIntentId: text("payment_intent_id"),
+  status: text("status").notNull().default("in_attesa"),
+  timestamp: timestamp("timestamp").defaultNow(),
+  emailSent: boolean("email_sent").default(false),
 });
 
 export const contacts = pgTable("contacts", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  nome: text("nome").notNull(),
   email: text("email").notNull(),
-  subject: text("subject").notNull(),
-  message: text("message").notNull(),
+  oggetto: text("oggetto").notNull(),
+  messaggio: text("messaggio").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
+  risposto: boolean("risposto").default(false),
 });
 
 export const newsletter = pgTable("newsletter", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
-  subscribedAt: timestamp("subscribed_at").defaultNow(),
+  attivo: boolean("attivo").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Insert schemas
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-  approvedAt: true,
-  stripeCustomerId: true,
-  stripeSubscriptionId: true,
+export const insertUserSchema = createInsertSchema(users).pick({
+  nome: true,
+  cognome: true,
+  dataNascita: true,
+  luogoNascita: true,
+  codiceFiscale: true,
+  numeroLicenza: true,
+  email: true,
+  password: true,
 });
 
 export const insertPendingUserSchema = createInsertSchema(pendingUsers).omit({
@@ -106,8 +109,7 @@ export const insertPendingUserSchema = createInsertSchema(pendingUsers).omit({
 
 export const insertNewsSchema = createInsertSchema(news).omit({
   id: true,
-  createdAt: true,
-  publishedAt: true,
+  data: true,
 });
 
 export const insertCompetitionSchema = createInsertSchema(competitions).omit({
@@ -122,14 +124,13 @@ export const insertMembershipSchema = createInsertSchema(memberships).omit({
 export const insertContactSchema = createInsertSchema(contacts).omit({
   id: true,
   createdAt: true,
+  risposto: true,
 });
 
-export const insertNewsletterSchema = createInsertSchema(newsletter).omit({
-  id: true,
-  subscribedAt: true,
+export const insertNewsletterSchema = createInsertSchema(newsletter).pick({
+  email: true,
 });
 
-// Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type PendingUser = typeof pendingUsers.$inferSelect;

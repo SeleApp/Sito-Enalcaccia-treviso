@@ -1,108 +1,121 @@
 import { useState } from "react";
-import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Facebook, Instagram, Youtube, Twitter, Send } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const newsletterMutation = useMutation({
-    mutationFn: async (email: string) => {
-      const res = await apiRequest("POST", "/api/newsletter", { email });
-      return res.json();
-    },
-    onSuccess: () => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsLoading(true);
+    try {
+      await apiRequest("POST", "/api/newsletter", { email });
       toast({
-        title: "Iscrizione completata",
-        description: "Ti sei iscritto con successo alla newsletter!",
+        title: "Iscrizione completata!",
+        description: "Ti sei iscritto alla newsletter con successo.",
       });
       setEmail("");
-    },
-    onError: (error: Error) => {
+    } catch (error) {
       toast({
         title: "Errore",
-        description: error.message,
+        description: "Errore durante l'iscrizione alla newsletter.",
         variant: "destructive",
       });
-    },
-  });
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      newsletterMutation.mutate(email);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-slate-900 text-white py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Brand */}
+          {/* Brand Section */}
           <div>
             <div className="flex items-center mb-4">
-              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center mr-3">
-                <span className="text-accent-foreground font-bold text-sm">EC</span>
-              </div>
+              <i className="fas fa-crosshairs text-primary text-2xl mr-3"></i>
               <span className="font-serif font-bold text-xl">Enal Caccia</span>
             </div>
-            <p className="text-primary-foreground/80 mb-4">
+            <p className="text-slate-300 mb-4 text-sm">
               Ente Nazionale Associazioni Libere della Caccia - Promuoviamo la caccia responsabile e sostenibile in Italia.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-                <Facebook className="w-5 h-5" />
+              <a
+                href="#"
+                className="text-slate-300 hover:text-white transition-colors"
+                aria-label="Facebook"
+              >
+                <i className="fab fa-facebook text-xl"></i>
               </a>
-              <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-                <Instagram className="w-5 h-5" />
+              <a
+                href="#"
+                className="text-slate-300 hover:text-white transition-colors"
+                aria-label="Instagram"
+              >
+                <i className="fab fa-instagram text-xl"></i>
               </a>
-              <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-                <Youtube className="w-5 h-5" />
+              <a
+                href="#"
+                className="text-slate-300 hover:text-white transition-colors"
+                aria-label="YouTube"
+              >
+                <i className="fab fa-youtube text-xl"></i>
               </a>
-              <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-                <Twitter className="w-5 h-5" />
+              <a
+                href="#"
+                className="text-slate-300 hover:text-white transition-colors"
+                aria-label="Twitter"
+              >
+                <i className="fab fa-twitter text-xl"></i>
               </a>
             </div>
           </div>
 
-          {/* Collegamenti Utili */}
+          {/* Links Utili */}
           <div>
             <h4 className="font-semibold mb-4">Collegamenti Utili</h4>
-            <ul className="space-y-2 text-primary-foreground/80">
+            <ul className="space-y-2 text-sm">
               <li>
-                <a 
-                  href="https://www.enalcaccia.it" 
-                  target="_blank" 
+                <a
+                  href="https://www.enalcaccia.it"
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary-foreground transition-colors"
+                  className="text-slate-300 hover:text-white transition-colors"
                 >
                   Enalcaccia Nazionale
                 </a>
               </li>
               <li>
-                <a 
-                  href="https://www.regione.veneto.it" 
-                  target="_blank" 
+                <a
+                  href="https://www.regione.veneto.it"
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary-foreground transition-colors"
+                  className="text-slate-300 hover:text-white transition-colors"
                 >
                   Regione Veneto - Caccia
                 </a>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-primary-foreground transition-colors">
-                  Privacy Policy
-                </Link>
+                <a
+                  href="#"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  Federazione Italiana Caccia
+                </a>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-primary-foreground transition-colors">
-                  Termini e Condizioni
-                </Link>
+                <a
+                  href="#"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  Normative Venatorie
+                </a>
               </li>
             </ul>
           </div>
@@ -110,26 +123,38 @@ export default function Footer() {
           {/* Servizi */}
           <div>
             <h4 className="font-semibold mb-4">Servizi</h4>
-            <ul className="space-y-2 text-primary-foreground/80">
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/membership" className="hover:text-primary-foreground transition-colors">
-                  Tesseramento
-                </Link>
+                <a
+                  href="/membership"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  Tesseramenti
+                </a>
               </li>
               <li>
-                <Link href="/competitions" className="hover:text-primary-foreground transition-colors">
+                <a
+                  href="/competitions"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
                   Gare Cinofile
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/courses" className="hover:text-primary-foreground transition-colors">
+                <a
+                  href="#"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
                   Corsi di Formazione
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/reserves" className="hover:text-primary-foreground transition-colors">
+                <a
+                  href="#"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
                   Riserve Convenzionate
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -137,7 +162,7 @@ export default function Footer() {
           {/* Newsletter */}
           <div>
             <h4 className="font-semibold mb-4">Newsletter</h4>
-            <p className="text-primary-foreground/80 mb-4">
+            <p className="text-slate-300 mb-4 text-sm">
               Ricevi aggiornamenti sulle nostre attività
             </p>
             <form onSubmit={handleNewsletterSubmit} className="flex space-x-2">
@@ -146,35 +171,44 @@ export default function Footer() {
                 placeholder="La tua email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
+                className="flex-1 bg-slate-800 border-slate-700 text-white placeholder:text-slate-400"
                 required
               />
-              <Button 
-                type="submit" 
-                size="sm" 
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
-                disabled={newsletterMutation.isPending}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="btn-primary"
               >
-                <Send className="w-4 h-4" />
+                <i className="fas fa-arrow-right"></i>
               </Button>
             </form>
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-primary-foreground/60 text-sm mb-4 md:mb-0">
-            © 2024 Enal Caccia. Tutti i diritti riservati.
+        {/* Bottom Section */}
+        <div className="border-t border-slate-700 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-slate-300 text-sm mb-4 md:mb-0">
+            &copy; 2024 Enal Caccia. Tutti i diritti riservati.
           </p>
           <div className="flex space-x-6">
-            <Link href="/privacy" className="text-primary-foreground/60 hover:text-primary-foreground text-sm transition-colors">
+            <a
+              href="#"
+              className="text-slate-300 hover:text-white text-sm transition-colors"
+            >
               Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-primary-foreground/60 hover:text-primary-foreground text-sm transition-colors">
+            </a>
+            <a
+              href="#"
+              className="text-slate-300 hover:text-white text-sm transition-colors"
+            >
               Termini e Condizioni
-            </Link>
-            <Link href="/cookies" className="text-primary-foreground/60 hover:text-primary-foreground text-sm transition-colors">
+            </a>
+            <a
+              href="#"
+              className="text-slate-300 hover:text-white text-sm transition-colors"
+            >
               Cookie Policy
-            </Link>
+            </a>
           </div>
         </div>
       </div>

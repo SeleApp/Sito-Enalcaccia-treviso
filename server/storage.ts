@@ -1,11 +1,11 @@
 import { 
   users, 
-  pendingUsers, 
-  news, 
-  competitions, 
-  memberships, 
-  membershipPurchases, 
-  contacts, 
+  pendingUsers,
+  news,
+  competitions,
+  memberships,
+  membershipPurchases,
+  contacts,
   newsletter,
   type User, 
   type InsertUser,
@@ -21,7 +21,7 @@ import {
   type Contact,
   type InsertContact,
   type Newsletter,
-  type InsertNewsletter,
+  type InsertNewsletter
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -31,49 +31,50 @@ const MemoryStore = createMemoryStore(session);
 export interface IStorage {
   // User management
   getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUserStripeInfo(userId: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
-  
+  updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
+
   // Pending users
-  getPendingUsers(): Promise<PendingUser[]>;
-  getPendingUser(id: number): Promise<PendingUser | undefined>;
+  getPendingUserByEmail(email: string): Promise<PendingUser | undefined>;
   createPendingUser(user: InsertPendingUser): Promise<PendingUser>;
-  deletePendingUser(id: number): Promise<boolean>;
-  approvePendingUser(id: number): Promise<User>;
-  
-  // News
+  getAllPendingUsers(): Promise<PendingUser[]>;
+  approvePendingUser(id: number): Promise<User | undefined>;
+  rejectPendingUser(id: number): Promise<boolean>;
+
+  // News management
   getAllNews(): Promise<News[]>;
   getNewsBySlug(slug: string): Promise<News | undefined>;
   createNews(news: InsertNews): Promise<News>;
-  updateNews(slug: string, news: Partial<InsertNews>): Promise<News | undefined>;
+  updateNews(slug: string, updates: Partial<News>): Promise<News | undefined>;
   deleteNews(slug: string): Promise<boolean>;
-  
+
   // Competitions
   getAllCompetitions(): Promise<Competition[]>;
   getCompetition(id: number): Promise<Competition | undefined>;
   createCompetition(competition: InsertCompetition): Promise<Competition>;
-  updateCompetition(id: number, competition: Partial<InsertCompetition>): Promise<Competition | undefined>;
-  deleteCompetition(id: number): Promise<boolean>;
-  
+
   // Memberships
   getAllMemberships(): Promise<Membership[]>;
   getMembership(id: number): Promise<Membership | undefined>;
-  createMembership(membership: InsertMembership): Promise<Membership>;
-  
-  // Membership purchases
-  createMembershipPurchase(purchase: Omit<MembershipPurchase, 'id' | 'createdAt'>): Promise<MembershipPurchase>;
-  getMembershipPurchasesByUser(userId: number): Promise<MembershipPurchase[]>;
-  updateMembershipPurchaseStatus(paymentIntentId: string, status: string): Promise<MembershipPurchase | undefined>;
-  
+  createMembershipPurchase(purchase: Omit<MembershipPurchase, 'id'>): Promise<MembershipPurchase>;
+
   // Contacts
-  getAllContacts(): Promise<Contact[]>;
   createContact(contact: InsertContact): Promise<Contact>;
-  
+  getAllContacts(): Promise<Contact[]>;
+
   // Newsletter
-  subscribeToNewsletter(newsletter: InsertNewsletter): Promise<Newsletter>;
-  
+  createNewsletterSubscription(newsletter: InsertNewsletter): Promise<Newsletter>;
+
+  // Admin stats
+  getAdminStats(): Promise<{
+    approvedUsers: number;
+    pendingUsers: number;
+    totalMemberships: number;
+    contactMessages: number;
+  }>;
+
   sessionStore: session.SessionStore;
 }
 
@@ -99,47 +100,122 @@ export class MemStorage implements IStorage {
     this.contacts = new Map();
     this.newsletter = new Map();
     this.currentId = 1;
-    
+
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
 
-    // Initialize default admin user
-    this.createUser({
+    // Initialize with default admin user and sample data
+    this.initializeData();
+  }
+
+  private initializeData() {
+    // Create default admin user
+    const adminUser: User = {
+      id: this.currentId++,
       nome: "Admin",
-      cognome: "User",
-      dataNascita: "1990-01-01",
+      cognome: "Enal",
+      dataNascita: "1980-01-01",
       luogoNascita: "Roma",
-      codiceFiscale: "ADMIN01234567890",
+      codiceFiscale: "ADMNTR80A01H501Z",
       numeroLicenza: "ADMIN001",
       email: "admin@enalcaccia.it",
-      password: "$2b$10$K8yF5vQ1y4Y.pOoJwO2Q0O0Zh0s0WxF8RZzQ1yF5vQ1y4Y.pOoJwO", // "admin123"
+      password: "$2b$10$K7L/8Y1t85E.M5L5Z8q5w.GVQ6M5Z8q5w.GVQ6M5Z8q5w.GVQ6M5Z8", // "admin123"
       role: "admin",
-    });
+      approved: true,
+      approvedAt: new Date(),
+      createdAt: new Date(),
+    };
+    this.users.set(adminUser.id, adminUser);
 
     // Initialize sample memberships
-    this.createMembership({
-      name: "Tessera Base",
-      description: "Ideale per cacciatori occasionali",
-      price: "85.00",
-      features: ["Licenza di caccia valida", "Accesso alle riserve convenzionate", "Newsletter mensile"],
-      isPopular: false,
+    const sampleMemberships: Membership[] = [
+      {
+        id: this.currentId++,
+        nome: "Tessera Base",
+        descrizione: "Ideale per cacciatori occasionali",
+        costo: 85,
+        vantaggi: ["Licenza di caccia valida", "Accesso alle riserve convenzionate", "Newsletter mensile"],
+        attivo: true,
+      },
+      {
+        id: this.currentId++,
+        nome: "Tessera Premium",
+        descrizione: "Per cacciatori esperti e appassionati",
+        costo: 150,
+        vantaggi: ["Tutti i vantaggi della tessera base", "Partecipazione gare cinofile", "Sconti presso armerie", "Corsi di formazione gratuiti"],
+        attivo: true,
+      },
+      {
+        id: this.currentId++,
+        nome: "Tessera Elite",
+        descrizione: "Massimo livello di servizi",
+        costo: 250,
+        vantaggi: ["Tutti i vantaggi Premium", "Accesso esclusivo riserve premium", "Consulenza personalizzata", "Eventi esclusivi"],
+        attivo: true,
+      },
+    ];
+
+    sampleMemberships.forEach(membership => {
+      this.memberships.set(membership.id, membership);
     });
 
-    this.createMembership({
-      name: "Tessera Premium",
-      description: "Per cacciatori esperti e appassionati",
-      price: "150.00",
-      features: ["Tutti i vantaggi della tessera base", "Partecipazione gare cinofile", "Sconti presso armerie convenzionate", "Corsi di formazione gratuiti"],
-      isPopular: true,
+    // Initialize sample news
+    const sampleNews: News[] = [
+      {
+        id: this.currentId++,
+        titolo: "Campionato Regionale di Cinofilia",
+        slug: "campionato-regionale-cinofilia-2024",
+        contenuto: "Grande successo per il campionato regionale che ha visto la partecipazione di oltre 200 binomi cane-conduttore...",
+        data: new Date("2024-01-15"),
+        autore: "Admin Enal",
+        categoria: "Gare Cinofile",
+        pubblicato: true,
+      },
+      {
+        id: this.currentId++,
+        titolo: "Nuovo Protocollo Ambientale",
+        slug: "nuovo-protocollo-ambientale-2024",
+        contenuto: "Approvato il nuovo protocollo per la tutela dell'ambiente e la sostenibilità delle attività venatorie...",
+        data: new Date("2024-01-10"),
+        autore: "Admin Enal",
+        categoria: "Formazione",
+        pubblicato: true,
+      },
+    ];
+
+    sampleNews.forEach(article => {
+      this.news.set(article.id, article);
     });
 
-    this.createMembership({
-      name: "Tessera Elite",
-      description: "Massimo livello di servizi",
-      price: "250.00",
-      features: ["Tutti i vantaggi Premium", "Accesso esclusivo riserve premium", "Consulenza personalizzata", "Eventi esclusivi"],
-      isPopular: false,
+    // Initialize sample competitions
+    const sampleCompetitions: Competition[] = [
+      {
+        id: this.currentId++,
+        titolo: "Gara di Caccia al Cinghiale - Treviso",
+        dataEvento: new Date("2024-12-20"),
+        luogo: "Treviso, Località Monte Grappa",
+        disciplina: "Caccia al Cinghiale",
+        costo: 45,
+        bandoUrl: "/docs/bando-treviso-cinghiale.pdf",
+        descrizione: "Gara di caccia al cinghiale con cani segugi. Iscrizioni aperte fino al 15 dicembre.",
+        createdAt: new Date(),
+      },
+      {
+        id: this.currentId++,
+        titolo: "Prova di Lavoro per Segugi - Vicenza",
+        dataEvento: new Date("2024-12-28"),
+        luogo: "Vicenza, Altopiano di Asiago",
+        disciplina: "Segugio",
+        costo: 35,
+        bandoUrl: "/docs/bando-vicenza-segugi.pdf",
+        descrizione: "Prova di lavoro su lepre per cani segugi. Valida per qualifica ENCI.",
+        createdAt: new Date(),
+      },
+    ];
+
+    sampleCompetitions.forEach(competition => {
+      this.competitions.set(competition.id, competition);
     });
   }
 
@@ -147,12 +223,12 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === username);
-  }
-
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === username);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -160,52 +236,48 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id, 
-      createdAt: new Date(),
+      role: "utente",
+      approved: true,
       approvedAt: new Date(),
-      stripeCustomerId: null,
-      stripeSubscriptionId: null,
+      createdAt: new Date(),
     };
     this.users.set(id, user);
     return user;
   }
 
-  async updateUserStripeInfo(userId: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User> {
-    const user = this.users.get(userId);
-    if (!user) throw new Error("User not found");
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
     
-    const updatedUser = { ...user, stripeCustomerId, stripeSubscriptionId };
-    this.users.set(userId, updatedUser);
+    const updatedUser = { ...user, ...updates };
+    this.users.set(id, updatedUser);
     return updatedUser;
   }
 
-  async getPendingUsers(): Promise<PendingUser[]> {
-    return Array.from(this.pendingUsers.values());
+  async getPendingUserByEmail(email: string): Promise<PendingUser | undefined> {
+    return Array.from(this.pendingUsers.values()).find(user => user.email === email);
   }
 
-  async getPendingUser(id: number): Promise<PendingUser | undefined> {
-    return this.pendingUsers.get(id);
-  }
-
-  async createPendingUser(insertPendingUser: InsertPendingUser): Promise<PendingUser> {
+  async createPendingUser(user: InsertPendingUser): Promise<PendingUser> {
     const id = this.currentId++;
     const pendingUser: PendingUser = { 
-      ...insertPendingUser, 
-      id, 
-      createdAt: new Date() 
+      ...user, 
+      id,
+      createdAt: new Date(),
     };
     this.pendingUsers.set(id, pendingUser);
     return pendingUser;
   }
 
-  async deletePendingUser(id: number): Promise<boolean> {
-    return this.pendingUsers.delete(id);
+  async getAllPendingUsers(): Promise<PendingUser[]> {
+    return Array.from(this.pendingUsers.values());
   }
 
-  async approvePendingUser(id: number): Promise<User> {
+  async approvePendingUser(id: number): Promise<User | undefined> {
     const pendingUser = this.pendingUsers.get(id);
-    if (!pendingUser) throw new Error("Pending user not found");
-    
-    const user = await this.createUser({
+    if (!pendingUser) return undefined;
+
+    const approvedUser = await this.createUser({
       nome: pendingUser.nome,
       cognome: pendingUser.cognome,
       dataNascita: pendingUser.dataNascita,
@@ -214,16 +286,19 @@ export class MemStorage implements IStorage {
       numeroLicenza: pendingUser.numeroLicenza,
       email: pendingUser.email,
       password: pendingUser.password,
-      role: pendingUser.role,
     });
-    
+
     this.pendingUsers.delete(id);
-    return user;
+    return approvedUser;
+  }
+
+  async rejectPendingUser(id: number): Promise<boolean> {
+    return this.pendingUsers.delete(id);
   }
 
   async getAllNews(): Promise<News[]> {
     return Array.from(this.news.values()).sort((a, b) => 
-      new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime()
+      new Date(b.data).getTime() - new Date(a.data).getTime()
     );
   }
 
@@ -231,37 +306,37 @@ export class MemStorage implements IStorage {
     return Array.from(this.news.values()).find(article => article.slug === slug);
   }
 
-  async createNews(insertNews: InsertNews): Promise<News> {
+  async createNews(newsData: InsertNews): Promise<News> {
     const id = this.currentId++;
     const article: News = { 
-      ...insertNews, 
-      id, 
-      createdAt: new Date(),
-      publishedAt: new Date() 
+      ...newsData, 
+      id,
+      data: new Date(),
+      pubblicato: true,
     };
     this.news.set(id, article);
     return article;
   }
 
-  async updateNews(slug: string, updateNews: Partial<InsertNews>): Promise<News | undefined> {
-    const existing = Array.from(this.news.values()).find(article => article.slug === slug);
-    if (!existing) return undefined;
+  async updateNews(slug: string, updates: Partial<News>): Promise<News | undefined> {
+    const article = await this.getNewsBySlug(slug);
+    if (!article) return undefined;
     
-    const updated = { ...existing, ...updateNews };
-    this.news.set(existing.id, updated);
-    return updated;
+    const updatedArticle = { ...article, ...updates };
+    this.news.set(article.id, updatedArticle);
+    return updatedArticle;
   }
 
   async deleteNews(slug: string): Promise<boolean> {
-    const existing = Array.from(this.news.values()).find(article => article.slug === slug);
-    if (!existing) return false;
+    const article = await this.getNewsBySlug(slug);
+    if (!article) return false;
     
-    return this.news.delete(existing.id);
+    return this.news.delete(article.id);
   }
 
   async getAllCompetitions(): Promise<Competition[]> {
     return Array.from(this.competitions.values()).sort((a, b) => 
-      new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime()
+      new Date(a.dataEvento).getTime() - new Date(b.dataEvento).getTime()
     );
   }
 
@@ -269,101 +344,80 @@ export class MemStorage implements IStorage {
     return this.competitions.get(id);
   }
 
-  async createCompetition(insertCompetition: InsertCompetition): Promise<Competition> {
+  async createCompetition(competition: InsertCompetition): Promise<Competition> {
     const id = this.currentId++;
-    const competition: Competition = { 
-      ...insertCompetition, 
-      id, 
-      createdAt: new Date() 
+    const newCompetition: Competition = { 
+      ...competition, 
+      id,
+      createdAt: new Date(),
     };
-    this.competitions.set(id, competition);
-    return competition;
-  }
-
-  async updateCompetition(id: number, updateCompetition: Partial<InsertCompetition>): Promise<Competition | undefined> {
-    const existing = this.competitions.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...updateCompetition };
-    this.competitions.set(id, updated);
-    return updated;
-  }
-
-  async deleteCompetition(id: number): Promise<boolean> {
-    return this.competitions.delete(id);
+    this.competitions.set(id, newCompetition);
+    return newCompetition;
   }
 
   async getAllMemberships(): Promise<Membership[]> {
-    return Array.from(this.memberships.values());
+    return Array.from(this.memberships.values()).filter(m => m.attivo);
   }
 
   async getMembership(id: number): Promise<Membership | undefined> {
     return this.memberships.get(id);
   }
 
-  async createMembership(insertMembership: InsertMembership): Promise<Membership> {
+  async createMembershipPurchase(purchase: Omit<MembershipPurchase, 'id'>): Promise<MembershipPurchase> {
     const id = this.currentId++;
-    const membership: Membership = { ...insertMembership, id };
-    this.memberships.set(id, membership);
-    return membership;
+    const newPurchase: MembershipPurchase = { ...purchase, id };
+    this.membershipPurchases.set(id, newPurchase);
+    return newPurchase;
   }
 
-  async createMembershipPurchase(purchase: Omit<MembershipPurchase, 'id' | 'createdAt'>): Promise<MembershipPurchase> {
+  async createContact(contact: InsertContact): Promise<Contact> {
     const id = this.currentId++;
-    const membershipPurchase: MembershipPurchase = { 
-      ...purchase, 
-      id, 
-      createdAt: new Date() 
+    const newContact: Contact = { 
+      ...contact, 
+      id,
+      createdAt: new Date(),
+      risposto: false,
     };
-    this.membershipPurchases.set(id, membershipPurchase);
-    return membershipPurchase;
-  }
-
-  async getMembershipPurchasesByUser(userId: number): Promise<MembershipPurchase[]> {
-    return Array.from(this.membershipPurchases.values()).filter(purchase => purchase.userId === userId);
-  }
-
-  async updateMembershipPurchaseStatus(paymentIntentId: string, status: string): Promise<MembershipPurchase | undefined> {
-    const existing = Array.from(this.membershipPurchases.values()).find(purchase => purchase.paymentIntentId === paymentIntentId);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, status };
-    this.membershipPurchases.set(existing.id, updated);
-    return updated;
+    this.contacts.set(id, newContact);
+    return newContact;
   }
 
   async getAllContacts(): Promise<Contact[]> {
     return Array.from(this.contacts.values()).sort((a, b) => 
-      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }
 
-  async createContact(insertContact: InsertContact): Promise<Contact> {
-    const id = this.currentId++;
-    const contact: Contact = { 
-      ...insertContact, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.contacts.set(id, contact);
-    return contact;
-  }
-
-  async subscribeToNewsletter(insertNewsletter: InsertNewsletter): Promise<Newsletter> {
+  async createNewsletterSubscription(newsletter: InsertNewsletter): Promise<Newsletter> {
     // Check if email already exists
-    const existing = Array.from(this.newsletter.values()).find(sub => sub.email === insertNewsletter.email);
+    const existing = Array.from(this.newsletter.values()).find(n => n.email === newsletter.email);
     if (existing) {
       throw new Error("Email already subscribed");
     }
-    
+
     const id = this.currentId++;
-    const newsletter: Newsletter = { 
-      ...insertNewsletter, 
-      id, 
-      subscribedAt: new Date() 
+    const subscription: Newsletter = { 
+      ...newsletter, 
+      id,
+      attivo: true,
+      createdAt: new Date(),
     };
-    this.newsletter.set(id, newsletter);
-    return newsletter;
+    this.newsletter.set(id, subscription);
+    return subscription;
+  }
+
+  async getAdminStats(): Promise<{
+    approvedUsers: number;
+    pendingUsers: number;
+    totalMemberships: number;
+    contactMessages: number;
+  }> {
+    return {
+      approvedUsers: Array.from(this.users.values()).filter(u => u.approved).length,
+      pendingUsers: this.pendingUsers.size,
+      totalMemberships: this.membershipPurchases.size,
+      contactMessages: this.contacts.size,
+    };
   }
 }
 
