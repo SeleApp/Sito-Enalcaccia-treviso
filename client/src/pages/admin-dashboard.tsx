@@ -1,20 +1,27 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import Navigation from "@/components/navigation";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Users, Clock, CreditCard, Mail, UserCheck, UserX, Eye, Reply } from "lucide-react";
+import { UserManagement } from "@/components/admin/user-management";
+import { NewsManagement } from "@/components/admin/news-management";
+import { CompetitionManagement } from "@/components/admin/competition-management";
+import { useQuery } from "@tanstack/react-query";
+import { Users, Clock, CreditCard, Mail, UserCheck, Newspaper, Trophy, Settings } from "lucide-react";
 import { useLocation } from "wouter";
+
+interface AdminStats {
+  approvedUsers: number;
+  pendingUsers: number;
+  totalMemberships: number;
+  contactMessages: number;
+}
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
 
   // Redirect non-admin users
   if (user && user.role !== "admin") {
@@ -22,329 +29,121 @@ export default function AdminDashboard() {
     return null;
   }
 
-  const { data: stats } = useQuery({
-    queryKey: ["/api/admin/stats"]
-  });
-
-  const { data: pendingUsers = [] } = useQuery({
-    queryKey: ["/api/admin/pending-users"]
-  });
-
-  const { data: contacts = [] } = useQuery({
-    queryKey: ["/api/admin/contacts"]
-  });
-
-  const { data: memberships = [] } = useQuery({
-    queryKey: ["/api/admin/memberships"]
-  });
-
-  const approveUserMutation = useMutation({
-    mutationFn: (userId: number) => apiRequest("POST", `/api/admin/approve-user/${userId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
-      toast({
-        title: "Utente approvato",
-        description: "L'utente è stato approvato con successo",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Errore",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
-  const rejectUserMutation = useMutation({
-    mutationFn: (userId: number) => apiRequest("DELETE", `/api/admin/reject-user/${userId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
-      toast({
-        title: "Richiesta rifiutata",
-        description: "La richiesta di registrazione è stata rifiutata",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Errore",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
-  const markContactRepliedMutation = useMutation({
-    mutationFn: (contactId: number) => apiRequest("PUT", `/api/admin/contacts/${contactId}`, { replied: true }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
-      toast({
-        title: "Contatto aggiornato",
-        description: "Il contatto è stato segnato come risposto",
-      });
-    }
+  const { data: stats } = useQuery<AdminStats>({
+    queryKey: ["/api/admin/stats"],
   });
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Header />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard Amministrativa</h1>
-          <p className="text-muted-foreground">Benvenuto, {user?.nome} {user?.cognome}</p>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard Amministrativa</h1>
+          <p className="text-muted-foreground mt-2">Benvenuto, {user?.nome} {user?.cognome}</p>
         </div>
 
         {/* Statistics Cards */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Utenti Approvati</p>
-                    <p className="text-2xl font-bold text-primary">{stats.approvedUsers}</p>
-                  </div>
-                  <Users className="h-8 w-8 text-primary/60" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="border-l-4 border-l-primary">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Utenti Approvati</p>
+                  <p className="text-3xl font-bold text-primary">{stats?.approvedUsers || 0}</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Richieste Pendenti</p>
-                    <p className="text-2xl font-bold text-yellow-600">{stats.pendingUsers}</p>
-                  </div>
-                  <Clock className="h-8 w-8 text-yellow-600/60" />
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Users className="h-6 w-6 text-primary" />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Tesseramenti Totali</p>
-                    <p className="text-2xl font-bold text-green-600">{stats.totalMemberships}</p>
-                  </div>
-                  <CreditCard className="h-8 w-8 text-green-600/60" />
+          <Card className="border-l-4 border-l-yellow-500">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Richieste Pendenti</p>
+                  <p className="text-3xl font-bold text-yellow-600">{stats?.pendingUsers || 0}</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Messaggi Contatti</p>
-                    <p className="text-2xl font-bold text-orange-600">{stats.contactMessages}</p>
-                  </div>
-                  <Mail className="h-8 w-8 text-orange-600/60" />
+                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-yellow-600" />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+              </div>
+            </CardContent>
+          </Card>
 
-        <Tabs defaultValue="pending" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="pending">Richieste Pendenti</TabsTrigger>
-            <TabsTrigger value="contacts">Messaggi</TabsTrigger>
-            <TabsTrigger value="memberships">Tesseramenti</TabsTrigger>
-          </TabsList>
+          <Card className="border-l-4 border-l-green-500">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Tesseramenti Totali</p>
+                  <p className="text-3xl font-bold text-green-600">{stats?.totalMemberships || 0}</p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <CreditCard className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <TabsContent value="pending">
-            <Card>
-              <CardHeader>
-                <CardTitle>Richieste di Registrazione in Attesa</CardTitle>
-                <CardDescription>
-                  Approva o rifiuta le richieste di registrazione degli utenti
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {pendingUsers.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    Nessuna richiesta in attesa
-                  </p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nome</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Codice Fiscale</TableHead>
-                        <TableHead>Numero Licenza</TableHead>
-                        <TableHead>Data Richiesta</TableHead>
-                        <TableHead>Azioni</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {pendingUsers.map((user: any) => (
-                        <TableRow key={user.id}>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{user.nome} {user.cognome}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {user.luogoNascita}, {new Date(user.dataNascita).toLocaleDateString('it-IT')}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell className="font-mono text-sm">{user.codiceFiscale}</TableCell>
-                          <TableCell>{user.numeroLicenza}</TableCell>
-                          <TableCell>{new Date(user.createdAt).toLocaleDateString('it-IT')}</TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                onClick={() => approveUserMutation.mutate(user.id)}
-                                disabled={approveUserMutation.isPending}
-                              >
-                                <UserCheck className="h-4 w-4 mr-1" />
-                                Approva
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => rejectUserMutation.mutate(user.id)}
-                                disabled={rejectUserMutation.isPending}
-                              >
-                                <UserX className="h-4 w-4 mr-1" />
-                                Rifiuta
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <Card className="border-l-4 border-l-blue-500">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Messaggi Contatti</p>
+                  <p className="text-3xl font-bold text-blue-600">{stats?.contactMessages || 0}</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Mail className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          <TabsContent value="contacts">
-            <Card>
-              <CardHeader>
-                <CardTitle>Messaggi di Contatto</CardTitle>
-                <CardDescription>
-                  Gestisci i messaggi ricevuti dal modulo di contatto
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {contacts.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    Nessun messaggio ricevuto
-                  </p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nome</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Oggetto</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead>Stato</TableHead>
-                        <TableHead>Azioni</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {contacts.map((contact: any) => (
-                        <TableRow key={contact.id}>
-                          <TableCell className="font-medium">{contact.name}</TableCell>
-                          <TableCell>{contact.email}</TableCell>
-                          <TableCell>{contact.subject}</TableCell>
-                          <TableCell>{new Date(contact.createdAt).toLocaleDateString('it-IT')}</TableCell>
-                          <TableCell>
-                            <Badge variant={contact.replied ? "default" : "secondary"}>
-                              {contact.replied ? "Risposto" : "In attesa"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Button size="sm" variant="outline">
-                                <Eye className="h-4 w-4 mr-1" />
-                                Visualizza
-                              </Button>
-                              {!contact.replied && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => markContactRepliedMutation.mutate(contact.id)}
-                                  disabled={markContactRepliedMutation.isPending}
-                                >
-                                  <Reply className="h-4 w-4 mr-1" />
-                                  Segna come Risposto
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+        {/* Management Tabs */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Gestione Sistema
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="users" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="users" className="flex items-center gap-2">
+                  <UserCheck className="h-4 w-4" />
+                  Utenti
+                </TabsTrigger>
+                <TabsTrigger value="news" className="flex items-center gap-2">
+                  <Newspaper className="h-4 w-4" />
+                  News
+                </TabsTrigger>
+                <TabsTrigger value="competitions" className="flex items-center gap-2">
+                  <Trophy className="h-4 w-4" />
+                  Gare
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="memberships">
-            <Card>
-              <CardHeader>
-                <CardTitle>Tesseramenti</CardTitle>
-                <CardDescription>
-                  Gestisci i tesseramenti e i pagamenti degli utenti
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {memberships.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    Nessun tesseramento presente
-                  </p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID Utente</TableHead>
-                        <TableHead>Tipo Tessera</TableHead>
-                        <TableHead>Importo</TableHead>
-                        <TableHead>Stato</TableHead>
-                        <TableHead>Validità</TableHead>
-                        <TableHead>Data Acquisto</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {memberships.map((membership: any) => (
-                        <TableRow key={membership.id}>
-                          <TableCell>{membership.userId}</TableCell>
-                          <TableCell className="font-medium">{membership.membershipType}</TableCell>
-                          <TableCell>€{(membership.amount / 100).toFixed(2)}</TableCell>
-                          <TableCell>
-                            <Badge variant={membership.status === "active" ? "default" : "secondary"}>
-                              {membership.status === "active" ? "Attivo" : membership.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {membership.validFrom && membership.validUntil && (
-                              <span className="text-sm">
-                                {new Date(membership.validFrom).toLocaleDateString('it-IT')} - {new Date(membership.validUntil).toLocaleDateString('it-IT')}
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell>{new Date(membership.createdAt).toLocaleDateString('it-IT')}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              <TabsContent value="users" className="mt-6">
+                <UserManagement />
+              </TabsContent>
+
+              <TabsContent value="news" className="mt-6">
+                <NewsManagement />
+              </TabsContent>
+
+              <TabsContent value="competitions" className="mt-6">
+                <CompetitionManagement />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       </div>
+
+      <Footer />
     </div>
   );
 }

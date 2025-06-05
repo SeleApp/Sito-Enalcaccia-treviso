@@ -1,40 +1,60 @@
-import { useQuery } from "@tanstack/react-query";
-import Navigation from "@/components/navigation";
-import Footer from "@/components/footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useParams } from "wouter";
+import { News } from "@shared/schema";
+import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Clock, ArrowLeft } from "lucide-react";
-import { Link, useRoute } from "wouter";
 
 export default function NewsPage() {
-  const [match, params] = useRoute("/news/:slug");
-  
-  const { data: news = [] } = useQuery({
-    queryKey: ["/api/news"]
+  const params = useParams();
+  const isDetailView = !!params.slug;
+
+  const { data: news = [], isLoading: newsLoading } = useQuery<News[]>({
+    queryKey: ["/api/news"],
   });
 
-  const { data: article } = useQuery({
-    queryKey: [`/api/news/${params?.slug}`],
-    enabled: !!params?.slug
+  const { data: article, isLoading: articleLoading } = useQuery<News>({
+    queryKey: ["/api/news", params.slug],
+    enabled: isDetailView,
   });
 
-  if (match && params?.slug) {
-    // Individual article view
+  if (isDetailView) {
+    if (articleLoading) {
+      return (
+        <div className="min-h-screen bg-background">
+          <Header />
+          <div className="max-w-4xl mx-auto px-4 py-8">
+            <div className="animate-pulse">
+              <div className="h-8 bg-muted rounded w-3/4 mb-4" />
+              <div className="h-4 bg-muted rounded w-1/2 mb-8" />
+              <div className="h-64 bg-muted rounded mb-6" />
+              <div className="space-y-3">
+                <div className="h-4 bg-muted rounded" />
+                <div className="h-4 bg-muted rounded" />
+                <div className="h-4 bg-muted rounded w-3/4" />
+              </div>
+            </div>
+          </div>
+          <Footer />
+        </div>
+      );
+    }
+
     if (!article) {
       return (
         <div className="min-h-screen bg-background">
-          <Navigation />
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold mb-4">Articolo non trovato</h1>
-              <Button asChild>
-                <Link href="/news">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Torna alle News
-                </Link>
+          <Header />
+          <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+            <h1 className="text-2xl font-bold mb-4">Articolo non trovato</h1>
+            <Link href="/news">
+              <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Torna alle news
               </Button>
-            </div>
+            </Link>
           </div>
           <Footer />
         </div>
@@ -43,86 +63,117 @@ export default function NewsPage() {
 
     return (
       <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Button asChild variant="outline" className="mb-6">
-            <Link href="/news">
+        <Header />
+        
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Link href="/news">
+            <Button variant="ghost" className="mb-6">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Torna alle News
-            </Link>
-          </Button>
+              Torna alle news
+            </Button>
+          </Link>
 
-          <article className="prose prose-lg max-w-none">
-            <div className="mb-8">
-              <div className="flex items-center text-sm text-muted-foreground mb-4">
-                <Clock className="mr-2 h-4 w-4" />
-                <span>{new Date(article.publishedAt).toLocaleDateString('it-IT')}</span>
-                <span className="mx-2">•</span>
-                <Badge variant="secondary">{article.category}</Badge>
+          <header className="mb-8">
+            <div className="flex items-center gap-4 mb-4">
+              <Badge variant="secondary">{article.category}</Badge>
+              <div className="flex items-center text-muted-foreground">
+                <Calendar className="h-4 w-4 mr-2" />
+                {new Date(article.date).toLocaleDateString('it-IT')}
               </div>
-              <h1 className="text-4xl font-bold mb-6">{article.title}</h1>
-              {article.excerpt && (
-                <p className="text-xl text-muted-foreground mb-8">{article.excerpt}</p>
-              )}
             </div>
-            
-            <div 
-              className="prose-content"
-              dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br />') }}
-            />
-          </article>
-        </div>
+            <h1 className="text-4xl font-bold text-foreground mb-4">{article.title}</h1>
+            <p className="text-xl text-muted-foreground">{article.excerpt}</p>
+          </header>
+
+          {article.featuredImage && (
+            <div className="mb-8">
+              <img
+                src={article.featuredImage}
+                alt={article.title}
+                className="w-full h-96 object-cover rounded-lg shadow-lg"
+              />
+            </div>
+          )}
+
+          <div className="prose prose-lg max-w-none">
+            <div className="whitespace-pre-wrap text-foreground leading-relaxed">
+              {article.content}
+            </div>
+          </div>
+        </article>
+
         <Footer />
       </div>
     );
   }
 
-  // News list view
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Header />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Notizie e Aggiornamenti</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Rimani sempre aggiornato sulle attività di Enal Caccia, le novità del settore venatorio e gli eventi in programma.
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-4">Notizie e Aggiornamenti</h1>
+          <p className="text-muted-foreground">
+            Rimani aggiornato sulle ultime novità di Enal Caccia
           </p>
         </div>
 
-        {news.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-lg text-muted-foreground">Nessuna notizia disponibile al momento</p>
-          </div>
-        ) : (
+        {newsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((article: any) => (
-              <Card key={article.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
-                    <Clock className="mr-2 h-4 w-4" />
-                    <span>{new Date(article.publishedAt).toLocaleDateString('it-IT')}</span>
-                    <span className="mx-2">•</span>
-                    <Badge variant="secondary">{article.category}</Badge>
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <div className="h-48 bg-muted" />
+                <CardContent className="p-6">
+                  <div className="h-4 bg-muted rounded w-1/3 mb-2" />
+                  <div className="h-6 bg-muted rounded w-3/4 mb-3" />
+                  <div className="space-y-2 mb-4">
+                    <div className="h-4 bg-muted rounded" />
+                    <div className="h-4 bg-muted rounded w-2/3" />
                   </div>
-                  <CardTitle className="line-clamp-2">
-                    <Link href={`/news/${article.slug}`} className="hover:text-primary">
-                      {article.title}
-                    </Link>
-                  </CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {article.excerpt}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/news/${article.slug}`}>
-                      Leggi tutto
-                    </Link>
-                  </Button>
+                  <div className="h-4 bg-muted rounded w-1/4" />
                 </CardContent>
               </Card>
             ))}
+          </div>
+        ) : news.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {news.map((article) => (
+              <Card key={article.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                {article.featuredImage && (
+                  <img 
+                    src={article.featuredImage} 
+                    alt={article.title}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge variant="secondary">{article.category}</Badge>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      {new Date(article.date).toLocaleDateString('it-IT')}
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 hover:text-primary">
+                    <Link href={`/news/${article.slug}`}>{article.title}</Link>
+                  </h3>
+                  <p className="text-muted-foreground mb-4">{article.excerpt}</p>
+                  <Link href={`/news/${article.slug}`}>
+                    <Button variant="ghost" className="text-primary p-0">
+                      Leggi tutto →
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-lg font-semibold mb-2">Nessuna notizia disponibile</h3>
+            <p className="text-muted-foreground">
+              Al momento non ci sono notizie da visualizzare. Torna presto per gli aggiornamenti!
+            </p>
           </div>
         )}
       </div>

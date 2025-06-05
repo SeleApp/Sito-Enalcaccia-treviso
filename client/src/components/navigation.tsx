@@ -2,15 +2,8 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Target, Menu, LogOut } from "lucide-react";
 
 export default function Navigation() {
   const [location] = useLocation();
@@ -22,13 +15,8 @@ export default function Navigation() {
     { name: "News", href: "/news" },
     { name: "Gare Cinofile", href: "/competitions" },
     { name: "Tesseramento", href: "/membership" },
-    { name: "Contatti", href: "/contacts" },
+    { name: "Contatti", href: "/contact" },
   ];
-
-  const isActive = (href: string) => {
-    if (href === "/") return location === "/";
-    return location.startsWith(href);
-  };
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -39,67 +27,51 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-3">
-                  <span className="text-white font-bold text-sm">EC</span>
-                </div>
-                <span className="font-serif font-bold text-xl text-primary">Enal Caccia</span>
-              </div>
-            </Link>
-          </div>
+          <Link href="/">
+            <div className="flex items-center cursor-pointer">
+              <Target className="h-8 w-8 text-primary mr-3" />
+              <span className="font-serif font-bold text-xl text-foreground">Enal Caccia</span>
+            </div>
+          </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`nav-link px-3 py-2 text-sm font-medium ${
-                    isActive(item.href) ? "text-primary" : ""
+          <div className="hidden md:flex items-center space-x-8">
+            {navigation.map((item) => (
+              <Link key={item.name} href={item.href}>
+                <Button
+                  variant="ghost"
+                  className={`${
+                    location === item.href
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-primary"
                   }`}
                 >
                   {item.name}
-                </Link>
-              ))}
-            </div>
+                </Button>
+              </Link>
+            ))}
           </div>
 
-          {/* Auth Buttons / User Menu */}
+          {/* Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                {user.role === "admin" && (
-                  <Link href="/admin">
-                    <Button variant="outline" size="sm">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Admin
-                    </Button>
-                  </Link>
-                )}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                      <User className="w-4 h-4" />
-                      <span>{user.nome} {user.cognome}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard" className="flex items-center">
-                        <User className="w-4 h-4 mr-2" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <span className="text-sm text-muted-foreground">
+                  Ciao, {user.nome}
+                </span>
+                <Link href={user.role === "admin" ? "/admin" : "/dashboard"}>
+                  <Button variant="outline">
+                    {user.role === "admin" ? "Admin" : "Dashboard"}
+                  </Button>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleLogout}
+                  disabled={logoutMutation.isPending}
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
               </div>
             ) : (
               <div className="flex items-center space-x-4">
@@ -117,73 +89,72 @@ export default function Navigation() {
           <div className="md:hidden">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="icon">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
-                <div className="flex flex-col space-y-4 mt-6">
+                <div className="flex flex-col space-y-4 mt-8">
                   {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={`nav-link block px-3 py-2 text-base font-medium ${
-                        isActive(item.href) ? "text-primary" : ""
-                      }`}
-                    >
-                      {item.name}
+                    <Link key={item.name} href={item.href}>
+                      <Button
+                        variant="ghost"
+                        className={`w-full justify-start ${
+                          location === item.href ? "text-primary bg-primary/10" : ""
+                        }`}
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {item.name}
+                      </Button>
                     </Link>
                   ))}
                   
                   <div className="border-t pt-4">
                     {user ? (
                       <div className="space-y-2">
-                        <div className="px-3 py-2">
-                          <p className="text-sm font-medium">{user.nome} {user.cognome}</p>
-                          <p className="text-xs text-muted-foreground">{user.email}</p>
-                        </div>
-                        <Link 
-                          href="/dashboard" 
-                          onClick={() => setMobileOpen(false)}
-                          className="block px-3 py-2 text-base font-medium"
-                        >
-                          Dashboard
-                        </Link>
-                        {user.role === "admin" && (
-                          <Link 
-                            href="/admin" 
+                        <p className="text-sm text-muted-foreground px-3">
+                          Ciao, {user.nome}
+                        </p>
+                        <Link href={user.role === "admin" ? "/admin" : "/dashboard"}>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
                             onClick={() => setMobileOpen(false)}
-                            className="block px-3 py-2 text-base font-medium"
                           >
-                            Admin
-                          </Link>
-                        )}
-                        <button
+                            {user.role === "admin" ? "Admin Dashboard" : "Il Mio Dashboard"}
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start"
                           onClick={() => {
                             handleLogout();
                             setMobileOpen(false);
                           }}
-                          className="block w-full text-left px-3 py-2 text-base font-medium"
+                          disabled={logoutMutation.isPending}
                         >
+                          <LogOut className="h-4 w-4 mr-2" />
                           Logout
-                        </button>
+                        </Button>
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <Link 
-                          href="/auth" 
-                          onClick={() => setMobileOpen(false)}
-                          className="block px-3 py-2 text-base font-medium"
-                        >
-                          Login
+                        <Link href="/auth">
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            Login
+                          </Button>
                         </Link>
-                        <Link 
-                          href="/auth" 
-                          onClick={() => setMobileOpen(false)}
-                          className="block w-full text-left px-3 py-2 text-base font-medium"
-                        >
-                          Registrazione
+                        <Link href="/auth">
+                          <Button
+                            className="w-full justify-start btn-primary"
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            Registrazione
+                          </Button>
                         </Link>
                       </div>
                     )}

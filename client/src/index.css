@@ -3,48 +3,58 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 210 40% 15%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 210 40% 15%;
-  --card: 0 0% 100%;
-  --card-foreground: 210 40% 15%;
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --primary: 143 85% 16%; /* Forest green #2D5016 */
-  --primary-foreground: 0 0% 98%;
-  --secondary: 25 76% 31%; /* Saddle brown #8B4513 */
-  --secondary-foreground: 0 0% 98%;
-  --accent: 38 92% 50%; /* Golden yellow #DAA520 */
-  --accent-foreground: 210 40% 15%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-  --ring: 143 85% 16%;
+  --background: 210 11% 98%; /* #F5F7FA */
+  --foreground: 210 11% 15%; /* #2D5016 equivalent */
+  --muted: 210 11% 93%; /* #EEEEEE */
+  --muted-foreground: 210 6% 46%; /* #757575 */
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 210 11% 15%; /* #2D5016 equivalent */
+  --card: 0 0% 100%; /* #FFFFFF */
+  --card-foreground: 210 11% 15%; /* #2D5016 equivalent */
+  --border: 210 11% 82%; /* #D1D5DB */
+  --input: 210 11% 82%; /* #D1D5DB */
+  --primary: 88 65% 18%; /* #2D5016 - Forest Green */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF */
+  --secondary: 25 76% 31%; /* #8B4513 - Saddle Brown */
+  --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+  --accent: 25 95% 60%; /* #FF6B35 - Orange Red */
+  --accent-foreground: 0 0% 100%; /* #FFFFFF */
+  --destructive: 0 84% 60%; /* #F44336 */
+  --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+  --ring: 88 65% 18%; /* #2D5016 */
   --radius: 0.5rem;
+  --chart-1: 88 65% 18%; /* #2D5016 */
+  --chart-2: 25 76% 31%; /* #8B4513 */
+  --chart-3: 25 95% 60%; /* #FF6B35 */
+  --chart-4: 142 71% 45%; /* #10B981 */
+  --chart-5: 45 93% 47%; /* #F59E0B */
 }
 
 .dark {
-  --background: 210 40% 4%;
-  --foreground: 0 0% 98%;
-  --muted: 215 32% 14%;
-  --muted-foreground: 217 33% 65%;
-  --popover: 210 40% 4%;
-  --popover-foreground: 0 0% 98%;
-  --card: 210 40% 4%;
-  --card-foreground: 0 0% 98%;
-  --border: 215 32% 14%;
-  --input: 215 32% 14%;
-  --primary: 143 85% 16%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 25 76% 31%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 38 92% 50%;
-  --accent-foreground: 210 40% 15%;
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
-  --ring: 143 85% 16%;
+  --background: 210 11% 6%; /* #0F172A */
+  --foreground: 0 0% 98%; /* #FAFAFA */
+  --muted: 210 11% 15%; /* #1E293B */
+  --muted-foreground: 210 6% 54%; /* #94A3B8 */
+  --popover: 210 11% 6%; /* #0F172A */
+  --popover-foreground: 0 0% 98%; /* #FAFAFA */
+  --card: 210 11% 6%; /* #0F172A */
+  --card-foreground: 0 0% 98%; /* #FAFAFA */
+  --border: 210 11% 15%; /* #1E293B */
+  --input: 210 11% 15%; /* #1E293B */
+  --primary: 88 65% 18%; /* #2D5016 */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF */
+  --secondary: 25 76% 31%; /* #8B4513 */
+  --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+  --accent: 25 95% 60%; /* #FF6B35 */
+  --accent-foreground: 0 0% 100%; /* #FFFFFF */
+  --destructive: 0 84% 60%; /* #F44336 */
+  --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+  --ring: 88 65% 18%; /* #2D5016 */
+  --chart-1: 88 65% 18%; /* #2D5016 */
+  --chart-2: 25 76% 31%; /* #8B4513 */
+  --chart-3: 25 95% 60%; /* #FF6B35 */
+  --chart-4: 142 71% 45%; /* #10B981 */
+  --chart-5: 45 93% 47%; /* #F59E0B */
 }
 
 @layer base {
@@ -63,32 +73,42 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-2 px-4 rounded-lg transition-colors;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold py-2 px-4 rounded-lg transition-colors;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 px-4 py-2 rounded-md font-medium transition-colors;
   }
 
   .btn-accent {
-    @apply bg-accent text-accent-foreground hover:bg-accent/90 font-semibold py-2 px-4 rounded-lg transition-colors;
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md font-medium transition-colors;
   }
 
-  .nav-link {
-    @apply text-foreground hover:text-primary transition-colors duration-200;
-  }
-
-  .hero-gradient {
+  .gradient-primary {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
   }
 
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  .text-forest {
+    color: hsl(var(--primary));
   }
-}
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-saddle {
+    color: hsl(var(--secondary));
+  }
+
+  .text-accent-custom {
+    color: hsl(var(--accent));
+  }
+
+  .bg-forest {
+    background-color: hsl(var(--primary));
+  }
+
+  .bg-saddle {
+    background-color: hsl(var(--secondary));
+  }
+
+  .border-forest {
+    border-color: hsl(var(--primary));
   }
 }
