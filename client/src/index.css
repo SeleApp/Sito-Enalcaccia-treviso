@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 210 40% 15%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 40% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 210 40% 15%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --primary: 143 85% 16%; /* Forest green #2D5016 */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 25 76% 31%; /* Saddle brown #8B4513 */
+  --secondary-foreground: 0 0% 98%;
+  --accent: 38 92% 50%; /* Golden yellow #DAA520 */
+  --accent-foreground: 210 40% 15%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 143 85% 16%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 210 40% 4%;
+  --foreground: 0 0% 98%;
+  --muted: 215 32% 14%;
+  --muted-foreground: 217 33% 65%;
+  --popover: 210 40% 4%;
+  --popover-foreground: 0 0% 98%;
+  --card: 210 40% 4%;
+  --card-foreground: 0 0% 98%;
+  --border: 215 32% 14%;
+  --input: 215 32% 14%;
+  --primary: 143 85% 16%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 25 76% 31%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 38 92% 50%;
+  --accent-foreground: 210 40% 15%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 143 85% 16%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-2 px-4 rounded-lg transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold py-2 px-4 rounded-lg transition-colors;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 font-semibold py-2 px-4 rounded-lg transition-colors;
+  }
+
+  .nav-link {
+    @apply text-foreground hover:text-primary transition-colors duration-200;
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
