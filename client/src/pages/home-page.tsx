@@ -42,10 +42,10 @@ export default function HomePage() {
         />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="text-white">
-            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia</h1>
-            <p className="text-xl md:text-2xl mb-2">Ente Nazionale Associazioni Libere della Caccia</p>
+            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia Treviso</h1>
+            <p className="text-xl md:text-2xl mb-2">Sezione Provinciale di Treviso</p>
             <p className="text-lg mb-8 max-w-2xl">
-              Promuoviamo la caccia responsabile e sostenibile, valorizzando le tradizioni venatorie italiane 
+              Promuoviamo la caccia responsabile e sostenibile nella provincia di Treviso, valorizzando le tradizioni venatorie venete 
               attraverso formazione, competizioni cinofile e tesseramenti.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -81,7 +81,7 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-serif font-bold text-foreground mb-4">I Nostri Servizi</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Enal Caccia offre una gamma completa di servizi per i cacciatori, dalle licenze alle competizioni cinofile.
+              Enal Caccia Treviso offre una gamma completa di servizi per i cacciatori della provincia, dalle licenze alle competizioni cinofile.
             </p>
           </div>
           

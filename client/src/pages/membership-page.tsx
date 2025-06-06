@@ -106,7 +106,7 @@ export default function MembershipPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Tesseramento 2025</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Diventa socio Enal Caccia e accedi a tutti i nostri servizi. 
+            Diventa socio Enal Caccia Treviso e accedi a tutti i nostri servizi nella provincia. 
             Scegli la tessera più adatta alle tue esigenze e inizia subito a usufruire dei vantaggi esclusivi.
           </p>
         </div>
@@ -310,11 +310,11 @@ export default function MembershipPage() {
         <div className="bg-muted/50 rounded-lg p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-serif font-bold text-foreground mb-4">
-              Perché Scegliere Enal Caccia
+              Perché Scegliere Enal Caccia Treviso
             </h2>
             <p className="text-muted-foreground max-w-3xl mx-auto">
-              Da oltre 50 anni siamo al fianco dei cacciatori italiani, offrendo servizi di qualità 
-              e promuovendo una caccia responsabile e sostenibile.
+              Da oltre 50 anni siamo al fianco dei cacciatori veneti, offrendo servizi di qualità 
+              nella provincia di Treviso e promuovendo una caccia responsabile e sostenibile.
             </p>
           </div>
 

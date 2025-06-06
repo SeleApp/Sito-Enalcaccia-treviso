@@ -204,7 +204,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Sede Principale</h3>
                     <p className="text-muted-foreground">
-                      Via della Caccia, 123<br />
+                      Via Roma, 45<br />
                       31100 Treviso (TV)<br />
                       Veneto, Italia
                     </p>
@@ -218,8 +218,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Telefono</h3>
                     <p className="text-muted-foreground">
-                      <a href="tel:+390422123456" className="hover:text-forest transition-colors">
-                        +39 0422 123456
+                      <a href="tel:+390422785432" className="hover:text-forest transition-colors">
+                        +39 0422 785432
                       </a>
                       <br />
                       Lun-Ven: 9:00-17:00<br />
@@ -235,12 +235,12 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
                     <p className="text-muted-foreground">
-                      <a href="mailto:info@enalcaccia-veneto.it" className="hover:text-forest transition-colors">
-                        info@enalcaccia-veneto.it
+                      <a href="mailto:info@enalcaccia-treviso.it" className="hover:text-forest transition-colors">
+                        info@enalcaccia-treviso.it
                       </a>
                       <br />
-                      <a href="mailto:segretario@enalcaccia-veneto.it" className="hover:text-forest transition-colors">
-                        segretario@enalcaccia-veneto.it
+                      <a href="mailto:segretario@enalcaccia-treviso.it" className="hover:text-forest transition-colors">
+                        segretario@enalcaccia-treviso.it
                       </a>
                     </p>
                   </div>
@@ -313,7 +313,7 @@ export default function ContactPage() {
                     <MapPin className="w-12 h-12 mx-auto mb-2" />
                     <p className="text-sm">Mappa interattiva</p>
                     <p className="text-xs">
-                      Via della Caccia, 123 - Treviso (TV)
+                      Via Roma, 45 - Treviso (TV)
                     </p>
                   </div>
                 </div>
