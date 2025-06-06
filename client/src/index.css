@@ -3,55 +3,52 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 20 14.3% 4.1%;
+  --background: 210 11% 98%; /* #F5F7FA */
+  --foreground: 120 8% 15%; /* #2D5016 */
   --muted: 60 4.8% 95.9%;
   --muted-foreground: 25 5.3% 44.7%;
   --popover: 0 0% 100%;
-  --popover-foreground: 20 14.3% 4.1%;
+  --popover-foreground: 120 8% 15%;
   --card: 0 0% 100%;
-  --card-foreground: 20 14.3% 4.1%;
+  --card-foreground: 120 8% 15%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 138 45% 20%; /* #2D5016 - Forest Green */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 25 73% 27%; /* #8B4513 - Saddle Brown */
-  --secondary-foreground: 0 0% 100%;
-  --accent: 20 91% 48%; /* #DAA520 - Goldenrod */
-  --accent-foreground: 0 0% 100%;
+  --primary: 94 68% 43%; /* #2D5016 forest green */
+  --primary-foreground: 211 100% 99%;
+  --secondary: 26 38% 33%; /* #8B4513 saddle brown */
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 20 100% 60%; /* #FF6B35 accent orange */
+  --accent-foreground: 60 9.1% 97.8%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;
-  --ring: 20 14.3% 4.1%;
+  --success: 142 76% 36%;
+  --warning: 45 93% 47%;
+  --ring: 120 8% 15%;
   --radius: 0.5rem;
-
-  /* Custom colors for hunting theme */
-  --forest: 138 45% 20%; /* #2D5016 */
-  --forest-light: 138 34% 36%; /* #4A7C59 */
-  --forest-dark: 138 67% 10%; /* #1A3009 */
-  --saddle: 25 73% 27%; /* #8B4513 */
-  --goldenrod: 43 74% 49%; /* #DAA520 */
 }
 
 .dark {
-  --background: 240 10% 3.9%;
+  --background: 120 50% 3%; /* #0A1A03 */
   --foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --popover: 240 10% 3.9%;
+  --muted: 120 3.7% 15.9%;
+  --muted-foreground: 120 5% 64.9%;
+  --popover: 120 50% 3%;
   --popover-foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
+  --card: 120 50% 3%;
   --card-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --primary: 138 45% 20%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 3.7% 15.9%;
+  --border: 120 3.7% 15.9%;
+  --input: 120 3.7% 15.9%;
+  --primary: 94 68% 43%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 120 3.7% 15.9%;
   --secondary-foreground: 0 0% 98%;
-  --accent: 240 3.7% 15.9%;
+  --accent: 20 100% 60%;
   --accent-foreground: 0 0% 98%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --ring: 240 4.9% 83.9%;
+  --success: 142 76% 36%;
+  --warning: 45 93% 47%;
+  --ring: 120 4.9% 83.9%;
 }
 
 @layer base {
@@ -60,107 +57,36 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
   }
 }
 
-/* Custom utilities for hunting theme */
-.text-forest {
-  color: hsl(var(--forest));
-}
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-lg font-semibold transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 px-6 py-3 rounded-lg font-semibold transition-colors;
+  }
+  
+  .btn-accent {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 rounded-lg font-semibold transition-colors;
+  }
 
-.text-forest-light {
-  color: hsl(var(--forest-light));
-}
-
-.text-forest-dark {
-  color: hsl(var(--forest-dark));
-}
-
-.bg-forest {
-  background-color: hsl(var(--forest));
-}
-
-.bg-forest-light {
-  background-color: hsl(var(--forest-light));
-}
-
-.bg-forest-dark {
-  background-color: hsl(var(--forest-dark));
-}
-
-.text-saddle {
-  color: hsl(var(--saddle));
-}
-
-.bg-saddle {
-  background-color: hsl(var(--saddle));
-}
-
-.text-goldenrod {
-  color: hsl(var(--goldenrod));
-}
-
-.bg-goldenrod {
-  background-color: hsl(var(--goldenrod));
-}
-
-.border-forest {
-  border-color: hsl(var(--forest));
-}
-
-.hover\:bg-forest:hover {
-  background-color: hsl(var(--forest));
-}
-
-.hover\:bg-forest-light:hover {
-  background-color: hsl(var(--forest-light));
-}
-
-.hover\:text-forest:hover {
-  color: hsl(var(--forest));
-}
-
-.hover\:text-forest-light:hover {
-  color: hsl(var(--forest-light));
-}
-
-/* Gradient backgrounds */
-.gradient-forest {
-  background: linear-gradient(135deg, hsl(var(--forest)) 0%, hsl(var(--forest-light)) 100%);
-}
-
-.gradient-hero {
-  background: linear-gradient(rgba(45, 80, 22, 0.7), rgba(45, 80, 22, 0.7));
-}
-
-/* Hero section background overlay */
-.hero-bg {
-  background-image: linear-gradient(rgba(45, 80, 22, 0.7), rgba(45, 80, 22, 0.7)), url('https://images.unsplash.com/photo-1551522435-a13afa10f103?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=600');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* Card hover effects */
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* Button styles */
-.btn-primary {
-  @apply bg-forest hover:bg-forest-light text-white font-semibold py-2 px-4 rounded-lg transition-colors;
-}
-
-.btn-secondary {
-  @apply bg-saddle hover:bg-opacity-90 text-white font-semibold py-2 px-4 rounded-lg transition-colors;
-}
-
-.btn-accent {
-  @apply bg-goldenrod hover:bg-opacity-90 text-white font-semibold py-2 px-4 rounded-lg transition-colors;
+  .card {
+    @apply bg-card text-card-foreground rounded-lg border shadow-sm;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
 }

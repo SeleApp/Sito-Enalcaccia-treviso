@@ -1,258 +1,215 @@
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "wouter";
-import { Competition } from "@shared/schema";
-import { MapPin, Euro, Calendar, FileText, ArrowLeft } from "lucide-react";
+import Navigation from "@/components/navigation";
+import Footer from "@/components/footer";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import { Calendar, MapPin, Euro, Users, Search, FileText } from "lucide-react";
+import type { Competition } from "@shared/schema";
 
 export default function CompetitionsPage() {
-  const params = useParams();
-  const isDetailView = !!params.id;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDiscipline, setSelectedDiscipline] = useState("");
 
-  const { data: competitions = [], isLoading: competitionsLoading } = useQuery<Competition[]>({
+  const { data: competitions = [], isLoading } = useQuery<Competition[]>({
     queryKey: ["/api/competitions"],
   });
 
-  const { data: competition, isLoading: competitionLoading } = useQuery<Competition>({
-    queryKey: ["/api/competitions", params.id],
-    enabled: isDetailView,
+  const filteredCompetitions = competitions.filter(competition => {
+    const matchesSearch = competition.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         competition.location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDiscipline = selectedDiscipline === "" || competition.discipline === selectedDiscipline;
+    return matchesSearch && matchesDiscipline;
   });
 
-  if (isDetailView) {
-    if (competitionLoading) {
-      return (
-        <div className="min-h-screen bg-background">
-          <Header />
-          <div className="max-w-4xl mx-auto px-4 py-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-muted rounded w-3/4 mb-4" />
-              <div className="h-4 bg-muted rounded w-1/2 mb-8" />
-              <div className="h-32 bg-muted rounded mb-6" />
-              <div className="space-y-3">
-                <div className="h-4 bg-muted rounded" />
-                <div className="h-4 bg-muted rounded" />
-                <div className="h-4 bg-muted rounded w-3/4" />
-              </div>
-            </div>
-          </div>
-          <Footer />
-        </div>
-      );
-    }
-
-    if (!competition) {
-      return (
-        <div className="min-h-screen bg-background">
-          <Header />
-          <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Gara non trovata</h1>
-            <Link href="/competitions">
-              <Button variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Torna alle gare
-              </Button>
-            </Link>
-          </div>
-          <Footer />
-        </div>
-      );
-    }
-
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Link href="/competitions">
-            <Button variant="ghost" className="mb-6">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Torna alle gare
-            </Button>
-          </Link>
-
-          <Card>
-            <CardContent className="p-8">
-              <div className="flex items-center justify-between mb-6">
-                <Badge className="bg-primary text-primary-foreground">
-                  {competition.discipline}
-                </Badge>
-                <span className="text-muted-foreground">
-                  {new Date(competition.date).toLocaleDateString('it-IT')}
-                </span>
-              </div>
-
-              <h1 className="text-3xl font-bold mb-6">{competition.title}</h1>
-              
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                <div className="space-y-4">
-                  <div className="flex items-center text-muted-foreground">
-                    <Calendar className="h-5 w-5 mr-3 text-primary" />
-                    <div>
-                      <p className="font-medium text-foreground">Data</p>
-                      <p>{new Date(competition.date).toLocaleDateString('it-IT')}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="h-5 w-5 mr-3 text-primary" />
-                    <div>
-                      <p className="font-medium text-foreground">Luogo</p>
-                      <p>{competition.location}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center text-muted-foreground">
-                    <Euro className="h-5 w-5 mr-3 text-primary" />
-                    <div>
-                      <p className="font-medium text-foreground">Costo di Iscrizione</p>
-                      <p>€{competition.cost}</p>
-                    </div>
-                  </div>
-                  
-                  {competition.bandoUrl && (
-                    <div className="flex items-center text-muted-foreground">
-                      <FileText className="h-5 w-5 mr-3 text-primary" />
-                      <div>
-                        <p className="font-medium text-foreground">Documentazione</p>
-                        <a 
-                          href={competition.bandoUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          Scarica il bando
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">Descrizione</h2>
-                <p className="text-muted-foreground leading-relaxed">{competition.description}</p>
-              </div>
-
-              <div className="bg-muted/50 rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Come Partecipare</h3>
-                <p className="text-muted-foreground mb-4">
-                  Per partecipare a questa gara è necessario essere tesserati Enal Caccia. 
-                  Le iscrizioni devono essere effettuate entro i termini specificati nel bando.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Link href="/membership">
-                    <Button>Tesserati Ora</Button>
-                  </Link>
-                  <Link href="/contact">
-                    <Button variant="outline">Contatta l'Organizzazione</Button>
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Footer />
-      </div>
-    );
-  }
+  const disciplines = Array.from(new Set(competitions.map(c => c.discipline)));
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-4">Gare Cinofile</h1>
-          <p className="text-muted-foreground">
-            Scopri le prossime competizioni e partecipa con il tuo cane da caccia
+      {/* Hero Section */}
+      <section className="gradient-bg text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">
+            Gare Cinofile
+          </h1>
+          <p className="text-xl text-green-100 max-w-3xl mx-auto">
+            Partecipa alle competizioni per cani da caccia organizzate in tutta Italia. 
+            Trova l'evento perfetto per te e il tuo compagno a quattro zampe.
           </p>
         </div>
+      </section>
 
-        {competitionsLoading ? (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Search and Filters */}
+        <div className="mb-8 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Cerca per nome o località..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={selectedDiscipline} onValueChange={setSelectedDiscipline}>
+              <SelectTrigger className="w-full md:w-64">
+                <SelectValue placeholder="Tutte le discipline" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Tutte le discipline</SelectItem>
+                {disciplines.map(discipline => (
+                  <SelectItem key={discipline} value={discipline}>
+                    {discipline}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Competitions Grid */}
+        {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="flex justify-between mb-4">
-                    <div className="h-6 bg-muted rounded w-1/3" />
-                    <div className="h-4 bg-muted rounded w-1/4" />
-                  </div>
-                  <div className="h-6 bg-muted rounded w-3/4 mb-3" />
-                  <div className="space-y-2 mb-4">
-                    <div className="h-4 bg-muted rounded" />
-                    <div className="h-4 bg-muted rounded w-2/3" />
-                  </div>
-                  <div className="h-4 bg-muted rounded w-2/3 mb-4" />
-                  <div className="flex space-x-2">
-                    <div className="h-9 bg-muted rounded flex-1" />
-                    <div className="h-9 bg-muted rounded flex-1" />
-                  </div>
-                </CardContent>
-              </Card>
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-muted h-64 rounded-lg"></div>
+              </div>
             ))}
           </div>
-        ) : competitions.length > 0 ? (
+        ) : filteredCompetitions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {competitions.map((competition) => (
-              <Card key={competition.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <Badge className="bg-primary text-primary-foreground">
-                      {competition.discipline}
-                    </Badge>
+            {filteredCompetitions.map((competition) => (
+              <Card key={competition.id} className="card-hover">
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge variant="secondary">{competition.discipline}</Badge>
                     <span className="text-sm text-muted-foreground">
-                      {new Date(competition.date).toLocaleDateString('it-IT')}
+                      {new Date(competition.eventDate).toLocaleDateString()}
                     </span>
                   </div>
-                  
-                  <h3 className="text-xl font-semibold mb-3">{competition.title}</h3>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-muted-foreground">
-                      <MapPin className="h-4 w-4 mr-2 text-primary" />
-                      <span className="text-sm">{competition.location}</span>
+                  <CardTitle className="text-xl">{competition.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span>
+                        {new Date(competition.eventDate).toLocaleDateString('it-IT', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
                     </div>
-                    <div className="flex items-center text-muted-foreground">
-                      <Euro className="h-4 w-4 mr-2 text-primary" />
-                      <span className="text-sm">€{competition.cost}</span>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      <span>{competition.location}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Euro className="w-4 h-4 mr-2" />
+                      <span>€{competition.cost}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Users className="w-4 h-4 mr-2" />
+                      <span>
+                        {competition.currentParticipants}/{competition.maxParticipants} partecipanti
+                      </span>
                     </div>
                   </div>
                   
-                  <p className="text-muted-foreground mb-4 text-sm line-clamp-3">
+                  <p className="text-sm text-muted-foreground mb-4">
                     {competition.description}
                   </p>
                   
                   <div className="flex space-x-2">
-                    <Link href={`/competitions/${competition.id}`}>
-                      <Button className="flex-1 text-sm">Dettagli</Button>
-                    </Link>
+                    <Button size="sm" className="flex-1">
+                      Dettagli
+                    </Button>
                     {competition.bandoUrl && (
-                      <Button variant="outline" className="flex-1 text-sm" asChild>
-                        <a href={competition.bandoUrl} target="_blank" rel="noopener noreferrer">
-                          <FileText className="h-4 w-4 mr-1" />
-                          Bando
-                        </a>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        <FileText className="w-4 h-4 mr-1" />
+                        Bando
                       </Button>
                     )}
                   </div>
+                  
+                  {/* Registration deadline warning */}
+                  {new Date(competition.registrationDeadline) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) && (
+                    <div className="mt-3 p-2 bg-warning/10 border border-warning/20 rounded text-sm text-warning">
+                      ⚠️ Iscrizioni chiudono il {new Date(competition.registrationDeadline).toLocaleDateString()}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : (
           <div className="text-center py-12">
-            <h3 className="text-lg font-semibold mb-2">Nessuna gara programmata</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Nessuna gara trovata
+            </h3>
             <p className="text-muted-foreground">
-              Al momento non ci sono gare cinofile in programma. Torna presto per gli aggiornamenti!
+              Prova a modificare i filtri di ricerca
             </p>
           </div>
         )}
+
+        {/* Information Section */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Come Partecipare</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-start space-x-3">
+                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
+                <div>
+                  <h4 className="font-semibold">Registrazione</h4>
+                  <p className="text-sm text-muted-foreground">Assicurati di avere un account approvato</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
+                <div>
+                  <h4 className="font-semibold">Tessera Valida</h4>
+                  <p className="text-sm text-muted-foreground">Acquista una tessera Premium o Elite</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
+                <div>
+                  <h4 className="font-semibold">Iscrizione</h4>
+                  <p className="text-sm text-muted-foreground">Iscriviti entro la scadenza indicata</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Regolamento</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>• Tutti i cani devono essere registrati e microchippati</li>
+                <li>• Certificato sanitario obbligatorio</li>
+                <li>• Assicurazione di responsabilità civile</li>
+                <li>• Equipaggiamento di sicurezza richiesto</li>
+                <li>• Rispetto delle normative ENCI</li>
+              </ul>
+              <Button variant="outline" className="w-full mt-4">
+                Scarica Regolamento Completo
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <Footer />

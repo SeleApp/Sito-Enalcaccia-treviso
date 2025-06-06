@@ -1,15 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import Stripe from "stripe";
-import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { 
-  insertNewsSchema, 
-  insertCompetitionSchema, 
-  insertContactSchema, 
-  insertNewsletterSchema,
-  insertPendingUserSchema
-} from "@shared/schema";
+import { storage } from "./storage";
+import { insertContactSchema, insertNewsletterSchema, insertMembershipSchema, insertNewsSchema, insertCompetitionSchema } from "@shared/schema";
+import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -23,27 +17,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
 
-  // Middleware to check if user is authenticated
-  const requireAuth = (req: any, res: any, next: any) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-    next();
-  };
-
-  // Middleware to check if user is admin
-  const requireAdmin = (req: any, res: any, next: any) => {
-    if (!req.isAuthenticated() || req.user.role !== 'admin') {
-      return res.status(403).json({ message: "Admin access required" });
-    }
-    next();
-  };
-
   // Public routes
   app.get("/api/news", async (req, res) => {
     try {
-      const allNews = await storage.getAllNews();
-      res.json(allNews);
+      const news = await storage.getAllNews();
+      res.json(news.filter(article => article.published));
     } catch (error) {
       res.status(500).json({ message: "Error fetching news" });
     }
@@ -52,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/news/:slug", async (req, res) => {
     try {
       const article = await storage.getNewsBySlug(req.params.slug);
-      if (!article) {
+      if (!article || !article.published) {
         return res.status(404).json({ message: "Article not found" });
       }
       res.json(article);
@@ -70,20 +48,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/memberships", async (req, res) => {
+  app.get("/api/competitions/:id", async (req, res) => {
     try {
-      const memberships = await storage.getAllMemberships();
-      res.json(memberships);
+      const competition = await storage.getCompetition(parseInt(req.params.id));
+      if (!competition) {
+        return res.status(404).json({ message: "Competition not found" });
+      }
+      res.json(competition);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching memberships" });
+      res.status(500).json({ message: "Error fetching competition" });
     }
   });
 
   app.post("/api/contact", async (req, res) => {
     try {
       const contactData = insertContactSchema.parse(req.body);
-      const contact = await storage.createContact(contactData);
-      res.status(201).json({ message: "Message sent successfully", contact });
+      await storage.createContact(contactData);
+      res.json({ message: "Message sent successfully" });
     } catch (error) {
       res.status(400).json({ message: "Invalid contact data" });
     }
@@ -92,76 +73,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/newsletter", async (req, res) => {
     try {
       const newsletterData = insertNewsletterSchema.parse(req.body);
-      const subscription = await storage.createNewsletterSubscription(newsletterData);
-      res.status(201).json({ message: "Newsletter subscription successful", subscription });
+      await storage.subscribeNewsletter(newsletterData.email);
+      res.json({ message: "Successfully subscribed to newsletter" });
     } catch (error) {
-      res.status(400).json({ message: "Invalid email or already subscribed" });
+      res.status(400).json({ message: "Error subscribing to newsletter" });
     }
   });
 
-  // User registration route (public but creates pending user)
-  app.post("/api/register-pending", async (req, res) => {
-    try {
-      const userData = insertPendingUserSchema.parse(req.body);
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(userData.email);
-      const existingPending = await storage.getPendingUserByEmail(userData.email);
-      
-      if (existingUser || existingPending) {
-        return res.status(400).json({ message: "Email already registered" });
-      }
+  // Protected routes
+  app.get("/api/user/profile", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    res.json(req.user);
+  });
 
-      const pendingUser = await storage.createPendingUser(userData);
-      res.status(201).json({ 
-        message: "Registration request submitted. Awaiting admin approval.",
-        pendingUser: { id: pendingUser.id, email: pendingUser.email }
-      });
+  app.put("/api/user/profile", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const updatedUser = await storage.updateUser(req.user!.id, req.body);
+      res.json(updatedUser);
     } catch (error) {
-      res.status(400).json({ message: "Invalid registration data" });
+      res.status(400).json({ message: "Error updating profile" });
     }
   });
 
-  // Protected routes (require authentication)
-  app.get("/api/user/profile", requireAuth, async (req, res) => {
-    const user = await storage.getUser(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const { password, ...userProfile } = user;
-    res.json(userProfile);
-  });
-
-  app.put("/api/user/profile", requireAuth, async (req, res) => {
-    try {
-      const updates = req.body;
-      const updatedUser = await storage.updateUser(req.user.id, updates);
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
+  // Membership routes
+  app.get("/api/membership-types", (req, res) => {
+    const membershipTypes = [
+      {
+        id: "base",
+        name: "Tessera Base",
+        description: "Ideale per cacciatori occasionali",
+        price: 85,
+        features: [
+          "Licenza di caccia valida",
+          "Accesso alle riserve convenzionate",
+          "Newsletter mensile",
+        ]
+      },
+      {
+        id: "premium",
+        name: "Tessera Premium",
+        description: "Per cacciatori esperti e appassionati",
+        price: 150,
+        features: [
+          "Tutti i vantaggi della tessera base",
+          "Partecipazione gare cinofile",
+          "Sconti presso armerie convenzionate",
+          "Corsi di formazione gratuiti",
+        ]
+      },
+      {
+        id: "elite",
+        name: "Tessera Elite",
+        description: "Massimo livello di servizi",
+        price: 250,
+        features: [
+          "Tutti i vantaggi Premium",
+          "Accesso esclusivo riserve premium",
+          "Consulenza personalizzata",
+          "Eventi esclusivi",
+        ]
       }
-      const { password, ...userProfile } = updatedUser;
-      res.json(userProfile);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid update data" });
-    }
+    ];
+    res.json(membershipTypes);
   });
 
-  // Stripe payment routes
-  app.post("/api/create-payment-intent", requireAuth, async (req, res) => {
+  app.post("/api/create-payment-intent", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     try {
-      const { membershipId } = req.body;
-      const membership = await storage.getMembership(membershipId);
+      const { membershipType, amount } = req.body;
       
-      if (!membership) {
-        return res.status(404).json({ message: "Membership not found" });
-      }
-
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: membership.costo * 100, // Convert to cents
+        amount: amount * 100, // Convert to cents
         currency: "eur",
         metadata: {
-          userId: req.user.id.toString(),
-          membershipId: membershipId.toString(),
+          userId: req.user!.id.toString(),
+          membershipType,
         },
       });
 
@@ -171,38 +165,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/confirm-payment", requireAuth, async (req, res) => {
+  app.post("/api/membership/confirm", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     try {
-      const { paymentIntentId } = req.body;
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      const { paymentIntentId, membershipType, amount } = req.body;
       
-      if (paymentIntent.status === 'succeeded') {
-        const userId = parseInt(paymentIntent.metadata.userId);
-        const membershipId = parseInt(paymentIntent.metadata.membershipId);
-        const membership = await storage.getMembership(membershipId);
-        
-        if (membership) {
-          const purchase = await storage.createMembershipPurchase({
-            userId,
-            membershipId,
-            amount: membership.costo,
-            paymentIntentId,
-            status: "pagato",
-            emailSent: false,
-          });
-          
-          res.json({ success: true, purchase });
-        }
-      } else {
-        res.status(400).json({ message: "Payment not completed" });
-      }
-    } catch (error: any) {
-      res.status(500).json({ message: "Error confirming payment: " + error.message });
+      const membershipData = insertMembershipSchema.parse({
+        userId: req.user!.id,
+        membershipType,
+        amount,
+        stripePaymentIntentId: paymentIntentId,
+        status: "completed",
+      });
+
+      await storage.createMembership(membershipData);
+      res.json({ message: "Membership created successfully" });
+    } catch (error) {
+      res.status(400).json({ message: "Error creating membership" });
     }
   });
 
   // Admin routes
-  app.get("/api/admin/stats", requireAdmin, async (req, res) => {
+  app.get("/api/admin/stats", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
       const stats = await storage.getAdminStats();
       res.json(stats);
@@ -211,7 +202,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/pending-users", requireAdmin, async (req, res) => {
+  app.get("/api/admin/pending-users", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
       const pendingUsers = await storage.getAllPendingUsers();
       res.json(pendingUsers);
@@ -220,95 +215,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/approve-user/:id", requireAdmin, async (req, res) => {
+  app.post("/api/admin/approve-user/:id", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
-      const pendingUserId = parseInt(req.params.id);
-      const approvedUser = await storage.approvePendingUser(pendingUserId);
-      if (!approvedUser) {
-        return res.status(404).json({ message: "Pending user not found" });
-      }
-      res.json({ message: "User approved successfully", user: approvedUser });
+      await storage.approvePendingUser(parseInt(req.params.id));
+      res.json({ message: "User approved successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error approving user" });
+      res.status(400).json({ message: "Error approving user" });
     }
   });
 
-  app.delete("/api/admin/reject-user/:id", requireAdmin, async (req, res) => {
+  app.delete("/api/admin/pending-users/:id", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
-      const pendingUserId = parseInt(req.params.id);
-      const rejected = await storage.rejectPendingUser(pendingUserId);
-      if (!rejected) {
-        return res.status(404).json({ message: "Pending user not found" });
-      }
-      res.json({ message: "User registration rejected" });
+      await storage.deletePendingUser(parseInt(req.params.id));
+      res.json({ message: "Pending user deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error rejecting user" });
+      res.status(400).json({ message: "Error deleting pending user" });
     }
   });
 
-  app.get("/api/admin/news", requireAdmin, async (req, res) => {
+  // Admin news management
+  app.get("/api/admin/news", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
-      const allNews = await storage.getAllNews();
-      res.json(allNews);
+      const news = await storage.getAllNews();
+      res.json(news);
     } catch (error) {
       res.status(500).json({ message: "Error fetching news" });
     }
   });
 
-  app.post("/api/admin/news", requireAdmin, async (req, res) => {
+  app.post("/api/admin/news", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
-      const newsData = insertNewsSchema.parse({
-        ...req.body,
-        autore: req.user.nome + " " + req.user.cognome,
-      });
-      const article = await storage.createNews(newsData);
-      res.status(201).json(article);
+      const newsData = insertNewsSchema.parse(req.body);
+      const news = await storage.createNews(newsData);
+      res.json(news);
     } catch (error) {
-      res.status(400).json({ message: "Invalid news data" });
+      res.status(400).json({ message: "Error creating news article" });
     }
   });
 
-  app.put("/api/admin/news/:slug", requireAdmin, async (req, res) => {
+  app.put("/api/admin/news/:id", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
-      const updates = req.body;
-      const updatedArticle = await storage.updateNews(req.params.slug, updates);
-      if (!updatedArticle) {
-        return res.status(404).json({ message: "Article not found" });
-      }
-      res.json(updatedArticle);
+      const newsData = insertNewsSchema.parse(req.body);
+      const news = await storage.updateNews(parseInt(req.params.id), newsData);
+      res.json(news);
     } catch (error) {
-      res.status(400).json({ message: "Invalid update data" });
+      res.status(400).json({ message: "Error updating news article" });
     }
   });
 
-  app.delete("/api/admin/news/:slug", requireAdmin, async (req, res) => {
+  app.delete("/api/admin/news/:id", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
-      const deleted = await storage.deleteNews(req.params.slug);
-      if (!deleted) {
-        return res.status(404).json({ message: "Article not found" });
-      }
-      res.json({ message: "Article deleted successfully" });
+      await storage.deleteNews(parseInt(req.params.id));
+      res.json({ message: "News article deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting article" });
+      res.status(400).json({ message: "Error deleting news article" });
     }
   });
 
-  app.post("/api/admin/competitions", requireAdmin, async (req, res) => {
+  // Admin competitions management
+  app.get("/api/admin/competitions", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    try {
+      const competitions = await storage.getAllCompetitions();
+      res.json(competitions);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching competitions" });
+    }
+  });
+
+  app.post("/api/admin/competitions", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
       const competitionData = insertCompetitionSchema.parse(req.body);
       const competition = await storage.createCompetition(competitionData);
-      res.status(201).json(competition);
+      res.json(competition);
     } catch (error) {
-      res.status(400).json({ message: "Invalid competition data" });
+      res.status(400).json({ message: "Error creating competition" });
     }
   });
 
-  app.get("/api/admin/contacts", requireAdmin, async (req, res) => {
+  app.put("/api/admin/competitions/:id", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    try {
+      const competitionData = insertCompetitionSchema.parse(req.body);
+      const competition = await storage.updateCompetition(parseInt(req.params.id), competitionData);
+      res.json(competition);
+    } catch (error) {
+      res.status(400).json({ message: "Error updating competition" });
+    }
+  });
+
+  app.delete("/api/admin/competitions/:id", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    try {
+      await storage.deleteCompetition(parseInt(req.params.id));
+      res.json({ message: "Competition deleted successfully" });
+    } catch (error) {
+      res.status(400).json({ message: "Error deleting competition" });
+    }
+  });
+
+  // Admin contacts management
+  app.get("/api/admin/contacts", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     try {
       const contacts = await storage.getAllContacts();
       res.json(contacts);
     } catch (error) {
       res.status(500).json({ message: "Error fetching contacts" });
+    }
+  });
+
+  app.put("/api/admin/contacts/:id/respond", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    try {
+      await storage.markContactResponded(parseInt(req.params.id));
+      res.json({ message: "Contact marked as responded" });
+    } catch (error) {
+      res.status(400).json({ message: "Error updating contact" });
     }
   });
 

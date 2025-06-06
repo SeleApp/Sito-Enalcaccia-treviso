@@ -1,49 +1,30 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { insertUserSchema } from "@shared/schema";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trophy, Users, GraduationCap } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { useMutation } from "@tanstack/react-query";
-
-const loginSchema = z.object({
-  username: z.string().email("Email non valida"),
-  password: z.string().min(1, "Password richiesta"),
-});
-
-const registrationSchema = insertUserSchema.extend({
-  passwordConfirm: z.string(),
-}).refine((data) => data.password === data.passwordConfirm, {
-  message: "Le password non corrispondono",
-  path: ["passwordConfirm"],
-}).refine((data) => {
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
-  return passwordRegex.test(data.password);
-}, {
-  message: "Password deve contenere almeno 8 caratteri, una lettera e un numero",
-  path: ["password"],
-});
-
-type LoginData = z.infer<typeof loginSchema>;
-type RegistrationData = z.infer<typeof registrationSchema>;
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
-  const { user, loginMutation } = useAuth();
-  const { toast } = useToast();
+  const { user, loginMutation, registerMutation } = useAuth();
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+  const [registerForm, setRegisterForm] = useState({
+    nome: "",
+    cognome: "",
+    dataNascita: "",
+    luogoNascita: "",
+    codiceFiscale: "",
+    numeroLicenza: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+  });
 
   // Redirect if already logged in
   if (user) {
@@ -51,338 +32,268 @@ export default function AuthPage() {
     return null;
   }
 
-  const loginForm = useForm<LoginData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-    },
-  });
-
-  const registrationForm = useForm<RegistrationData>({
-    resolver: zodResolver(registrationSchema),
-    defaultValues: {
-      nome: "",
-      cognome: "",
-      dataNascita: "",
-      luogoNascita: "",
-      codiceFiscale: "",
-      numeroLicenza: "",
-      email: "",
-      password: "",
-      passwordConfirm: "",
-    },
-  });
-
-  const registrationMutation = useMutation({
-    mutationFn: async (data: RegistrationData) => {
-      const { passwordConfirm, ...registrationData } = data;
-      const res = await apiRequest("POST", "/api/register-pending", registrationData);
-      return await res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Registrazione inviata",
-        description: "La tua richiesta è in attesa di approvazione amministratore.",
-      });
-      registrationForm.reset();
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Errore registrazione",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onLogin = (data: LoginData) => {
-    loginMutation.mutate(data);
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    loginMutation.mutate(loginForm);
   };
 
-  const onRegister = (data: RegistrationData) => {
-    registrationMutation.mutate(data);
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (registerForm.password !== registerForm.passwordConfirm) {
+      return;
+    }
+
+    const { passwordConfirm, ...userData } = registerForm;
+    registerMutation.mutate({
+      ...userData,
+      username: userData.email, // Use email as username
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Left side - Forms */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <Trophy className="h-12 w-12 text-forest" />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8">
+        {/* Left side - Forms */}
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader className="space-y-1 text-center">
+            <div className="flex items-center justify-between mb-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Torna al sito
+                </Button>
+              </Link>
             </div>
-            <h1 className="text-3xl font-serif font-bold text-gray-900">Enal Caccia</h1>
-            <p className="text-gray-600 mt-2">Accedi o registrati per continuare</p>
-          </div>
-
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Accedi</TabsTrigger>
-              <TabsTrigger value="register">Registrati</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Accedi al tuo account</CardTitle>
-                  <CardDescription>
-                    Inserisci le tue credenziali per accedere
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...loginForm}>
-                    <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
-                      <FormField
-                        control={loginForm.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input placeholder="tua@email.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+            <CardTitle className="text-2xl font-serif">Enal Caccia</CardTitle>
+            <p className="text-gray-600">Accedi al tuo account o registrati</p>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="register">Registrazione</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login" className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Email</Label>
+                    <Input
+                      id="username"
+                      type="email"
+                      placeholder="tua@email.com"
+                      value={loginForm.username}
+                      onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={loginForm.password}
+                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={loginMutation.isPending}
+                  >
+                    {loginMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Accesso...
+                      </>
+                    ) : (
+                      "Accedi"
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="register" className="space-y-4">
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="nome">Nome *</Label>
+                      <Input
+                        id="nome"
+                        type="text"
+                        placeholder="Mario"
+                        value={registerForm.nome}
+                        onChange={(e) => setRegisterForm({ ...registerForm, nome: e.target.value })}
+                        required
                       />
-                      <FormField
-                        control={loginForm.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="Password" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cognome">Cognome *</Label>
+                      <Input
+                        id="cognome"
+                        type="text"
+                        placeholder="Rossi"
+                        value={registerForm.cognome}
+                        onChange={(e) => setRegisterForm({ ...registerForm, cognome: e.target.value })}
+                        required
                       />
-                      <Button 
-                        type="submit" 
-                        className="w-full btn-primary"
-                        disabled={loginMutation.isPending}
-                      >
-                        {loginMutation.isPending ? "Accesso in corso..." : "Accedi"}
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="register">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Registrazione</CardTitle>
-                  <CardDescription>
-                    Compila tutti i campi per richiedere l'iscrizione
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...registrationForm}>
-                    <form onSubmit={registrationForm.handleSubmit(onRegister)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={registrationForm.control}
-                          name="nome"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Nome *</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Mario" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={registrationForm.control}
-                          name="cognome"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Cognome *</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Rossi" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={registrationForm.control}
-                          name="dataNascita"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Data di Nascita *</FormLabel>
-                              <FormControl>
-                                <Input type="date" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={registrationForm.control}
-                          name="luogoNascita"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Luogo di Nascita *</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Roma" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={registrationForm.control}
-                          name="codiceFiscale"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Codice Fiscale *</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder="RSSMRA80A01H501Z" 
-                                  style={{ textTransform: 'uppercase' }}
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={registrationForm.control}
-                          name="numeroLicenza"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Numero Licenza *</FormLabel>
-                              <FormControl>
-                                <Input placeholder="123456789" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={registrationForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email *</FormLabel>
-                            <FormControl>
-                              <Input type="email" placeholder="mario.rossi@email.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="dataNascita">Data di Nascita *</Label>
+                      <Input
+                        id="dataNascita"
+                        type="date"
+                        value={registerForm.dataNascita}
+                        onChange={(e) => setRegisterForm({ ...registerForm, dataNascita: e.target.value })}
+                        required
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="luogoNascita">Luogo di Nascita *</Label>
+                      <Input
+                        id="luogoNascita"
+                        type="text"
+                        placeholder="Roma"
+                        value={registerForm.luogoNascita}
+                        onChange={(e) => setRegisterForm({ ...registerForm, luogoNascita: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="codiceFiscale">Codice Fiscale *</Label>
+                      <Input
+                        id="codiceFiscale"
+                        type="text"
+                        placeholder="RSSMRA80A01H501Z"
+                        value={registerForm.codiceFiscale}
+                        onChange={(e) => setRegisterForm({ ...registerForm, codiceFiscale: e.target.value.toUpperCase() })}
+                        pattern="[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]"
+                        maxLength={16}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="numeroLicenza">Numero Licenza *</Label>
+                      <Input
+                        id="numeroLicenza"
+                        type="text"
+                        placeholder="123456789"
+                        value={registerForm.numeroLicenza}
+                        onChange={(e) => setRegisterForm({ ...registerForm, numeroLicenza: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="mario.rossi@email.com"
+                      value={registerForm.email}
+                      onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="password-reg">Password *</Label>
+                      <Input
+                        id="password-reg"
+                        type="password"
+                        value={registerForm.password}
+                        onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
+                        minLength={8}
+                        required
+                      />
+                      <p className="text-xs text-gray-500">Minimo 8 caratteri, almeno un numero e una lettera</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="passwordConfirm">Conferma Password *</Label>
+                      <Input
+                        id="passwordConfirm"
+                        type="password"
+                        value={registerForm.passwordConfirm}
+                        onChange={(e) => setRegisterForm({ ...registerForm, passwordConfirm: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={registrationForm.control}
-                          name="password"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Password *</FormLabel>
-                              <FormControl>
-                                <Input type="password" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={registrationForm.control}
-                          name="passwordConfirm"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Conferma Password *</FormLabel>
-                              <FormControl>
-                                <Input type="password" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                  {registerForm.password !== registerForm.passwordConfirm && registerForm.passwordConfirm && (
+                    <Alert>
+                      <AlertDescription>Le password non corrispondono</AlertDescription>
+                    </Alert>
+                  )}
 
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <div className="flex items-start">
-                          <Trophy className="text-yellow-600 h-5 w-5 mr-3 mt-0.5" />
-                          <div>
-                            <p className="text-sm text-yellow-800 font-medium">Richiesta in Attesa di Approvazione</p>
-                            <p className="text-sm text-yellow-700 mt-1">
-                              La tua registrazione sarà sottoposta a revisione da parte degli amministratori. 
-                              Riceverai una conferma via email una volta approvata.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                  <Alert className="bg-yellow-50 border-yellow-200">
+                    <AlertDescription className="text-yellow-800">
+                      <strong>Richiesta in Attesa di Approvazione:</strong> La tua registrazione sarà sottoposta a revisione da parte degli amministratori. Riceverai una conferma via email una volta approvata.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={registerMutation.isPending || registerForm.password !== registerForm.passwordConfirm}
+                  >
+                    {registerMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Registrazione...
+                      </>
+                    ) : (
+                      "Registrati"
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
-                      <Button 
-                        type="submit" 
-                        className="w-full btn-primary"
-                        disabled={registrationMutation.isPending}
-                      >
-                        {registrationMutation.isPending ? "Invio in corso..." : "Invia Richiesta di Registrazione"}
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-
-      {/* Right side - Hero */}
-      <div className="hidden lg:flex flex-1 bg-forest relative">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "linear-gradient(rgba(45, 80, 22, 0.8), rgba(45, 80, 22, 0.8)), url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=1200')"
-          }}
-        />
-        <div className="relative z-10 flex flex-col justify-center px-12 text-white">
-          <h2 className="text-4xl font-serif font-bold mb-6">Unisciti alla Comunità</h2>
-          <p className="text-xl mb-8 text-green-100">
-            Enal Caccia è la tua porta d'accesso al mondo della caccia responsabile e sostenibile in Italia.
-          </p>
-          
-          <div className="space-y-6">
-            <div className="flex items-start">
-              <Trophy className="h-8 w-8 text-goldenrod mr-4 mt-1" />
-              <div>
-                <h3 className="font-semibold text-lg">Gare e Competizioni</h3>
-                <p className="text-green-100">Partecipa alle gare cinofile organizzate in tutta Italia</p>
+        {/* Right side - Hero section */}
+        <div className="hidden lg:flex lg:items-center lg:justify-center">
+          <div className="max-w-md text-center">
+            <div 
+              className="w-full h-96 bg-cover bg-center rounded-lg mb-6"
+              style={{
+                backgroundImage: "linear-gradient(rgba(45, 80, 22, 0.7), rgba(45, 80, 22, 0.7)), url('https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600')"
+              }}
+            />
+            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">
+              Benvenuti in Enal Caccia
+            </h2>
+            <p className="text-gray-600 mb-6">
+              L'associazione italiana dedicata alla promozione della caccia responsabile, 
+              della cinofilia e della tutela del patrimonio ambientale.
+            </p>
+            <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
+                <span>Tesseramento online</span>
               </div>
-            </div>
-            
-            <div className="flex items-start">
-              <GraduationCap className="h-8 w-8 text-goldenrod mr-4 mt-1" />
-              <div>
-                <h3 className="font-semibold text-lg">Formazione</h3>
-                <p className="text-green-100">Accedi a corsi di formazione e aggiornamenti normativi</p>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
+                <span>Gare cinofile</span>
               </div>
-            </div>
-            
-            <div className="flex items-start">
-              <Users className="h-8 w-8 text-goldenrod mr-4 mt-1" />
-              <div>
-                <h3 className="font-semibold text-lg">Comunità</h3>
-                <p className="text-green-100">Entra a far parte di una comunità di cacciatori appassionati</p>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
+                <span>Formazione specializzata</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
+                <span>Comunità attiva</span>
               </div>
             </div>
           </div>

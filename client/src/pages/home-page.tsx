@@ -1,56 +1,198 @@
+import { useState } from "react";
 import { Link } from "wouter";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Navigation from "@/components/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { News, Competition } from "@shared/schema";
-import { Calendar, MapPin, Euro, Trophy, Users, GraduationCap, IdCard } from "lucide-react";
+import { Calendar, MapPin, Euro, Trophy, Users, GraduationCap, Shield, Leaf, Clock, Phone, Mail, MapPin as MapPinIcon } from "lucide-react";
 
 export default function HomePage() {
-  const { data: news = [] } = useQuery<News[]>({
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+
+  // Fetch latest news
+  const { data: news = [] } = useQuery({
     queryKey: ["/api/news"],
   });
 
-  const { data: competitions = [] } = useQuery<Competition[]>({
+  // Fetch upcoming competitions
+  const { data: competitions = [] } = useQuery({
     queryKey: ["/api/competitions"],
   });
 
-  const latestNews = news.slice(0, 3);
-  const upcomingCompetitions = competitions.slice(0, 3);
+  // Fetch membership types
+  const { data: membershipTypes = [] } = useQuery({
+    queryKey: ["/api/membership-types"],
+  });
+
+  const contactMutation = useMutation({
+    mutationFn: async (data: typeof contactForm) => {
+      const res = await apiRequest("POST", "/api/contact", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Messaggio inviato",
+        description: "Ti risponderemo il prima possibile.",
+      });
+      setContactForm({ name: "", email: "", subject: "", message: "" });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Errore nell'invio del messaggio. Riprova.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const newsletterMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const res = await apiRequest("POST", "/api/newsletter", { email });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Iscrizione completata",
+        description: "Ti sei iscritto alla newsletter con successo!",
+      });
+      setNewsletterEmail("");
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Errore nell'iscrizione alla newsletter.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    contactMutation.mutate(contactForm);
+  };
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    newsletterMutation.mutate(newsletterEmail);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+      <Header />
       
       {/* Hero Section */}
-      <section className="relative h-96 hero-bg flex items-center justify-center">
-        <div className="text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Enal Caccia</h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
-            Associazione Venatoria per la Promozione della Caccia Responsabile
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/membership">
-              <Button className="btn-accent text-lg px-8 py-3">
-                <IdCard className="mr-2 h-5 w-5" />
-                Tesseramento
-              </Button>
-            </Link>
-            <Link href="#chi-siamo">
-              <Button 
-                variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-forest text-lg px-8 py-3"
-              >
+      <section className="relative h-96 bg-gradient-to-r from-primary to-secondary overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "linear-gradient(rgba(45, 80, 22, 0.7), rgba(45, 80, 22, 0.7)), url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=600')"
+          }}
+        />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+          <div className="text-white">
+            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia</h1>
+            <p className="text-xl md:text-2xl mb-2">Associazione Venatoria per la Promozione della Caccia Responsabile</p>
+            <p className="text-lg mb-8 max-w-2xl">Promuoviamo la caccia responsabile e sostenibile, valorizzando le tradizioni venatorie italiane attraverso formazione, competizioni cinofile e tesseramenti.</p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/membership">
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-white">
+                  <Trophy className="mr-2 h-5 w-5" />
+                  Tesseramento
+                </Button>
+              </Link>
+              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary">
                 Scopri di più
               </Button>
-            </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Overview */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-serif font-bold text-neutral mb-4">I Nostri Servizi</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Enal Caccia offre una gamma completa di servizi per i cacciatori, dalle licenze alle competizioni cinofile.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="text-white h-8 w-8" />
+                </div>
+                <CardTitle className="text-xl">Tesseramenti</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Rinnova o ottieni la tua tessera venatoria con procedure semplificate e pagamenti sicuri online.
+                </p>
+                <Link href="/membership">
+                  <Button variant="link" className="text-primary">
+                    Scopri di più →
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trophy className="text-white h-8 w-8" />
+                </div>
+                <CardTitle className="text-xl">Gare Cinofile</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Partecipa alle competizioni per cani da caccia organizzate in tutta Italia.
+                </p>
+                <Link href="/competitions">
+                  <Button variant="link" className="text-primary">
+                    Vedi calendario →
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                  <GraduationCap className="text-white h-8 w-8" />
+                </div>
+                <CardTitle className="text-xl">Formazione</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Corsi di formazione per cacciatori responsabili e gestione sostenibile della fauna.
+                </p>
+                <Button variant="link" className="text-primary">
+                  Iscriviti →
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="chi-siamo" className="py-16 bg-white">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Chi Siamo</h2>
@@ -62,7 +204,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <img 
-                src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
                 alt="Sede dell'associazione" 
                 className="rounded-lg shadow-lg w-full h-auto"
               />
@@ -70,37 +212,43 @@ export default function HomePage() {
             <div className="space-y-6">
               <div className="flex items-start">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="w-12 h-12 bg-forest rounded-lg flex items-center justify-center">
-                    <Trophy className="text-white h-6 w-6" />
+                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                    <Shield className="text-white h-6 w-6" />
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Tradizione e Sicurezza</h3>
-                  <p className="text-gray-600">Promuoviamo la tradizione venatoria italiana nel rispetto delle normative e della sicurezza.</p>
+                  <p className="text-gray-600">
+                    Promuoviamo la tradizione venatoria italiana nel rispetto delle normative e della sicurezza.
+                  </p>
                 </div>
               </div>
               
               <div className="flex items-start">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="w-12 h-12 bg-forest rounded-lg flex items-center justify-center">
-                    <Users className="text-white h-6 w-6" />
+                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                    <Leaf className="text-white h-6 w-6" />
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Rispetto Ambientale</h3>
-                  <p className="text-gray-600">Sosteniamo la conservazione dell'ambiente e la gestione sostenibile della fauna selvatica.</p>
+                  <p className="text-gray-600">
+                    Sosteniamo la conservazione dell'ambiente e la gestione sostenibile della fauna selvatica.
+                  </p>
                 </div>
               </div>
               
               <div className="flex items-start">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="w-12 h-12 bg-forest rounded-lg flex items-center justify-center">
-                    <GraduationCap className="text-white h-6 w-6" />
+                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                    <Users className="text-white h-6 w-6" />
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Comunità Unita</h3>
-                  <p className="text-gray-600">Riuniamo cacciatori esperti e principianti in una comunità basata sul rispetto reciproco.</p>
+                  <p className="text-gray-600">
+                    Riuniamo cacciatori esperti e principianti in una comunità basata sul rispetto reciproco.
+                  </p>
                 </div>
               </div>
             </div>
@@ -108,73 +256,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Activities Section */}
-      <section id="attivita" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Le Nostre Attività</h2>
-            <p className="text-xl text-gray-600">Scopri tutti i servizi e le iniziative che offriamo ai nostri iscritti</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-16 h-16 bg-forest rounded-lg flex items-center justify-center mb-4">
-                  <Trophy className="text-white h-8 w-8" />
-                </div>
-                <CardTitle>Gare Cinofile</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="mb-4">
-                  Organizziamo competizioni per cani da caccia nelle diverse discipline venatorie.
-                </CardDescription>
-                <Link href="/competitions">
-                  <Button variant="link" className="text-forest hover:text-forest-light p-0">
-                    Scopri le gare →
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-            
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-16 h-16 bg-saddle rounded-lg flex items-center justify-center mb-4">
-                  <GraduationCap className="text-white h-8 w-8" />
-                </div>
-                <CardTitle>Corsi di Formazione</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="mb-4">
-                  Corsi per ottenere e rinnovare il porto d'armi e licenze di caccia.
-                </CardDescription>
-                <Button variant="link" className="text-forest hover:text-forest-light p-0">
-                  Vedi i corsi →
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-16 h-16 bg-goldenrod rounded-lg flex items-center justify-center mb-4">
-                  <Users className="text-white h-8 w-8" />
-                </div>
-                <CardTitle>Assistenza Legale</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="mb-4">
-                  Supporto legale e consulenza per questioni relative all'attività venatoria.
-                </CardDescription>
-                <Button variant="link" className="text-forest hover:text-forest-light p-0">
-                  Maggiori info →
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* News Section */}
-      <section id="news" className="py-16 bg-white">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <div>
@@ -182,36 +265,30 @@ export default function HomePage() {
               <p className="text-xl text-gray-600">Rimani aggiornato sulle novità del mondo venatorio</p>
             </div>
             <Link href="/news">
-              <Button className="btn-primary">
-                Vedi tutte le news
-              </Button>
+              <Button variant="outline">Vedi tutte le news</Button>
             </Link>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {latestNews.map((article) => (
-              <Card key={article.id} className="card-hover overflow-hidden">
-                <div className="aspect-w-16 aspect-h-9">
+            {news.slice(0, 3).map((article: any) => (
+              <Card key={article.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-video">
                   <img 
-                    src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=300" 
-                    alt={article.titolo}
-                    className="w-full h-48 object-cover"
+                    src={article.featuredImage || "https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3"} 
+                    alt={article.title}
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <CardHeader>
+                <CardContent className="p-6">
                   <div className="flex items-center text-sm text-gray-500 mb-3">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <span>{new Date(article.data).toLocaleDateString('it-IT')}</span>
+                    <span>{new Date(article.createdAt).toLocaleDateString('it-IT')}</span>
                   </div>
-                  <CardTitle className="hover:text-forest transition-colors">
-                    {article.titolo}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">
-                    {article.contenuto.substring(0, 150)}...
-                  </CardDescription>
-                  <Button variant="link" className="text-forest hover:text-forest-light p-0">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3 hover:text-primary transition-colors">
+                    {article.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4">{article.excerpt}</p>
+                  <Button variant="link" className="text-primary p-0">
                     Leggi tutto →
                   </Button>
                 </CardContent>
@@ -222,7 +299,7 @@ export default function HomePage() {
       </section>
 
       {/* Competitions Section */}
-      <section id="gare" className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Gare Cinofile</h2>
@@ -230,39 +307,33 @@ export default function HomePage() {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {upcomingCompetitions.map((competition) => (
-              <Card key={competition.id} className="card-hover">
+            {competitions.slice(0, 3).map((competition: any) => (
+              <Card key={competition.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between mb-4">
-                    <Badge className="bg-forest text-white">{competition.disciplina}</Badge>
+                    <Badge className="bg-primary text-white">{competition.discipline}</Badge>
                     <span className="text-gray-500 text-sm">
-                      {new Date(competition.dataEvento).toLocaleDateString('it-IT')}
+                      {new Date(competition.date).toLocaleDateString('it-IT')}
                     </span>
                   </div>
-                  <CardTitle>{competition.titolo}</CardTitle>
+                  <CardTitle className="text-xl">{competition.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-gray-600">
-                      <MapPin className="mr-2 h-4 w-4 text-forest" />
-                      <span>{competition.luogo}</span>
+                      <MapPin className="mr-2 h-4 w-4 text-primary" />
+                      <span className="text-sm">{competition.location}</span>
                     </div>
                     <div className="flex items-center text-gray-600">
-                      <Euro className="mr-2 h-4 w-4 text-forest" />
-                      <span>€{competition.costo},00</span>
+                      <Euro className="mr-2 h-4 w-4 text-primary" />
+                      <span className="text-sm">€{competition.cost}</span>
                     </div>
                   </div>
-                  
-                  <CardDescription className="mb-4">
-                    {competition.descrizione}
-                  </CardDescription>
-                  
+                  <p className="text-gray-600 mb-4 text-sm">{competition.description}</p>
                   <div className="flex space-x-3">
-                    <Button className="flex-1 btn-primary text-sm">
-                      Dettagli
-                    </Button>
+                    <Button size="sm" className="flex-1">Dettagli</Button>
                     {competition.bandoUrl && (
-                      <Button variant="outline" className="flex-1 border-forest text-forest hover:bg-forest hover:text-white text-sm">
+                      <Button variant="outline" size="sm" className="flex-1">
                         Bando
                       </Button>
                     )}
@@ -274,7 +345,7 @@ export default function HomePage() {
           
           <div className="text-center mt-12">
             <Link href="/competitions">
-              <Button className="btn-primary text-lg px-8 py-3">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
                 Vedi tutte le gare
               </Button>
             </Link>
@@ -282,81 +353,200 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Membership Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Tesseramento 2025</h2>
+            <p className="text-xl text-gray-600">Diventa socio Enal Caccia e accedi a tutti i nostri servizi</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {membershipTypes.map((membership: any, index: number) => (
+              <Card 
+                key={membership.id} 
+                className={`text-center hover:shadow-lg transition-shadow ${
+                  index === 1 ? 'border-2 border-accent transform scale-105 relative' : 'border-2 border-gray-200'
+                }`}
+              >
+                {index === 1 && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-accent text-white px-4 py-1">PIÙ POPOLARE</Badge>
+                  </div>
+                )}
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-2xl">{membership.name}</CardTitle>
+                  <div className="text-4xl font-bold text-primary">
+                    €{membership.price}
+                    <span className="text-lg font-normal text-gray-600">/anno</span>
+                  </div>
+                  <p className="text-gray-600">{membership.description}</p>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3 mb-8 text-left">
+                    {membership.features.map((feature: string, idx: number) => (
+                      <li key={idx} className="flex items-center">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                        <span className="text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/membership">
+                    <Button className={`w-full ${index === 1 ? 'bg-accent hover:bg-accent/90' : ''}`}>
+                      Scegli {membership.name.split(' ')[1]}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-4">
+              Hai bisogno di aiuto nella scelta? <Button variant="link" className="text-primary p-0">Contattaci</Button>
+            </p>
+            <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
+              <div className="flex items-center">
+                <Shield className="text-green-500 mr-2 h-4 w-4" />
+                <span>Pagamento sicuro</span>
+              </div>
+              <div className="flex items-center">
+                <span>Stripe SSL</span>
+              </div>
+              <div className="flex items-center">
+                <Clock className="text-green-500 mr-2 h-4 w-4" />
+                <span>Attivazione immediata</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
-      <section id="contatti" className="py-16 bg-white">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Contattaci</h2>
             <p className="text-xl text-gray-600">Siamo qui per rispondere alle tue domande</p>
           </div>
           
-          <div className="text-center">
-            <Link href="/contact">
-              <Button className="btn-primary text-lg px-8 py-3">
-                Vai alla pagina contatti
-              </Button>
-            </Link>
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Info */}
+            <div>
+              <div className="space-y-8">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                      <MapPinIcon className="text-white h-6 w-6" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Sede Principale</h3>
+                    <p className="text-gray-600">Via della Caccia, 123<br />31100 Treviso (TV)<br />Veneto, Italia</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                      <Phone className="text-white h-6 w-6" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Telefono</h3>
+                    <p className="text-gray-600">+39 0422 123456<br />Lun-Ven: 9:00-17:00<br />Sab: 9:00-12:00</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                      <Mail className="text-white h-6 w-6" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Email</h3>
+                    <p className="text-gray-600">info@enalcaccia-veneto.it<br />segretario@enalcaccia-veneto.it</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                      <Clock className="text-white h-6 w-6" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Orari di Apertura</h3>
+                    <p className="text-gray-600">Lunedì - Venerdì: 9:00 - 17:00<br />Sabato: 9:00 - 12:00<br />Domenica: Chiuso</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Contact Form */}
+            <Card className="p-8">
+              <form onSubmit={handleContactSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">Nome *</label>
+                    <Input
+                      id="name"
+                      type="text"
+                      required
+                      placeholder="Il tuo nome"
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                    <Input
+                      id="email"
+                      type="email"
+                      required
+                      placeholder="tua@email.com"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">Oggetto *</label>
+                  <Input
+                    id="subject"
+                    type="text"
+                    required
+                    placeholder="Di cosa vuoi parlare?"
+                    value={contactForm.subject}
+                    onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">Messaggio *</label>
+                  <Textarea
+                    id="message"
+                    rows={5}
+                    required
+                    placeholder="Scrivi qui il tuo messaggio..."
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                  />
+                </div>
+                
+                <Button type="submit" className="w-full" disabled={contactMutation.isPending}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  {contactMutation.isPending ? "Invio..." : "Invia Messaggio"}
+                </Button>
+              </form>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-forest-dark text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="md:col-span-1">
-              <div className="flex items-center mb-4">
-                <Trophy className="text-goldenrod h-8 w-8 mr-3" />
-                <span className="font-serif font-bold text-xl">Enal Caccia</span>
-              </div>
-              <p className="text-gray-300 mb-4">
-                Associazione Venatoria per la promozione della caccia responsabile e la conservazione dell'ambiente.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Links Utili</h3>
-              <ul className="space-y-2">
-                <li><a href="https://www.enalcaccia.it" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-goldenrod transition-colors">Enalcaccia Nazionale</a></li>
-                <li><a href="https://www.regione.veneto.it" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-goldenrod transition-colors">Regione Veneto - Caccia</a></li>
-                <li><Link href="/privacy" className="text-gray-300 hover:text-goldenrod transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-gray-300 hover:text-goldenrod transition-colors">Termini e Condizioni</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">I Nostri Servizi</h3>
-              <ul className="space-y-2">
-                <li><Link href="/membership" className="text-gray-300 hover:text-goldenrod transition-colors">Tesseramento</Link></li>
-                <li><Link href="/competitions" className="text-gray-300 hover:text-goldenrod transition-colors">Gare Cinofile</Link></li>
-                <li><a href="#corsi" className="text-gray-300 hover:text-goldenrod transition-colors">Corsi di Formazione</a></li>
-                <li><a href="#assistenza" className="text-gray-300 hover:text-goldenrod transition-colors">Assistenza Legale</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
-              <p className="text-gray-300 mb-4">Iscriviti per ricevere news e aggiornamenti</p>
-              <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="tua@email.com"
-                  className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-goldenrod focus:border-transparent"
-                />
-                <Button className="bg-goldenrod hover:bg-opacity-90 text-white px-4 py-2 rounded-r-lg">
-                  <span>→</span>
-                </Button>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-700 mt-12 pt-8 text-center">
-            <p className="text-gray-300">
-              © 2024 Enal Caccia Veneto. Tutti i diritti riservati. | P.IVA: 12345678901
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

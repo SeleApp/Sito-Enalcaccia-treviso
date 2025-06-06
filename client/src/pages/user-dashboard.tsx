@@ -1,172 +1,212 @@
 import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 import Navigation from "@/components/navigation";
+import Footer from "@/components/footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
-import { User, IdCard, Trophy, Settings, LogOut } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { User, CreditCard, Trophy, Settings, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function UserDashboard() {
-  const { user, logoutMutation } = useAuth();
+  const { user } = useAuth();
+  const [location, setLocation] = useLocation();
 
   if (!user) {
+    setLocation("/auth");
     return null;
   }
 
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
             Benvenuto, {user.nome} {user.cognome}
           </h1>
-          <p className="text-gray-600">Gestisci il tuo profilo e le tue attività</p>
+          <p className="text-muted-foreground">
+            Gestisci il tuo profilo e accedi ai servizi di Enal Caccia
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {/* Profile Card */}
-          <Card className="col-span-full lg:col-span-2">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 bg-forest rounded-full flex items-center justify-center">
-                    <User className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>Il Tuo Profilo</CardTitle>
-                    <CardDescription>Informazioni personali e licenze</CardDescription>
-                  </div>
-                </div>
-                <Badge variant={user.approved ? "default" : "secondary"}>
-                  {user.approved ? "Approvato" : "In Attesa"}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Nome Completo</p>
-                  <p className="text-lg">{user.nome} {user.cognome}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Email</p>
-                  <p className="text-lg">{user.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Codice Fiscale</p>
-                  <p className="text-lg">{user.codiceFiscale}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Numero Licenza</p>
-                  <p className="text-lg">{user.numeroLicenza}</p>
-                </div>
-              </div>
-              <div className="mt-6 pt-6 border-t">
-                <Button variant="outline" className="mr-4">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Modifica Profilo
-                </Button>
-                <Button variant="outline" onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Account Status */}
+        <div className="mb-8">
+          {!user.isApproved ? (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Il tuo account è in attesa di approvazione da parte degli amministratori. 
+                Riceverai una notifica via email una volta approvato.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert className="border-success bg-success/10">
+              <CheckCircle className="h-4 w-4 text-success" />
+              <AlertDescription className="text-success">
+                Il tuo account è stato approvato! Puoi ora accedere a tutti i servizi.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
 
-          {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Profile Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Azioni Rapide</CardTitle>
-              <CardDescription>Accesso veloce ai servizi</CardDescription>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="w-5 h-5" />
+                <span>Profilo Utente</span>
+              </CardTitle>
+              <CardDescription>
+                Informazioni del tuo account
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Link href="/membership">
-                <Button className="w-full btn-primary">
-                  <IdCard className="mr-2 h-4 w-4" />
-                  Tesseramento
-                </Button>
-              </Link>
-              <Link href="/competitions">
-                <Button variant="outline" className="w-full">
-                  <Trophy className="mr-2 h-4 w-4" />
-                  Gare Cinofile
-                </Button>
-              </Link>
-              <Link href="/news">
-                <Button variant="outline" className="w-full">
-                  News & Aggiornamenti
-                </Button>
-              </Link>
+            <CardContent className="space-y-3">
+              <div>
+                <p className="text-sm font-medium">Nome Completo</p>
+                <p className="text-muted-foreground">{user.nome} {user.cognome}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium">Email</p>
+                <p className="text-muted-foreground">{user.email}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium">Numero Licenza</p>
+                <p className="text-muted-foreground">{user.numeroLicenza}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium">Status</p>
+                <Badge variant={user.isApproved ? "default" : "secondary"}>
+                  {user.isApproved ? "Approvato" : "In attesa"}
+                </Badge>
+              </div>
+              <Button variant="outline" className="w-full mt-4">
+                <Settings className="w-4 h-4 mr-2" />
+                Modifica Profilo
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Membership Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <CreditCard className="w-5 h-5" />
+                <span>Tesseramento</span>
+              </CardTitle>
+              <CardDescription>
+                Gestisci la tua tessera
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {user.isApproved ? (
+                <div className="space-y-4">
+                  <div className="text-center py-4">
+                    <p className="text-muted-foreground mb-4">
+                      Non hai ancora una tessera attiva
+                    </p>
+                    <Button 
+                      className="w-full"
+                      onClick={() => setLocation("/membership")}
+                    >
+                      Acquista Tessera
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Disponibile dopo l'approvazione dell'account</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Competitions Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Trophy className="w-5 h-5" />
+                <span>Gare Cinofile</span>
+              </CardTitle>
+              <CardDescription>
+                Partecipa alle competizioni
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {user.isApproved ? (
+                <div className="space-y-4">
+                  <div className="text-center py-4">
+                    <p className="text-muted-foreground mb-4">
+                      Esplora le gare disponibili
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => setLocation("/competitions")}
+                    >
+                      Vedi Gare
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Disponibile dopo l'approvazione dell'account</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent Activity */}
-        <Card>
+        {/* Quick Links */}
+        <Card className="mt-8">
           <CardHeader>
-            <CardTitle>Attività Recente</CardTitle>
-            <CardDescription>Le tue ultime azioni e notifiche</CardDescription>
+            <CardTitle>Link Rapidi</CardTitle>
+            <CardDescription>
+              Accesso veloce alle sezioni principali
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="font-medium">Account approvato</p>
-                  <p className="text-sm text-gray-600">Il tuo account è stato approvato dall'amministratore</p>
-                </div>
-                <span className="text-sm text-gray-500">
-                  {user.approvedAt ? new Date(user.approvedAt).toLocaleDateString('it-IT') : ''}
-                </span>
-              </div>
-              
-              <div className="flex items-center space-x-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="font-medium">Registrazione completata</p>
-                  <p className="text-sm text-gray-600">Benvenuto in Enal Caccia!</p>
-                </div>
-                <span className="text-sm text-gray-500">
-                  {new Date(user.createdAt).toLocaleDateString('it-IT')}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Help Section */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Hai bisogno di aiuto?</CardTitle>
-            <CardDescription>Contattaci per qualsiasi domanda</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-semibold mb-2">Supporto Tecnico</h3>
-                <p className="text-sm text-gray-600 mb-4">Per problemi con il sito o l'account</p>
-                <Link href="/contact">
-                  <Button variant="outline" size="sm">Contatta Supporto</Button>
-                </Link>
-              </div>
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-semibold mb-2">Informazioni Generali</h3>
-                <p className="text-sm text-gray-600 mb-4">Per domande su servizi e attività</p>
-                <Button variant="outline" size="sm">
-                  <a href="tel:+390612345678">Chiama +39 06 1234567</a>
-                </Button>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center space-y-2"
+                onClick={() => setLocation("/news")}
+              >
+                <span className="text-lg">📰</span>
+                <span>Ultime News</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center space-y-2"
+                onClick={() => setLocation("/competitions")}
+              >
+                <span className="text-lg">🏆</span>
+                <span>Gare Cinofile</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center space-y-2"
+                onClick={() => setLocation("/membership")}
+              >
+                <span className="text-lg">🎫</span>
+                <span>Tesseramento</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center space-y-2"
+                onClick={() => setLocation("/#contatti")}
+              >
+                <span className="text-lg">📞</span>
+                <span>Contatti</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      <Footer />
     </div>
   );
 }
