@@ -1,16 +1,24 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Navbar } from "@/components/navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Users, Clock, Mail, CreditCard, CheckCircle, XCircle, Calendar } from "lucide-react";
-import type { PendingUser, Contact, News, Competition } from "@shared/schema";
+import { Users, Clock, Mail, CreditCard, CheckCircle, XCircle, Calendar, Plus, Edit, Trash2, FileText, Trophy } from "lucide-react";
+import { insertNewsSchema, insertCompetitionSchema } from "@shared/schema";
+import type { PendingUser, Contact, News, Competition, User, Membership, InsertNews, InsertCompetition } from "@shared/schema";
 
 interface AdminStats {
   approvedUsers: number;
@@ -22,6 +30,38 @@ interface AdminStats {
 export default function AdminDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [newsDialogOpen, setNewsDialogOpen] = useState(false);
+  const [competitionDialogOpen, setCompetitionDialogOpen] = useState(false);
+  const [editingNews, setEditingNews] = useState<News | null>(null);
+  const [editingCompetition, setEditingCompetition] = useState<Competition | null>(null);
+
+  // Forms
+  const newsForm = useForm<InsertNews>({
+    resolver: zodResolver(insertNewsSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      excerpt: "",
+      category: "",
+      featuredImage: "",
+      published: true,
+    },
+  });
+
+  const competitionForm = useForm<InsertCompetition>({
+    resolver: zodResolver(insertCompetitionSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      discipline: "",
+      location: "",
+      eventDate: new Date(),
+      registrationDeadline: new Date(),
+      cost: 0,
+      maxParticipants: null,
+      bandoUrl: "",
+    },
+  });
 
   // Redirect if not admin
   if (user?.role !== 'admin') {
@@ -104,6 +144,207 @@ export default function AdminDashboard() {
       });
     },
   });
+
+  // News mutations
+  const createNewsMutation = useMutation({
+    mutationFn: async (data: InsertNews) => {
+      const response = await apiRequest("POST", "/api/admin/news", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setNewsDialogOpen(false);
+      newsForm.reset();
+      toast({
+        title: "Articolo creato",
+        description: "L'articolo è stato creato con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante la creazione dell'articolo",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateNewsMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<News> }) => {
+      const response = await apiRequest("PUT", `/api/admin/news/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      setEditingNews(null);
+      setNewsDialogOpen(false);
+      newsForm.reset();
+      toast({
+        title: "Articolo aggiornato",
+        description: "L'articolo è stato aggiornato con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiornamento dell'articolo",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteNewsMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/admin/news/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      toast({
+        title: "Articolo eliminato",
+        description: "L'articolo è stato eliminato con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'eliminazione dell'articolo",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Competition mutations
+  const createCompetitionMutation = useMutation({
+    mutationFn: async (data: InsertCompetition) => {
+      const response = await apiRequest("POST", "/api/admin/competitions", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/competitions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setCompetitionDialogOpen(false);
+      competitionForm.reset();
+      toast({
+        title: "Gara creata",
+        description: "La gara cinofila è stata creata con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante la creazione della gara",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateCompetitionMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<Competition> }) => {
+      const response = await apiRequest("PUT", `/api/admin/competitions/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/competitions"] });
+      setEditingCompetition(null);
+      setCompetitionDialogOpen(false);
+      competitionForm.reset();
+      toast({
+        title: "Gara aggiornata",
+        description: "La gara cinofila è stata aggiornata con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiornamento della gara",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteCompetitionMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/admin/competitions/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/competitions"] });
+      toast({
+        title: "Gara eliminata",
+        description: "La gara cinofila è stata eliminata con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'eliminazione della gara",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Form handlers
+  const handleNewsSubmit = (data: InsertNews) => {
+    const formData = {
+      ...data,
+      slug: data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+    };
+    
+    if (editingNews) {
+      updateNewsMutation.mutate({ id: editingNews.id, data: formData });
+    } else {
+      createNewsMutation.mutate(formData);
+    }
+  };
+
+  const handleCompetitionSubmit = (data: InsertCompetition) => {
+    if (editingCompetition) {
+      updateCompetitionMutation.mutate({ id: editingCompetition.id, data });
+    } else {
+      createCompetitionMutation.mutate(data);
+    }
+  };
+
+  const handleEditNews = (newsItem: News) => {
+    setEditingNews(newsItem);
+    newsForm.reset({
+      title: newsItem.title,
+      content: newsItem.content,
+      excerpt: newsItem.excerpt,
+      category: newsItem.category,
+      featuredImage: newsItem.featuredImage || "",
+      published: newsItem.published || false,
+    });
+    setNewsDialogOpen(true);
+  };
+
+  const handleEditCompetition = (competition: Competition) => {
+    setEditingCompetition(competition);
+    competitionForm.reset({
+      title: competition.title,
+      description: competition.description,
+      discipline: competition.discipline,
+      location: competition.location,
+      eventDate: competition.eventDate,
+      registrationDeadline: competition.registrationDeadline,
+      cost: competition.cost,
+      maxParticipants: competition.maxParticipants,
+      bandoUrl: competition.bandoUrl || "",
+    });
+    setCompetitionDialogOpen(true);
+  };
+
+  const handleCloseNewsDialog = () => {
+    setNewsDialogOpen(false);
+    setEditingNews(null);
+    newsForm.reset();
+  };
+
+  const handleCloseCompetitionDialog = () => {
+    setCompetitionDialogOpen(false);
+    setEditingCompetition(null);
+    competitionForm.reset();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -293,7 +534,130 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">
                     {news.length} articoli totali
                   </p>
-                  <Button>Nuovo Articolo</Button>
+                  <Dialog open={newsDialogOpen} onOpenChange={setNewsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button onClick={() => setNewsDialogOpen(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nuovo Articolo
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {editingNews ? "Modifica Articolo" : "Nuovo Articolo"}
+                        </DialogTitle>
+                        <DialogDescription>
+                          {editingNews ? "Modifica i dettagli dell'articolo" : "Crea un nuovo articolo per il sito"}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={newsForm.handleSubmit(handleNewsSubmit)} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="title">Titolo *</Label>
+                          <Input
+                            id="title"
+                            {...newsForm.register("title")}
+                            placeholder="Inserisci il titolo dell'articolo"
+                          />
+                          {newsForm.formState.errors.title && (
+                            <p className="text-sm text-destructive">
+                              {newsForm.formState.errors.title.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="excerpt">Estratto *</Label>
+                          <Textarea
+                            id="excerpt"
+                            rows={3}
+                            {...newsForm.register("excerpt")}
+                            placeholder="Breve descrizione dell'articolo"
+                          />
+                          {newsForm.formState.errors.excerpt && (
+                            <p className="text-sm text-destructive">
+                              {newsForm.formState.errors.excerpt.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="category">Categoria *</Label>
+                          <Select
+                            value={newsForm.watch("category")}
+                            onValueChange={(value) => newsForm.setValue("category", value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Seleziona una categoria" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="notizie">Notizie</SelectItem>
+                              <SelectItem value="eventi">Eventi</SelectItem>
+                              <SelectItem value="gare">Gare</SelectItem>
+                              <SelectItem value="comunicazioni">Comunicazioni</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {newsForm.formState.errors.category && (
+                            <p className="text-sm text-destructive">
+                              {newsForm.formState.errors.category.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="content">Contenuto *</Label>
+                          <Textarea
+                            id="content"
+                            rows={8}
+                            {...newsForm.register("content")}
+                            placeholder="Scrivi il contenuto completo dell'articolo"
+                          />
+                          {newsForm.formState.errors.content && (
+                            <p className="text-sm text-destructive">
+                              {newsForm.formState.errors.content.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="featuredImage">URL Immagine</Label>
+                          <Input
+                            id="featuredImage"
+                            {...newsForm.register("featuredImage")}
+                            placeholder="https://esempio.com/immagine.jpg"
+                          />
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="published"
+                            {...newsForm.register("published")}
+                            className="rounded"
+                          />
+                          <Label htmlFor="published">Pubblica immediatamente</Label>
+                        </div>
+
+                        <div className="flex justify-end space-x-2 pt-4">
+                          <Button type="button" variant="outline" onClick={handleCloseNewsDialog}>
+                            Annulla
+                          </Button>
+                          <Button 
+                            type="submit" 
+                            disabled={createNewsMutation.isPending || updateNewsMutation.isPending}
+                          >
+                            {createNewsMutation.isPending || updateNewsMutation.isPending ? (
+                              <div className="flex items-center">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                Salvataggio...
+                              </div>
+                            ) : (
+                              editingNews ? "Aggiorna" : "Crea"
+                            )}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 
                 {news.length === 0 ? (
