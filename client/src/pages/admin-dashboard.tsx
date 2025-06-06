@@ -692,8 +692,23 @@ export default function AdminDashboard() {
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline">Modifica</Button>
-                              <Button size="sm" variant="destructive">Elimina</Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleEditNews(article)}
+                              >
+                                <Edit className="w-4 h-4 mr-1" />
+                                Modifica
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive"
+                                onClick={() => deleteNewsMutation.mutate(article.id)}
+                                disabled={deleteNewsMutation.isPending}
+                              >
+                                <Trash2 className="w-4 h-4 mr-1" />
+                                Elimina
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -718,7 +733,190 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">
                     {competitions.length} gare programmate
                   </p>
-                  <Button>Nuova Gara</Button>
+                  <Dialog open={competitionDialogOpen} onOpenChange={setCompetitionDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button onClick={() => setCompetitionDialogOpen(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nuova Gara
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {editingCompetition ? "Modifica Gara" : "Nuova Gara Cinofila"}
+                        </DialogTitle>
+                        <DialogDescription>
+                          {editingCompetition ? "Modifica i dettagli della gara" : "Organizza una nuova competizione cinofila"}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={competitionForm.handleSubmit(handleCompetitionSubmit)} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="comp-title">Titolo *</Label>
+                          <Input
+                            id="comp-title"
+                            {...competitionForm.register("title")}
+                            placeholder="Inserisci il titolo della gara"
+                          />
+                          {competitionForm.formState.errors.title && (
+                            <p className="text-sm text-destructive">
+                              {competitionForm.formState.errors.title.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="comp-description">Descrizione *</Label>
+                          <Textarea
+                            id="comp-description"
+                            rows={4}
+                            {...competitionForm.register("description")}
+                            placeholder="Descrivi la gara e le modalità di partecipazione"
+                          />
+                          {competitionForm.formState.errors.description && (
+                            <p className="text-sm text-destructive">
+                              {competitionForm.formState.errors.description.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="comp-discipline">Disciplina *</Label>
+                            <Select
+                              value={competitionForm.watch("discipline")}
+                              onValueChange={(value) => competitionForm.setValue("discipline", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Seleziona disciplina" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="caccia-cinghiale">Caccia al Cinghiale</SelectItem>
+                                <SelectItem value="caccia-lepre">Caccia alla Lepre</SelectItem>
+                                <SelectItem value="caccia-volpe">Caccia alla Volpe</SelectItem>
+                                <SelectItem value="traccia-sangue">Traccia su Sangue</SelectItem>
+                                <SelectItem value="prove-attitudine">Prove di Attitudine</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            {competitionForm.formState.errors.discipline && (
+                              <p className="text-sm text-destructive">
+                                {competitionForm.formState.errors.discipline.message}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="comp-location">Località *</Label>
+                            <Input
+                              id="comp-location"
+                              {...competitionForm.register("location")}
+                              placeholder="Luogo della gara"
+                            />
+                            {competitionForm.formState.errors.location && (
+                              <p className="text-sm text-destructive">
+                                {competitionForm.formState.errors.location.message}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="comp-event-date">Data Gara *</Label>
+                            <Input
+                              id="comp-event-date"
+                              type="datetime-local"
+                              {...competitionForm.register("eventDate", {
+                                valueAsDate: true,
+                              })}
+                            />
+                            {competitionForm.formState.errors.eventDate && (
+                              <p className="text-sm text-destructive">
+                                {competitionForm.formState.errors.eventDate.message}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="comp-registration-deadline">Scadenza Iscrizioni *</Label>
+                            <Input
+                              id="comp-registration-deadline"
+                              type="datetime-local"
+                              {...competitionForm.register("registrationDeadline", {
+                                valueAsDate: true,
+                              })}
+                            />
+                            {competitionForm.formState.errors.registrationDeadline && (
+                              <p className="text-sm text-destructive">
+                                {competitionForm.formState.errors.registrationDeadline.message}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="comp-cost">Costo Iscrizione (€) *</Label>
+                            <Input
+                              id="comp-cost"
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              {...competitionForm.register("cost", {
+                                valueAsNumber: true,
+                              })}
+                              placeholder="0.00"
+                            />
+                            {competitionForm.formState.errors.cost && (
+                              <p className="text-sm text-destructive">
+                                {competitionForm.formState.errors.cost.message}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="comp-max-participants">Numero Max Partecipanti</Label>
+                            <Input
+                              id="comp-max-participants"
+                              type="number"
+                              min="1"
+                              {...competitionForm.register("maxParticipants", {
+                                valueAsNumber: true,
+                              })}
+                              placeholder="Lascia vuoto per illimitato"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="comp-bando-url">URL Bando/Regolamento</Label>
+                          <Input
+                            id="comp-bando-url"
+                            {...competitionForm.register("bandoUrl")}
+                            placeholder="https://esempio.com/bando.pdf"
+                          />
+                        </div>
+
+                        <div className="flex justify-end space-x-2 pt-4">
+                          <Button type="button" variant="outline" onClick={handleCloseCompetitionDialog}>
+                            Annulla
+                          </Button>
+                          <Button 
+                            type="submit" 
+                            disabled={createCompetitionMutation.isPending || updateCompetitionMutation.isPending}
+                          >
+                            {createCompetitionMutation.isPending || updateCompetitionMutation.isPending ? (
+                              <div className="flex items-center">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                Salvataggio...
+                              </div>
+                            ) : (
+                              editingCompetition ? "Aggiorna" : "Crea"
+                            )}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 
                 {competitions.length === 0 ? (
@@ -731,8 +929,9 @@ export default function AdminDashboard() {
                       <TableRow>
                         <TableHead>Titolo</TableHead>
                         <TableHead>Disciplina</TableHead>
-                        <TableHead>Data Evento</TableHead>
-                        <TableHead>Partecipanti</TableHead>
+                        <TableHead>Località</TableHead>
+                        <TableHead>Data Gara</TableHead>
+                        <TableHead>Costo</TableHead>
                         <TableHead>Azioni</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -743,19 +942,30 @@ export default function AdminDashboard() {
                           <TableCell>
                             <Badge variant="outline">{competition.discipline}</Badge>
                           </TableCell>
+                          <TableCell>{competition.location}</TableCell>
                           <TableCell>
-                            <div className="flex items-center">
-                              <Calendar className="w-4 h-4 mr-2" />
-                              {new Date(competition.eventDate).toLocaleDateString('it-IT')}
-                            </div>
+                            {new Date(competition.eventDate).toLocaleDateString('it-IT')}
                           </TableCell>
-                          <TableCell>
-                            {competition.registeredParticipants} / {competition.maxParticipants}
-                          </TableCell>
+                          <TableCell>€{competition.cost.toFixed(2)}</TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline">Modifica</Button>
-                              <Button size="sm" variant="destructive">Elimina</Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleEditCompetition(competition)}
+                              >
+                                <Edit className="w-4 h-4 mr-1" />
+                                Modifica
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive"
+                                onClick={() => deleteCompetitionMutation.mutate(competition.id)}
+                                disabled={deleteCompetitionMutation.isPending}
+                              >
+                                <Trash2 className="w-4 h-4 mr-1" />
+                                Elimina
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
