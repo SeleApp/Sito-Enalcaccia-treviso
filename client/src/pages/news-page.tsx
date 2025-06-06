@@ -1,170 +1,172 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "wouter";
-import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { Calendar, Search, Tag } from "lucide-react";
 import type { News } from "@shared/schema";
 
 export default function NewsPage() {
-  const { slug } = useParams();
-  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
   const { data: news = [], isLoading } = useQuery<News[]>({
     queryKey: ["/api/news"],
   });
 
-  const { data: article, isLoading: isLoadingArticle } = useQuery<News>({
-    queryKey: [`/api/news/${slug}`],
-    enabled: !!slug,
+  // Get unique categories
+  const categories = Array.from(new Set(news.map(article => article.category)));
+  
+  // Filter news based on search and category
+  const filteredNews = news.filter(article => {
+    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         article.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || article.category === selectedCategory;
+    return matchesSearch && matchesCategory && article.published;
   });
 
-  if (slug) {
-    // Single article view
-    if (isLoadingArticle) {
-      return (
-        <div className="min-h-screen bg-gray-50">
-          <Header />
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-              <div className="h-64 bg-gray-200 rounded mb-8"></div>
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              </div>
-            </div>
-          </div>
-          <Footer />
-        </div>
-      );
-    }
-
-    if (!article) {
-      return (
-        <div className="min-h-screen bg-gray-50">
-          <Header />
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Articolo non trovato</h1>
-              <Link href="/news">
-                <Button>Torna alle notizie</Button>
-              </Link>
-            </div>
-          </div>
-          <Footer />
-        </div>
-      );
-    }
-
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <Link href="/news">
-              <Button variant="outline" size="sm">
-                <i className="fas fa-arrow-left mr-2"></i>
-                Torna alle notizie
-              </Button>
-            </Link>
-          </div>
-
-          <header className="mb-8">
-            <h1 className="text-4xl font-serif font-bold text-neutral mb-4">
-              {article.title}
-            </h1>
-            <div className="flex items-center text-gray-600 mb-6">
-              <i className="far fa-calendar mr-2"></i>
-              <span>{new Date(article.publishedAt).toLocaleDateString('it-IT')}</span>
-            </div>
-            {article.featuredImage && (
-              <img 
-                src={article.featuredImage} 
-                alt={article.title}
-                className="w-full h-64 md:h-96 object-cover rounded-lg mb-6"
-              />
-            )}
-          </header>
-
-          <div className="prose prose-lg max-w-none">
-            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-              {article.content}
-            </div>
-          </div>
-        </article>
-        <Footer />
-      </div>
-    );
-  }
-
-  // News list view
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-background">
+      <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-neutral mb-4">Notizie</h1>
-          <p className="text-xl text-gray-600">Rimani aggiornato sulle attività di Enal Caccia</p>
+          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Notizie</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Rimani aggiornato sulle ultime novità del mondo venatorio e delle attività di Enal Caccia
+          </p>
         </div>
 
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Cerca negli articoli..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue placeholder="Categoria" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tutte le categorie</SelectItem>
+              {categories.map(category => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Results Count */}
+        <div className="mb-6">
+          <p className="text-muted-foreground">
+            {filteredNews.length} {filteredNews.length === 1 ? 'articolo trovato' : 'articoli trovati'}
+          </p>
+        </div>
+
+        {/* News Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, i) => (
               <Card key={i} className="animate-pulse">
-                <div className="h-48 bg-gray-200 rounded-t-lg"></div>
+                <div className="aspect-video bg-muted" />
                 <CardHeader>
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-6 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+                  <div className="h-6 bg-muted rounded w-full" />
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-2/3" />
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-        ) : news.length === 0 ? (
-          <div className="text-center py-12">
-            <i className="fas fa-newspaper text-gray-400 text-6xl mb-4"></i>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Nessuna notizia disponibile</h3>
-            <p className="text-gray-600">Le notizie verranno pubblicate qui non appena disponibili.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((article) => (
-              <Card key={article.id} className="hover:shadow-lg transition-shadow overflow-hidden">
-                {article.featuredImage && (
-                  <img 
-                    src={article.featuredImage} 
-                    alt={article.title}
-                    className="w-full h-48 object-cover"
-                  />
+        ) : filteredNews.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-12">
+                <Tag className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  Nessun articolo trovato
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {searchTerm || selectedCategory !== "all" 
+                    ? "Prova a modificare i filtri di ricerca"
+                    : "Non ci sono articoli disponibili al momento"
+                  }
+                </p>
+                {(searchTerm || selectedCategory !== "all") && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedCategory("all");
+                    }}
+                  >
+                    Rimuovi filtri
+                  </Button>
                 )}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredNews.map((article) => (
+              <Card key={article.id} className="hover:shadow-lg transition-shadow">
+                <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
+                  {article.featuredImage && (
+                    <img 
+                      src={article.featuredImage}
+                      alt={article.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                </div>
                 <CardHeader>
-                  <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <i className="far fa-calendar mr-2"></i>
-                    <span>{new Date(article.publishedAt).toLocaleDateString('it-IT')}</span>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                    <div className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span>{new Date(article.createdAt).toLocaleDateString('it-IT')}</span>
+                    </div>
+                    <Badge variant="secondary">{article.category}</Badge>
                   </div>
-                  <CardTitle className="text-xl hover:text-primary transition-colors">
-                    <Link href={`/news/${article.slug}`}>
-                      {article.title}
-                    </Link>
+                  <CardTitle className="line-clamp-2 hover:text-primary transition-colors cursor-pointer">
+                    {article.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4">{article.excerpt}</p>
-                  <Link href={`/news/${article.slug}`} className="text-primary hover:text-accent font-semibold">
+                  <p className="text-muted-foreground mb-4 line-clamp-3">
+                    {article.excerpt}
+                  </p>
+                  <Button variant="link" className="p-0 h-auto">
                     Leggi tutto →
-                  </Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
+          </div>
+        )}
+
+        {/* Load More */}
+        {filteredNews.length > 0 && (
+          <div className="text-center mt-12">
+            <p className="text-muted-foreground text-sm">
+              Hai visualizzato tutti gli articoli disponibili
+            </p>
           </div>
         )}
       </div>

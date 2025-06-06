@@ -1,212 +1,233 @@
-import { useAuth } from "@/hooks/use-auth";
-import { useLocation } from "wouter";
-import Navigation from "@/components/navigation";
-import Footer from "@/components/footer";
+import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { User, CreditCard, Trophy, Settings, AlertCircle, CheckCircle } from "lucide-react";
+import { Navbar } from "@/components/navbar";
+import { useAuth } from "@/hooks/use-auth";
+import { User, CreditCard, Trophy, Calendar, Settings } from "lucide-react";
+import type { UserMembership, User as UserType } from "@shared/schema";
 
 export default function UserDashboard() {
   const { user } = useAuth();
-  const [location, setLocation] = useLocation();
+
+  const { data: userProfile } = useQuery<UserType>({
+    queryKey: ["/api/user/profile"],
+  });
+
+  const { data: userMemberships = [] } = useQuery<UserMembership[]>({
+    queryKey: ["/api/user/memberships"],
+  });
 
   if (!user) {
-    setLocation("/auth");
-    return null;
+    return null; // This should be handled by ProtectedRoute
   }
+
+  const activeMemberships = userMemberships.filter(m => 
+    m.status === 'paid' && new Date(m.expiresAt) > new Date()
+  );
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
             Benvenuto, {user.nome} {user.cognome}
           </h1>
           <p className="text-muted-foreground">
-            Gestisci il tuo profilo e accedi ai servizi di Enal Caccia
+            Gestisci il tuo profilo e i tuoi tesseramenti
           </p>
         </div>
 
-        {/* Account Status */}
-        <div className="mb-8">
-          {!user.isApproved ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Il tuo account è in attesa di approvazione da parte degli amministratori. 
-                Riceverai una notifica via email una volta approvato.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <Alert className="border-success bg-success/10">
-              <CheckCircle className="h-4 w-4 text-success" />
-              <AlertDescription className="text-success">
-                Il tuo account è stato approvato! Puoi ora accedere a tutti i servizi.
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Profile Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="w-5 h-5" />
-                <span>Profilo Utente</span>
-              </CardTitle>
-              <CardDescription>
-                Informazioni del tuo account
-              </CardDescription>
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Profilo</CardTitle>
+              <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm font-medium">Nome Completo</p>
-                <p className="text-muted-foreground">{user.nome} {user.cognome}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Email</p>
-                <p className="text-muted-foreground">{user.email}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Numero Licenza</p>
-                <p className="text-muted-foreground">{user.numeroLicenza}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Status</p>
-                <Badge variant={user.isApproved ? "default" : "secondary"}>
-                  {user.isApproved ? "Approvato" : "In attesa"}
-                </Badge>
-              </div>
-              <Button variant="outline" className="w-full mt-4">
-                <Settings className="w-4 h-4 mr-2" />
-                Modifica Profilo
-              </Button>
+            <CardContent>
+              <div className="text-2xl font-bold">Gestisci</div>
+              <p className="text-xs text-muted-foreground">
+                Aggiorna i tuoi dati personali
+              </p>
             </CardContent>
           </Card>
 
-          {/* Membership Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <CreditCard className="w-5 h-5" />
-                <span>Tesseramento</span>
-              </CardTitle>
-              <CardDescription>
-                Gestisci la tua tessera
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {user.isApproved ? (
-                <div className="space-y-4">
-                  <div className="text-center py-4">
-                    <p className="text-muted-foreground mb-4">
-                      Non hai ancora una tessera attiva
-                    </p>
-                    <Button 
-                      className="w-full"
-                      onClick={() => setLocation("/membership")}
-                    >
-                      Acquista Tessera
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Disponibile dopo l'approvazione dell'account</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <Link href="/membership">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Tesseramento</CardTitle>
+                <CreditCard className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Rinnova</div>
+                <p className="text-xs text-muted-foreground">
+                  Acquista o rinnova la tessera
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
 
-          {/* Competitions Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Trophy className="w-5 h-5" />
-                <span>Gare Cinofile</span>
-              </CardTitle>
-              <CardDescription>
-                Partecipa alle competizioni
-              </CardDescription>
+          <Link href="/competitions">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Gare</CardTitle>
+                <Trophy className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Partecipa</div>
+                <p className="text-xs text-muted-foreground">
+                  Iscriviti alle gare cinofile
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Eventi</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              {user.isApproved ? (
-                <div className="space-y-4">
-                  <div className="text-center py-4">
-                    <p className="text-muted-foreground mb-4">
-                      Esplora le gare disponibili
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => setLocation("/competitions")}
-                    >
-                      Vedi Gare
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Disponibile dopo l'approvazione dell'account</p>
-                </div>
-              )}
+              <div className="text-2xl font-bold">Calendario</div>
+              <p className="text-xs text-muted-foreground">
+                Visualizza prossimi eventi
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Links */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Profile Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <User className="w-5 h-5 mr-2" />
+                Informazioni Profilo
+              </CardTitle>
+              <CardDescription>
+                I tuoi dati personali registrati
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {userProfile && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Nome</p>
+                    <p className="text-base">{userProfile.nome}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Cognome</p>
+                    <p className="text-base">{userProfile.cognome}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Email</p>
+                    <p className="text-base">{userProfile.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Codice Fiscale</p>
+                    <p className="text-base">{userProfile.codiceFiscale}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Numero Licenza</p>
+                    <p className="text-base">{userProfile.numeroLicenza}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Data di Nascita</p>
+                    <p className="text-base">
+                      {new Date(userProfile.dataNascita).toLocaleDateString('it-IT')}
+                    </p>
+                  </div>
+                </div>
+              )}
+              <div className="pt-4">
+                <Button variant="outline" className="w-full">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Modifica Profilo
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Membership Status */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <CreditCard className="w-5 h-5 mr-2" />
+                Stato Tesseramento
+              </CardTitle>
+              <CardDescription>
+                Le tue tessere attive e scadute
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {activeMemberships.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground mb-4">
+                    Non hai tessere attive al momento
+                  </p>
+                  <Link href="/membership">
+                    <Button>Acquista Tessera</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activeMemberships.map((membership) => (
+                    <div key={membership.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="font-medium">Tessera Premium</p>
+                          <p className="text-sm text-muted-foreground">
+                            Scade il {new Date(membership.expiresAt).toLocaleDateString('it-IT')}
+                          </p>
+                        </div>
+                        <Badge variant="default">Attiva</Badge>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span>Pagato: €{(membership.amount / 100).toFixed(2)}</span>
+                        <span className="text-muted-foreground">
+                          {new Date(membership.paidAt || '').toLocaleDateString('it-IT')}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <div className="pt-4">
+                    <Link href="/membership">
+                      <Button variant="outline" className="w-full">
+                        Rinnova o Aggiorna Tessera
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
         <Card className="mt-8">
           <CardHeader>
-            <CardTitle>Link Rapidi</CardTitle>
+            <CardTitle>Attività Recente</CardTitle>
             <CardDescription>
-              Accesso veloce alle sezioni principali
+              Le tue ultime azioni e partecipazioni
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button 
-                variant="outline" 
-                className="h-auto p-4 flex flex-col items-center space-y-2"
-                onClick={() => setLocation("/news")}
-              >
-                <span className="text-lg">📰</span>
-                <span>Ultime News</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto p-4 flex flex-col items-center space-y-2"
-                onClick={() => setLocation("/competitions")}
-              >
-                <span className="text-lg">🏆</span>
-                <span>Gare Cinofile</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto p-4 flex flex-col items-center space-y-2"
-                onClick={() => setLocation("/membership")}
-              >
-                <span className="text-lg">🎫</span>
-                <span>Tesseramento</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto p-4 flex flex-col items-center space-y-2"
-                onClick={() => setLocation("/#contatti")}
-              >
-                <span className="text-lg">📞</span>
-                <span>Contatti</span>
-              </Button>
+            <div className="text-center py-8 text-muted-foreground">
+              <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+              <p>Nessuna attività recente da mostrare</p>
+              <p className="text-sm mt-2">
+                Partecipa alle gare cinofile o acquista una tessera per vedere la tua attività qui
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      <Footer />
     </div>
   );
 }

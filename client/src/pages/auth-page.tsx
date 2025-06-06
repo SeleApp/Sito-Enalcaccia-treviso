@@ -1,299 +1,390 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { insertUserSchema } from "@shared/schema";
+import { Shield, Users, Trophy } from "lucide-react";
+
+const loginSchema = z.object({
+  email: z.string().email("Email non valida"),
+  password: z.string().min(1, "Password richiesta"),
+});
+
+type LoginForm = z.infer<typeof loginSchema>;
+type RegisterForm = z.infer<typeof insertUserSchema>;
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation, registerMutation } = useAuth();
-  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
-  const [registerForm, setRegisterForm] = useState({
-    nome: "",
-    cognome: "",
-    dataNascita: "",
-    luogoNascita: "",
-    codiceFiscale: "",
-    numeroLicenza: "",
-    email: "",
-    password: "",
-    passwordConfirm: "",
-  });
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("login");
 
   // Redirect if already logged in
   if (user) {
-    setLocation("/dashboard");
+    setLocation("/");
     return null;
   }
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    loginMutation.mutate(loginForm);
+  const loginForm = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const registerForm = useForm<RegisterForm>({
+    resolver: zodResolver(insertUserSchema),
+    defaultValues: {
+      nome: "",
+      cognome: "",
+      dataNascita: "",
+      luogoNascita: "",
+      codiceFiscale: "",
+      numeroLicenza: "",
+      email: "",
+      password: "",
+      passwordConfirm: "",
+      role: "utente",
+    },
+  });
+
+  const onLogin = async (data: LoginForm) => {
+    try {
+      await loginMutation.mutateAsync(data);
+      toast({
+        title: "Accesso effettuato",
+        description: "Benvenuto in Enal Caccia!",
+      });
+      setLocation("/dashboard");
+    } catch (error: any) {
+      toast({
+        title: "Errore di accesso",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (registerForm.password !== registerForm.passwordConfirm) {
-      return;
+  const onRegister = async (data: RegisterForm) => {
+    try {
+      await registerMutation.mutateAsync(data);
+      toast({
+        title: "Registrazione inviata",
+        description: "La tua richiesta è in attesa di approvazione da parte degli amministratori.",
+      });
+      setActiveTab("login");
+      registerForm.reset();
+    } catch (error: any) {
+      toast({
+        title: "Errore nella registrazione",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-
-    const { passwordConfirm, ...userData } = registerForm;
-    registerMutation.mutate({
-      ...userData,
-      username: userData.email, // Use email as username
-    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-background">
+      <div className="grid lg:grid-cols-2 min-h-screen">
         {/* Left side - Forms */}
-        <Card className="w-full max-w-md mx-auto">
-          <CardHeader className="space-y-1 text-center">
-            <div className="flex items-center justify-between mb-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Torna al sito
-                </Button>
-              </Link>
+        <div className="flex items-center justify-center p-8">
+          <div className="w-full max-w-md space-y-6">
+            <div className="text-center space-y-2">
+              <h1 className="text-3xl font-serif font-bold">Enal Caccia</h1>
+              <p className="text-muted-foreground">
+                Accedi al tuo account o crea un nuovo profilo
+              </p>
             </div>
-            <CardTitle className="text-2xl font-serif">Enal Caccia</CardTitle>
-            <p className="text-gray-600">Accedi al tuo account o registrati</p>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="login" className="w-full">
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Registrazione</TabsTrigger>
+                <TabsTrigger value="login">Accedi</TabsTrigger>
+                <TabsTrigger value="register">Registrati</TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="login" className="space-y-4">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Email</Label>
-                    <Input
-                      id="username"
-                      type="email"
-                      placeholder="tua@email.com"
-                      value={loginForm.username}
-                      onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={loginForm.password}
-                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={loginMutation.isPending}
-                  >
-                    {loginMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Accesso...
-                      </>
-                    ) : (
-                      "Accedi"
-                    )}
-                  </Button>
-                </form>
+
+              <TabsContent value="login">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Accesso</CardTitle>
+                    <CardDescription>
+                      Inserisci le tue credenziali per accedere
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="login-email">Email</Label>
+                        <Input
+                          id="login-email"
+                          type="email"
+                          placeholder="tua@email.com"
+                          {...loginForm.register("email")}
+                        />
+                        {loginForm.formState.errors.email && (
+                          <p className="text-sm text-destructive">
+                            {loginForm.formState.errors.email.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="login-password">Password</Label>
+                        <Input
+                          id="login-password"
+                          type="password"
+                          {...loginForm.register("password")}
+                        />
+                        {loginForm.formState.errors.password && (
+                          <p className="text-sm text-destructive">
+                            {loginForm.formState.errors.password.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <Button 
+                        type="submit" 
+                        className="w-full"
+                        disabled={loginMutation.isPending}
+                      >
+                        {loginMutation.isPending ? "Accesso in corso..." : "Accedi"}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
               </TabsContent>
-              
-              <TabsContent value="register" className="space-y-4">
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="nome">Nome *</Label>
-                      <Input
-                        id="nome"
-                        type="text"
-                        placeholder="Mario"
-                        value={registerForm.nome}
-                        onChange={(e) => setRegisterForm({ ...registerForm, nome: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="cognome">Cognome *</Label>
-                      <Input
-                        id="cognome"
-                        type="text"
-                        placeholder="Rossi"
-                        value={registerForm.cognome}
-                        onChange={(e) => setRegisterForm({ ...registerForm, cognome: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="dataNascita">Data di Nascita *</Label>
-                      <Input
-                        id="dataNascita"
-                        type="date"
-                        value={registerForm.dataNascita}
-                        onChange={(e) => setRegisterForm({ ...registerForm, dataNascita: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="luogoNascita">Luogo di Nascita *</Label>
-                      <Input
-                        id="luogoNascita"
-                        type="text"
-                        placeholder="Roma"
-                        value={registerForm.luogoNascita}
-                        onChange={(e) => setRegisterForm({ ...registerForm, luogoNascita: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="codiceFiscale">Codice Fiscale *</Label>
-                      <Input
-                        id="codiceFiscale"
-                        type="text"
-                        placeholder="RSSMRA80A01H501Z"
-                        value={registerForm.codiceFiscale}
-                        onChange={(e) => setRegisterForm({ ...registerForm, codiceFiscale: e.target.value.toUpperCase() })}
-                        pattern="[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]"
-                        maxLength={16}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="numeroLicenza">Numero Licenza *</Label>
-                      <Input
-                        id="numeroLicenza"
-                        type="text"
-                        placeholder="123456789"
-                        value={registerForm.numeroLicenza}
-                        onChange={(e) => setRegisterForm({ ...registerForm, numeroLicenza: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="mario.rossi@email.com"
-                      value={registerForm.email}
-                      onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="password-reg">Password *</Label>
-                      <Input
-                        id="password-reg"
-                        type="password"
-                        value={registerForm.password}
-                        onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                        minLength={8}
-                        required
-                      />
-                      <p className="text-xs text-gray-500">Minimo 8 caratteri, almeno un numero e una lettera</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="passwordConfirm">Conferma Password *</Label>
-                      <Input
-                        id="passwordConfirm"
-                        type="password"
-                        value={registerForm.passwordConfirm}
-                        onChange={(e) => setRegisterForm({ ...registerForm, passwordConfirm: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
 
-                  {registerForm.password !== registerForm.passwordConfirm && registerForm.passwordConfirm && (
-                    <Alert>
-                      <AlertDescription>Le password non corrispondono</AlertDescription>
-                    </Alert>
-                  )}
+              <TabsContent value="register">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Registrazione</CardTitle>
+                    <CardDescription>
+                      Compila il modulo per richiedere l'iscrizione
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="nome">Nome *</Label>
+                          <Input
+                            id="nome"
+                            placeholder="Mario"
+                            {...registerForm.register("nome")}
+                          />
+                          {registerForm.formState.errors.nome && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.nome.message}
+                            </p>
+                          )}
+                        </div>
 
-                  <Alert className="bg-yellow-50 border-yellow-200">
-                    <AlertDescription className="text-yellow-800">
-                      <strong>Richiesta in Attesa di Approvazione:</strong> La tua registrazione sarà sottoposta a revisione da parte degli amministratori. Riceverai una conferma via email una volta approvata.
-                    </AlertDescription>
-                  </Alert>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={registerMutation.isPending || registerForm.password !== registerForm.passwordConfirm}
-                  >
-                    {registerMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Registrazione...
-                      </>
-                    ) : (
-                      "Registrati"
-                    )}
-                  </Button>
-                </form>
+                        <div className="space-y-2">
+                          <Label htmlFor="cognome">Cognome *</Label>
+                          <Input
+                            id="cognome"
+                            placeholder="Rossi"
+                            {...registerForm.register("cognome")}
+                          />
+                          {registerForm.formState.errors.cognome && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.cognome.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="dataNascita">Data di Nascita *</Label>
+                          <Input
+                            id="dataNascita"
+                            type="date"
+                            {...registerForm.register("dataNascita")}
+                          />
+                          {registerForm.formState.errors.dataNascita && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.dataNascita.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="luogoNascita">Luogo di Nascita *</Label>
+                          <Input
+                            id="luogoNascita"
+                            placeholder="Roma"
+                            {...registerForm.register("luogoNascita")}
+                          />
+                          {registerForm.formState.errors.luogoNascita && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.luogoNascita.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="codiceFiscale">Codice Fiscale *</Label>
+                          <Input
+                            id="codiceFiscale"
+                            placeholder="RSSMRA80A01H501Z"
+                            className="uppercase"
+                            {...registerForm.register("codiceFiscale")}
+                          />
+                          {registerForm.formState.errors.codiceFiscale && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.codiceFiscale.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="numeroLicenza">Numero Licenza *</Label>
+                          <Input
+                            id="numeroLicenza"
+                            placeholder="123456789"
+                            {...registerForm.register("numeroLicenza")}
+                          />
+                          {registerForm.formState.errors.numeroLicenza && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.numeroLicenza.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="register-email">Email *</Label>
+                        <Input
+                          id="register-email"
+                          type="email"
+                          placeholder="mario.rossi@email.com"
+                          {...registerForm.register("email")}
+                        />
+                        {registerForm.formState.errors.email && (
+                          <p className="text-sm text-destructive">
+                            {registerForm.formState.errors.email.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="password">Password *</Label>
+                          <Input
+                            id="password"
+                            type="password"
+                            {...registerForm.register("password")}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Minimo 8 caratteri, almeno un numero e una lettera
+                          </p>
+                          {registerForm.formState.errors.password && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.password.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="passwordConfirm">Conferma Password *</Label>
+                          <Input
+                            id="passwordConfirm"
+                            type="password"
+                            {...registerForm.register("passwordConfirm")}
+                          />
+                          {registerForm.formState.errors.passwordConfirm && (
+                            <p className="text-sm text-destructive">
+                              {registerForm.formState.errors.passwordConfirm.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div className="flex items-start">
+                          <Shield className="w-5 h-5 text-yellow-600 mr-3 mt-0.5" />
+                          <div>
+                            <p className="text-sm text-yellow-800 font-medium">
+                              Richiesta in Attesa di Approvazione
+                            </p>
+                            <p className="text-sm text-yellow-700 mt-1">
+                              La tua registrazione sarà sottoposta a revisione da parte degli amministratori. 
+                              Riceverai una conferma via email una volta approvata.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button 
+                        type="submit" 
+                        className="w-full"
+                        disabled={registerMutation.isPending}
+                      >
+                        {registerMutation.isPending ? "Invio in corso..." : "Invia Richiesta di Registrazione"}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Right side - Hero section */}
-        <div className="hidden lg:flex lg:items-center lg:justify-center">
-          <div className="max-w-md text-center">
-            <div 
-              className="w-full h-96 bg-cover bg-center rounded-lg mb-6"
-              style={{
-                backgroundImage: "linear-gradient(rgba(45, 80, 22, 0.7), rgba(45, 80, 22, 0.7)), url('https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600')"
-              }}
-            />
-            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">
-              Benvenuti in Enal Caccia
-            </h2>
-            <p className="text-gray-600 mb-6">
-              L'associazione italiana dedicata alla promozione della caccia responsabile, 
-              della cinofilia e della tutela del patrimonio ambientale.
-            </p>
-            <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
-                <span>Tesseramento online</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
-                <span>Gare cinofile</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
-                <span>Formazione specializzata</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
-                <span>Comunità attiva</span>
+        {/* Right side - Hero */}
+        <div className="hidden lg:block relative overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=1200')"
+            }}
+          />
+          <div className="absolute inset-0 bg-primary/80" />
+          <div className="relative h-full flex items-center justify-center p-8">
+            <div className="text-white text-center max-w-md">
+              <h2 className="text-3xl font-serif font-bold mb-6">
+                Unisciti alla Comunità Enal Caccia
+              </h2>
+              <p className="text-lg mb-8 opacity-90">
+                Fai parte della più grande associazione venatoria italiana. 
+                Accedi a servizi esclusivi, partecipa alle gare cinofile e 
+                contribuisci alla conservazione del patrimonio ambientale.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-center text-left">
+                  <Shield className="w-6 h-6 mr-4 text-accent" />
+                  <div>
+                    <h3 className="font-semibold">Tradizione e Sicurezza</h3>
+                    <p className="text-sm opacity-80">Caccia responsabile nel rispetto delle normative</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center text-left">
+                  <Trophy className="w-6 h-6 mr-4 text-accent" />
+                  <div>
+                    <h3 className="font-semibold">Competizioni</h3>
+                    <p className="text-sm opacity-80">Partecipa alle gare cinofile in tutta Italia</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center text-left">
+                  <Users className="w-6 h-6 mr-4 text-accent" />
+                  <div>
+                    <h3 className="font-semibold">Comunità</h3>
+                    <p className="text-sm opacity-80">Network di cacciatori esperti e principianti</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
