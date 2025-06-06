@@ -53,7 +53,7 @@ export function Navbar() {
                   </div>
                 </div>
               </div>
-              <span className="font-serif font-bold text-xl text-forest">Enal Caccia</span>
+              <span className="font-serif font-bold text-xl text-forest">Enal Caccia Treviso</span>
             </Link>
           </div>
 
