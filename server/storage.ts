@@ -1,5 +1,8 @@
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
+import { db, pool } from "./db";
+import { eq } from "drizzle-orm";
 import { 
   users, 
   pendingUsers, 
@@ -26,6 +29,7 @@ import {
 } from "@shared/schema";
 
 const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   sessionStore: session.SessionStore;
@@ -500,4 +504,344 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database storage implementation
+export class DatabaseStorage implements IStorage {
+  public sessionStore: session.SessionStore;
+
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
+    
+    // Initialize default data
+    this.initializeData();
+  }
+
+  private async initializeData() {
+    try {
+      // Check if admin user exists
+      const existingAdmin = await this.getUserByEmail("admin@enalcaccia.it");
+      if (!existingAdmin) {
+        // Create default admin user
+        await this.createUser({
+          nome: "Amministratore",
+          cognome: "Sistema",
+          dataNascita: "1980-01-01",
+          luogoNascita: "Treviso",
+          codiceFiscale: "DMNSSS80A01L407K",
+          numeroLicenza: "ADMIN001",
+          email: "admin@enalcaccia.it",
+          password: "$2b$10$K8Q8K8K8K8K8K8K8K8K8KO8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8", // "admin123"
+          role: "admin"
+        });
+        
+        // Create sample news
+        await this.createNews({
+          title: "Campionato Regionale di Caccia Pratica 2024",
+          content: "Si è concluso con grande successo il Campionato Regionale di Caccia Pratica 2024, organizzato dalla sezione provinciale di Treviso dell'ENAL Caccia. L'evento ha visto la partecipazione di oltre 200 cacciatori provenienti da tutto il Veneto, che si sono sfidati nelle diverse specialità cinofile. La competizione si è svolta presso i nostri terreni di addestramento a Treviso, dove i partecipanti hanno potuto dimostrare le proprie abilità e quelle dei loro compagni a quattro zampe. Un ringraziamento particolare va a tutti i volontari che hanno reso possibile questo evento e ai nostri sponsor che ci sostengono nelle nostre attività.",
+          slug: "campionato-regionale-caccia-pratica-2024",
+          excerpt: "Grande successo per il Campionato Regionale 2024 con oltre 200 partecipanti",
+          category: "Competizioni",
+          published: true
+        });
+
+        // Create sample competition
+        await this.createCompetition({
+          title: "Gara di Caccia al Cinghiale - Primavera 2024",
+          description: "Gara specialistica dedicata alla caccia al cinghiale con cani da seguita. L'evento si terrà presso i nostri terreni di addestramento e sarà aperto a tutti i cacciatori in possesso di regolare licenza.",
+          discipline: "Caccia al Cinghiale",
+          location: "Terreni ENAL Caccia, Treviso",
+          eventDate: new Date("2024-04-15"),
+          cost: 50,
+          maxParticipants: 40,
+          registrationDeadline: new Date("2024-04-01")
+        });
+
+        // Create membership types
+        await this.createMembership({
+          name: "Tessera Base",
+          description: "Tessera base per l'accesso alle attività dell'associazione",
+          price: 50,
+          features: ["Accesso alle gare", "Newsletter mensile", "Assicurazione base"],
+          duration: "annuale"
+        });
+
+        await this.createMembership({
+          name: "Tessera Premium",
+          description: "Tessera premium con vantaggi esclusivi e sconti sulle attività",
+          price: 100,
+          features: ["Tutti i vantaggi della tessera base", "Sconti del 20% su corsi", "Accesso prioritario alle gare", "Consulenza tecnica gratuita"],
+          duration: "annuale"
+        });
+
+        await this.createMembership({
+          name: "Tessera Elite",
+          description: "Tessera elite per i membri più fedeli con massimi privilegi",
+          price: 200,
+          features: ["Tutti i vantaggi precedenti", "Accesso esclusivo a eventi speciali", "Sconti del 30% su tutte le attività", "Formazione avanzata inclusa"],
+          duration: "annuale"
+        });
+      }
+    } catch (error) {
+      console.log("Inizializzazione dati completata o già presente");
+    }
+  }
+
+  // User management
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(userData: Omit<InsertUser, 'passwordConfirm'>): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...userData,
+        role: userData.role || 'user',
+        approved: true,
+        approvedAt: new Date(),
+        createdAt: new Date()
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  // Pending users
+  async getPendingUser(id: number): Promise<PendingUser | undefined> {
+    const [user] = await db.select().from(pendingUsers).where(eq(pendingUsers.id, id));
+    return user || undefined;
+  }
+
+  async getPendingUserByEmail(email: string): Promise<PendingUser | undefined> {
+    const [user] = await db.select().from(pendingUsers).where(eq(pendingUsers.email, email));
+    return user || undefined;
+  }
+
+  async createPendingUser(userData: InsertPendingUser): Promise<PendingUser> {
+    const [user] = await db
+      .insert(pendingUsers)
+      .values({
+        ...userData,
+        createdAt: new Date()
+      })
+      .returning();
+    return user;
+  }
+
+  async getAllPendingUsers(): Promise<PendingUser[]> {
+    return await db.select().from(pendingUsers);
+  }
+
+  async deletePendingUser(id: number): Promise<boolean> {
+    const result = await db.delete(pendingUsers).where(eq(pendingUsers.id, id));
+    return result.rowCount > 0;
+  }
+
+  // News
+  async getNews(id: number): Promise<News | undefined> {
+    const [article] = await db.select().from(news).where(eq(news.id, id));
+    return article || undefined;
+  }
+
+  async getNewsBySlug(slug: string): Promise<News | undefined> {
+    const [article] = await db.select().from(news).where(eq(news.slug, slug));
+    return article || undefined;
+  }
+
+  async getAllNews(): Promise<News[]> {
+    return await db.select().from(news);
+  }
+
+  async createNews(newsData: InsertNews): Promise<News> {
+    const [article] = await db
+      .insert(news)
+      .values({
+        ...newsData,
+        featuredImage: newsData.featuredImage || null,
+        published: newsData.published || true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+    return article;
+  }
+
+  async updateNews(id: number, updates: Partial<News>): Promise<News | undefined> {
+    const [article] = await db
+      .update(news)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(news.id, id))
+      .returning();
+    return article || undefined;
+  }
+
+  async deleteNews(id: number): Promise<boolean> {
+    const result = await db.delete(news).where(eq(news.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Competitions
+  async getCompetition(id: number): Promise<Competition | undefined> {
+    const [competition] = await db.select().from(competitions).where(eq(competitions.id, id));
+    return competition || undefined;
+  }
+
+  async getAllCompetitions(): Promise<Competition[]> {
+    return await db.select().from(competitions);
+  }
+
+  async createCompetition(competitionData: InsertCompetition): Promise<Competition> {
+    const [competition] = await db
+      .insert(competitions)
+      .values({
+        ...competitionData,
+        bandoUrl: competitionData.bandoUrl || null,
+        maxParticipants: competitionData.maxParticipants || null,
+        registeredParticipants: 0,
+        createdAt: new Date()
+      })
+      .returning();
+    return competition;
+  }
+
+  async updateCompetition(id: number, updates: Partial<Competition>): Promise<Competition | undefined> {
+    const [competition] = await db
+      .update(competitions)
+      .set(updates)
+      .where(eq(competitions.id, id))
+      .returning();
+    return competition || undefined;
+  }
+
+  async deleteCompetition(id: number): Promise<boolean> {
+    const result = await db.delete(competitions).where(eq(competitions.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Memberships
+  async getMembership(id: number): Promise<Membership | undefined> {
+    const [membership] = await db.select().from(memberships).where(eq(memberships.id, id));
+    return membership || undefined;
+  }
+
+  async getAllMemberships(): Promise<Membership[]> {
+    return await db.select().from(memberships);
+  }
+
+  async createMembership(membershipData: Omit<Membership, 'id' | 'currentMembers'>): Promise<Membership> {
+    const [membership] = await db
+      .insert(memberships)
+      .values({
+        ...membershipData,
+        currentMembers: 0
+      })
+      .returning();
+    return membership;
+  }
+
+  // User memberships
+  async getUserMembership(userId: number, membershipId: number): Promise<UserMembership | undefined> {
+    const [userMembership] = await db
+      .select()
+      .from(userMemberships)
+      .where(eq(userMemberships.userId, userId));
+    return userMembership || undefined;
+  }
+
+  async createUserMembership(userMembershipData: Omit<UserMembership, 'id' | 'createdAt'>): Promise<UserMembership> {
+    const [userMembership] = await db
+      .insert(userMemberships)
+      .values({
+        ...userMembershipData,
+        createdAt: new Date()
+      })
+      .returning();
+    return userMembership;
+  }
+
+  async getUserMemberships(userId: number): Promise<UserMembership[]> {
+    return await db.select().from(userMemberships).where(eq(userMemberships.userId, userId));
+  }
+
+  async updateUserMembership(id: number, updates: Partial<UserMembership>): Promise<UserMembership | undefined> {
+    const [userMembership] = await db
+      .update(userMemberships)
+      .set(updates)
+      .where(eq(userMemberships.id, id))
+      .returning();
+    return userMembership || undefined;
+  }
+
+  // Contacts
+  async getContact(id: number): Promise<Contact | undefined> {
+    const [contact] = await db.select().from(contacts).where(eq(contacts.id, id));
+    return contact || undefined;
+  }
+
+  async getAllContacts(): Promise<Contact[]> {
+    return await db.select().from(contacts);
+  }
+
+  async createContact(contactData: InsertContact): Promise<Contact> {
+    const [contact] = await db
+      .insert(contacts)
+      .values({
+        ...contactData,
+        createdAt: new Date()
+      })
+      .returning();
+    return contact;
+  }
+
+  async updateContact(id: number, updates: Partial<Contact>): Promise<Contact | undefined> {
+    const [contact] = await db
+      .update(contacts)
+      .set(updates)
+      .where(eq(contacts.id, id))
+      .returning();
+    return contact || undefined;
+  }
+
+  // Newsletter
+  async getNewsletterSubscriber(email: string): Promise<Newsletter | undefined> {
+    const [subscriber] = await db.select().from(newsletter).where(eq(newsletter.email, email));
+    return subscriber || undefined;
+  }
+
+  async createNewsletterSubscriber(subscriberData: InsertNewsletter): Promise<Newsletter> {
+    const [subscriber] = await db
+      .insert(newsletter)
+      .values({
+        ...subscriberData,
+        subscriptionDate: new Date()
+      })
+      .returning();
+    return subscriber;
+  }
+
+  async getAllNewsletterSubscribers(): Promise<Newsletter[]> {
+    return await db.select().from(newsletter);
+  }
+}
+
+export const storage = new DatabaseStorage();
