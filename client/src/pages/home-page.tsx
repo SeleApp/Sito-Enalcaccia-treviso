@@ -45,10 +45,7 @@ export default function HomePage() {
             <div className="text-white flex-1">
               <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia, Pesca e Tiro - Treviso</h1>
               <p className="text-xl md:text-2xl mb-2">Sezione Provinciale di Treviso</p>
-              <p className="text-lg mb-8 max-w-2xl">
-                Promuoviamo la caccia responsabile e sostenibile nella provincia di Treviso, valorizzando le tradizioni venatorie venete 
-                attraverso formazione, competizioni cinofile e tesseramenti.
-              </p>
+              <p className="text-lg mb-8 max-w-2xl">Promuoviamo la caccia responsabile e sostenibile nella provincia di Treviso, valorizzando le tradizioni venatorie venete attraverso formazione, competizioni cinofile e salvaguardia della biodiversità.</p>
               <div className="flex flex-wrap gap-4">
                 {!user && (
                   <>
