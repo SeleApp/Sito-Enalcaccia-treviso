@@ -46,7 +46,7 @@ export function Footer() {
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               <img 
-                src="attached_assets/ChatGPT Image 7 lug 2025, 21_07_16_1751915257891.png" 
+                src="attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
                 alt="Logo ENAL Caccia Treviso" 
                 className="w-10 h-10 object-contain"
               />

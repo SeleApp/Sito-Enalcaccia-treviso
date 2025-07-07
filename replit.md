@@ -45,7 +45,7 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - ✅ Created comprehensive TODO.md with implementation roadmap
 - ✅ **GDPR Compliance**: Privacy Policy and Cookie Policy pages created
 - ✅ **Cookie Management**: Banner with preference system and localStorage
-- ✅ **Official Logo**: ENAL logo integrated in navbar and footer
+- ✅ **Official Logo**: Updated ENAL logo with falcon design integrated in navbar and footer
 - ✅ **Menu Alignment**: Fixed dropdown positioning for "Gare" section
 
 ### Database Integration (Previous)
