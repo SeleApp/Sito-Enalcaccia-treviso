@@ -31,7 +31,6 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
       {/* Hero Section */}
       <section className="relative h-96 bg-gradient-to-r from-primary to-secondary overflow-hidden">
         <div 
@@ -42,7 +41,7 @@ export default function HomePage() {
         />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="text-white">
-            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia Treviso</h1>
+            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia, Pesca e Tiro  Treviso</h1>
             <p className="text-xl md:text-2xl mb-2">Sezione Provinciale di Treviso</p>
             <p className="text-lg mb-8 max-w-2xl">
               Promuoviamo la caccia responsabile e sostenibile nella provincia di Treviso, valorizzando le tradizioni venatorie venete 
@@ -74,7 +73,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Services Overview */}
       <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -137,7 +135,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* About Section */}
       <section className="py-16 bg-muted/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -202,7 +199,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* News Section */}
       <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -247,7 +243,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Competitions Section */}
       <section className="py-16 bg-muted/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -300,7 +295,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Membership Tiers */}
       <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -348,7 +342,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       <Footer />
     </div>
   );
