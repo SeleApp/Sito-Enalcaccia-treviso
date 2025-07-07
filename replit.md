@@ -54,6 +54,9 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - ✅ **Generic Competitions**: Replaced specific "Gare Cinofile" with general "Gare e Competizioni" on homepage
 - ✅ **Developer Credits**: Added Alessandro Favero developer credits with copyright in footer
 - ✅ **Public Pricing**: Made membership prices visible publicly without authentication requirement
+- ✅ **Calendar System**: Implemented comprehensive events calendar with React Big Calendar
+- ✅ **Events Management**: Interactive calendar with competition, course and meeting views
+- ✅ **Event Details**: Modal dialogs with registration capabilities and event information
 
 ### Database Integration (Previous)
 - ✅ Migrated from in-memory storage to PostgreSQL

@@ -21,6 +21,7 @@ import GareCinofile from "@/pages/gare-cinofile";
 import GarePesca from "@/pages/gare-pesca";
 import GareTiro from "@/pages/gare-tiro";
 import PescaTiro from "@/pages/pesca-tiro";
+import EventsPage from "@/pages/events-page";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import CookiePolicy from "@/pages/cookie-policy";
 
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/gare-pesca" component={GarePesca} />
       <Route path="/gare-tiro" component={GareTiro} />
       <Route path="/pesca-tiro" component={PescaTiro} />
+      <Route path="/eventi" component={EventsPage} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/cookie-policy" component={CookiePolicy} />
       <ProtectedRoute path="/dashboard" component={UserDashboard} />

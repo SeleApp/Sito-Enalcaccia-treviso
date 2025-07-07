@@ -145,8 +145,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/competitions" className="text-gray-300 hover:text-white transition-colors">
-                  Gare Cinofile
+                <Link href="/eventi" className="text-gray-300 hover:text-white transition-colors">
+                  Eventi
                 </Link>
               </li>
               <li>

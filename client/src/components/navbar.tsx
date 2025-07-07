@@ -26,6 +26,7 @@ export function Navbar() {
 
   const navigationItems = [
     { href: "/", label: "Home &\nNews", className: "text-center leading-tight" },
+    { href: "/eventi", label: "Eventi" },
     { href: "/scuola-venatoria", label: "Scuola Venatoria" },
     { href: "/direttivo", label: "Direttivo" },
     { 
