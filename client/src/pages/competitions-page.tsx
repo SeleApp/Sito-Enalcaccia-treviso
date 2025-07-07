@@ -77,11 +77,59 @@ export default function CompetitionsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Gare Cinofile</h1>
+          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Gare e Competizioni</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Partecipa alle competizioni per cani da caccia organizzate in tutta Italia. 
-            Valorizza il tuo compagno a quattro zampe e confrontati con altri appassionati.
+            Scopri tutte le competizioni organizzate da ENAL Caccia Treviso: gare cinofile, di pesca e di tiro. 
+            Partecipa e metti alla prova le tue abilità in diverse discipline sportive.
           </p>
+        </div>
+
+        {/* Quick Links to Specific Competitions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = '/gare-cinofile'}>
+            <CardHeader className="text-center">
+              <div className="w-16 h-16 bg-forest/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trophy className="w-8 h-8 text-forest" />
+              </div>
+              <CardTitle className="text-forest">Gare Cinofile</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground mb-4">
+                Competizioni per cani da caccia con prove di abilità e addestramento
+              </p>
+              <Button variant="outline" className="w-full">Vai alle Gare Cinofile</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = '/gare-pesca'}>
+            <CardHeader className="text-center">
+              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-blue-500" />
+              </div>
+              <CardTitle className="text-blue-500">Gare di Pesca</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground mb-4">
+                Competizioni di pesca sportiva in laghi e fiumi della provincia
+              </p>
+              <Button variant="outline" className="w-full">Vai alle Gare Pesca</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = '/gare-tiro'}>
+            <CardHeader className="text-center">
+              <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Calendar className="w-8 h-8 text-amber-500" />
+              </div>
+              <CardTitle className="text-amber-500">Gare di Tiro</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground mb-4">
+                Competizioni di tiro al piattello e tiro a volo per tutte le categorie
+              </p>
+              <Button variant="outline" className="w-full">Vai alle Gare Tiro</Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Filters */}

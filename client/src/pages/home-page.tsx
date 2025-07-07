@@ -118,14 +118,14 @@ export default function HomePage() {
                 <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trophy className="w-8 h-8 text-secondary" />
                 </div>
-                <CardTitle>Gare Cinofile</CardTitle>
+                <CardTitle>Gare e Competizioni</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground mb-4">
-                  Partecipa alle competizioni per cani da caccia organizzate in tutta Italia.
+                  Scopri tutte le competizioni: cinofile, di pesca e di tiro organizzate nella provincia.
                 </p>
-                <Link href="/gare-cinofile">
-                  <Button variant="link" className="p-0">Vedi calendario →</Button>
+                <Link href="/competitions">
+                  <Button variant="link" className="p-0">Vedi tutte le gare →</Button>
                 </Link>
               </CardContent>
             </Card>
