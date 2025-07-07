@@ -1,14 +1,11 @@
 import { EventsCalendar } from "@/components/events-calendar";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Target, GraduationCap, Users } from "lucide-react";
 
 export default function EventsPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="bg-background">{/* Layout now handles min-h-screen */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -142,8 +139,6 @@ export default function EventsPage() {
           </CardContent>
         </Card>
       </div>
-      
-      <Footer />
     </div>
   );
 }

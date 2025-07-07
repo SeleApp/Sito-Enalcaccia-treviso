@@ -4,8 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+
 import { useAuth } from "@/hooks/use-auth";
 import { Trophy, Users, GraduationCap, Shield, Leaf, Calendar, MapPin, Euro, ExternalLink } from "lucide-react";
 import type { News, Competition, Membership } from "@shared/schema";
@@ -29,8 +28,7 @@ export default function HomePage() {
   const upcomingCompetitions = competitions.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="bg-background">{/* Layout now handles min-h-screen */}
       {/* Hero Section */}
       <section className="relative h-96 bg-gradient-to-r from-primary to-secondary overflow-hidden">
         <div 
@@ -399,7 +397,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <Footer />
+
     </div>
   );
 }
