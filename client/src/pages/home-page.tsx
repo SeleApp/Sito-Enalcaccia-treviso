@@ -112,7 +112,7 @@ export default function HomePage() {
                 <p className="text-muted-foreground mb-4">
                   Partecipa alle competizioni per cani da caccia organizzate in tutta Italia.
                 </p>
-                <Link href="/competitions">
+                <Link href="/gare-cinofile">
                   <Button variant="link" className="p-0">Vedi calendario →</Button>
                 </Link>
               </CardContent>
@@ -129,7 +129,9 @@ export default function HomePage() {
                 <p className="text-muted-foreground mb-4">
                   Corsi di formazione per cacciatori responsabili e gestione sostenibile della fauna.
                 </p>
-                <Button variant="link" className="p-0">Iscriviti →</Button>
+                <Link href="/scuola-venatoria">
+                  <Button variant="link" className="p-0">Iscriviti →</Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
@@ -289,7 +291,7 @@ export default function HomePage() {
           </div>
           
           <div className="text-center mt-12">
-            <Link href="/competitions">
+            <Link href="/gare-cinofile">
               <Button>Vedi tutte le gare</Button>
             </Link>
           </div>

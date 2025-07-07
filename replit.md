@@ -26,7 +26,7 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 
 ## Recent Changes
 
-### January 7, 2025 - Navigation Menu Restructure
+### January 7, 2025 - Navigation Menu Restructure & Bug Fixes
 - ✅ Implemented dropdown navigation menu for "Gare" section
 - ✅ Created specialized pages for each competition type:
   - `scuola-venatoria.tsx` - Hunting school courses and information
@@ -39,6 +39,10 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - ✅ Added NavigationMenu component from Radix UI
 - ✅ Updated routing in App.tsx to include all new pages
 - ✅ Implemented consistent Italian language interface throughout
+- ✅ Fixed database connection issues (500 errors resolved)
+- ✅ Updated home page links to point to correct specialized pages
+- ✅ Improved dropdown menu styling and functionality
+- ✅ Created comprehensive TODO.md with implementation roadmap
 
 ### Database Integration (Previous)
 - ✅ Migrated from in-memory storage to PostgreSQL
