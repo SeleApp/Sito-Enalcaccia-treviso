@@ -53,21 +53,21 @@ export default function HomePage() {
                 {!user && (
                   <>
                     <Link href="/membership">
-                      <Button size="lg" className="bg-accent hover:bg-accent/90">
-                        Iscriviti Ora
+                      <Button size="lg" className="bg-white text-forest hover:bg-gray-100 font-semibold px-8 py-3 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
+                        🏆 Iscriviti Ora
                       </Button>
                     </Link>
                     <Link href="/auth">
-                      <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
-                        Accedi
+                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-forest font-semibold px-8 py-3 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
+                        🔐 Accedi
                       </Button>
                     </Link>
                   </>
                 )}
                 {user && (
                   <Link href="/dashboard">
-                    <Button size="lg" className="bg-accent hover:bg-accent/90">
-                      Vai alla Dashboard
+                    <Button size="lg" className="bg-white text-forest hover:bg-gray-100 font-semibold px-8 py-3 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
+                      📊 Vai alla Dashboard
                     </Button>
                   </Link>
                 )}
