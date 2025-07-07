@@ -57,6 +57,7 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - ✅ **Calendar System**: Implemented comprehensive events calendar with React Big Calendar
 - ✅ **Events Management**: Interactive calendar with competition, course and meeting views
 - ✅ **Event Details**: Modal dialogs with registration capabilities and event information
+- ✅ **Menu Consistency**: Fixed navigation menu formatting for uniform appearance across all items
 
 ### Database Integration (Previous)
 - ✅ Migrated from in-memory storage to PostgreSQL

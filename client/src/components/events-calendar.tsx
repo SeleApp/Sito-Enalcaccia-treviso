@@ -301,7 +301,7 @@ export function EventsCalendar() {
 
       {/* Event Details Dialog */}
       <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" aria-describedby="event-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {selectedEvent && (() => {
@@ -310,7 +310,7 @@ export function EventsCalendar() {
               })()}
               {selectedEvent?.title}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="event-description">
               Dettagli evento
             </DialogDescription>
           </DialogHeader>
