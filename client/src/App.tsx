@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
+import { CookieBanner } from "@/components/cookie-banner";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
@@ -20,6 +21,8 @@ import GareCinofile from "@/pages/gare-cinofile";
 import GarePesca from "@/pages/gare-pesca";
 import GareTiro from "@/pages/gare-tiro";
 import PescaTiro from "@/pages/pesca-tiro";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import CookiePolicy from "@/pages/cookie-policy";
 
 function Router() {
   return (
@@ -36,6 +39,8 @@ function Router() {
       <Route path="/gare-pesca" component={GarePesca} />
       <Route path="/gare-tiro" component={GareTiro} />
       <Route path="/pesca-tiro" component={PescaTiro} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/cookie-policy" component={CookiePolicy} />
       <ProtectedRoute path="/dashboard" component={UserDashboard} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
@@ -50,6 +55,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <CookieBanner />
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

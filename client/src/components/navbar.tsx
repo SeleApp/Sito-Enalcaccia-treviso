@@ -62,13 +62,11 @@ export function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-forest rounded-full flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white rounded-full relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-1 h-1 bg-white rounded-full"></div>
-                  </div>
-                </div>
-              </div>
+              <img 
+                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_07_16_1751915257891.png" 
+                alt="Logo ENAL Caccia Treviso" 
+                className="w-12 h-12 object-contain"
+              />
               <span className="font-serif font-bold text-xl text-forest">Enal Caccia, Pesca e Tiro - Treviso</span>
             </Link>
           </div>
@@ -189,13 +187,11 @@ export function Navbar() {
               <SheetContent side="right" className="w-80">
                 <SheetHeader>
                   <SheetTitle className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-forest rounded-full flex items-center justify-center">
-                      <div className="w-4 h-4 border-2 border-white rounded-full relative">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-1 h-1 bg-white rounded-full"></div>
-                        </div>
-                      </div>
-                    </div>
+                    <img 
+                      src="/attached_assets/ChatGPT Image 7 lug 2025, 21_07_16_1751915257891.png" 
+                      alt="Logo ENAL Caccia Treviso" 
+                      className="w-10 h-10 object-contain"
+                    />
                     <span className="font-serif font-bold text-forest">Enal Caccia</span>
                   </SheetTitle>
                 </SheetHeader>

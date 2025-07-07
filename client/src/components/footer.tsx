@@ -45,13 +45,11 @@ export function Footer() {
           {/* Brand Section */}
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-8 h-8 bg-forest rounded-full flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white rounded-full relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-1 h-1 bg-white rounded-full"></div>
-                  </div>
-                </div>
-              </div>
+              <img 
+                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_07_16_1751915257891.png" 
+                alt="Logo ENAL Caccia Treviso" 
+                className="w-10 h-10 object-contain"
+              />
               <span className="font-serif font-bold text-xl">Enal Caccia</span>
             </div>
             <p className="text-gray-300 mb-6 text-sm leading-relaxed">
@@ -125,13 +123,13 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-300 hover:text-white transition-colors">
-                  Termini e Condizioni
+                <Link href="/cookie-policy" className="text-gray-300 hover:text-white transition-colors">
+                  Cookie Policy
                 </Link>
               </li>
             </ul>
@@ -242,11 +240,11 @@ export function Footer() {
             © 2024 Enal Caccia Veneto. Tutti i diritti riservati. | P.IVA: 12345678901
           </p>
           <div className="flex space-x-6 text-sm">
-            <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
-              Privacy
+            <Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+              Privacy Policy
             </Link>
-            <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
-              Termini
+            <Link href="/cookie-policy" className="text-gray-400 hover:text-white transition-colors">
+              Cookie Policy
             </Link>
             <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
               Supporto
