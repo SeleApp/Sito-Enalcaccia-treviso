@@ -25,7 +25,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigationItems = [
-    { href: "/", label: "Home & News" },
+    { href: "/", label: "Home &\nNews", className: "text-center leading-tight" },
     { href: "/scuola-venatoria", label: "Scuola Venatoria" },
     { href: "/direttivo", label: "Direttivo" },
     { 
@@ -36,7 +36,7 @@ export function Navbar() {
         { href: "/gare-tiro", label: "Gare Tiro" }
       ]
     },
-    { href: "/pesca-tiro", label: "Pesca & Tiro" },
+    { href: "/pesca-tiro", label: "Pesca &\nTiro", className: "text-center leading-tight" },
     { href: "/membership", label: "Tesseramento" },
     { href: "/contact", label: "Contatti" },
   ];
@@ -114,9 +114,14 @@ export function Navbar() {
                       isActivePath(item.href!)
                         ? "text-forest border-b-2 border-forest"
                         : "text-gray-700 hover:text-forest"
-                    }`}
+                    } ${item.className || ""}`}
                   >
-                    {item.label}
+                    {item.label.split('\n').map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        {index < item.label.split('\n').length - 1 && <br />}
+                      </span>
+                    ))}
                   </Link>
                 )}
               </div>
@@ -242,9 +247,14 @@ export function Navbar() {
                               isActivePath(item.href!)
                                 ? "text-forest bg-forest/10"
                                 : "text-gray-700 hover:text-forest hover:bg-forest/5"
-                            }`}
+                            } ${item.className || ""}`}
                           >
-                            {item.label}
+                            {item.label.split('\n').map((line, index) => (
+                              <span key={index}>
+                                {line}
+                                {index < item.label.split('\n').length - 1 && <br />}
+                              </span>
+                            ))}
                           </Link>
                         )}
                       </div>
