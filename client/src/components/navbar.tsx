@@ -111,9 +111,9 @@ export function Navbar() {
                 ) : (
                   <Link
                     href={item.href!}
-                    className={`block px-3 py-2 text-sm font-medium transition-colors ${
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
                       isActivePath(item.href!)
-                        ? "text-forest border-b-2 border-forest"
+                        ? "text-forest"
                         : "text-gray-700 hover:text-forest"
                     }`}
                   >
