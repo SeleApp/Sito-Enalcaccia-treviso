@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
-import { Menu, User, LogOut, Shield } from "lucide-react";
+import { Menu, User, LogOut, Shield, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -18,9 +25,18 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigationItems = [
-    { href: "/", label: "Home" },
-    { href: "/news", label: "News" },
-    { href: "/competitions", label: "Gare Cinofile" },
+    { href: "/", label: "Home & News" },
+    { href: "/scuola-venatoria", label: "Scuola Venatoria" },
+    { href: "/direttivo", label: "Direttivo" },
+    { 
+      label: "Gare", 
+      submenu: [
+        { href: "/gare-cinofile", label: "Gare Cinofile" },
+        { href: "/gare-pesca", label: "Gare Pesca" },
+        { href: "/gare-tiro", label: "Gare Tiro" }
+      ]
+    },
+    { href: "/pesca-tiro", label: "Pesca & Tiro" },
     { href: "/membership", label: "Tesseramento" },
     { href: "/contact", label: "Contatti" },
   ];
@@ -58,21 +74,53 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`px-3 py-2 text-sm font-medium transition-colors ${
-                  isActivePath(item.href)
-                    ? "text-forest border-b-2 border-forest"
-                    : "text-gray-700 hover:text-forest"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList className="space-x-2">
+              {navigationItems.map((item) => (
+                <NavigationMenuItem key={item.label}>
+                  {item.submenu ? (
+                    <>
+                      <NavigationMenuTrigger className={`px-3 py-2 text-sm font-medium transition-colors bg-transparent hover:bg-transparent ${
+                        item.submenu.some(subItem => isActivePath(subItem.href))
+                          ? "text-forest"
+                          : "text-gray-700 hover:text-forest"
+                      }`}>
+                        {item.label}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="w-48 p-2">
+                          {item.submenu.map((subItem) => (
+                            <Link
+                              key={subItem.href}
+                              href={subItem.href}
+                              className={`block px-3 py-2 text-sm rounded-md transition-colors ${
+                                isActivePath(subItem.href)
+                                  ? "text-forest bg-forest/10"
+                                  : "text-gray-700 hover:text-forest hover:bg-forest/5"
+                              }`}
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </NavigationMenuContent>
+                    </>
+                  ) : (
+                    <Link
+                      href={item.href!}
+                      className={`block px-3 py-2 text-sm font-medium transition-colors ${
+                        isActivePath(item.href!)
+                          ? "text-forest border-b-2 border-forest"
+                          : "text-gray-700 hover:text-forest"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
@@ -164,18 +212,43 @@ export function Navbar() {
                   {/* Navigation Items */}
                   <div className="space-y-2">
                     {navigationItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                          isActivePath(item.href)
-                            ? "text-forest bg-forest/10"
-                            : "text-gray-700 hover:text-forest hover:bg-forest/5"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
+                      <div key={item.label}>
+                        {item.submenu ? (
+                          <>
+                            <div className="px-3 py-2 text-base font-medium text-gray-900 border-b border-gray-200">
+                              {item.label}
+                            </div>
+                            <div className="ml-4 space-y-1">
+                              {item.submenu.map((subItem) => (
+                                <Link
+                                  key={subItem.href}
+                                  href={subItem.href}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className={`block px-3 py-2 rounded-md text-sm transition-colors ${
+                                    isActivePath(subItem.href)
+                                      ? "text-forest bg-forest/10"
+                                      : "text-gray-600 hover:text-forest hover:bg-forest/5"
+                                  }`}
+                                >
+                                  {subItem.label}
+                                </Link>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <Link
+                            href={item.href!}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                              isActivePath(item.href!)
+                                ? "text-forest bg-forest/10"
+                                : "text-gray-700 hover:text-forest hover:bg-forest/5"
+                            }`}
+                          >
+                            {item.label}
+                          </Link>
+                        )}
+                      </div>
                     ))}
                   </div>
 

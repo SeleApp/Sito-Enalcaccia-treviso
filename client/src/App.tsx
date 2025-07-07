@@ -14,6 +14,12 @@ import NewsPage from "@/pages/news-page";
 import CompetitionsPage from "@/pages/competitions-page";
 import MembershipPage from "@/pages/membership-page";
 import ContactPage from "@/pages/contact-page";
+import ScuolaVenatoria from "@/pages/scuola-venatoria";
+import Direttivo from "@/pages/direttivo";
+import GareCinofile from "@/pages/gare-cinofile";
+import GarePesca from "@/pages/gare-pesca";
+import GareTiro from "@/pages/gare-tiro";
+import PescaTiro from "@/pages/pesca-tiro";
 
 function Router() {
   return (
@@ -24,6 +30,12 @@ function Router() {
       <Route path="/competitions" component={CompetitionsPage} />
       <Route path="/membership" component={MembershipPage} />
       <Route path="/contact" component={ContactPage} />
+      <Route path="/scuola-venatoria" component={ScuolaVenatoria} />
+      <Route path="/direttivo" component={Direttivo} />
+      <Route path="/gare-cinofile" component={GareCinofile} />
+      <Route path="/gare-pesca" component={GarePesca} />
+      <Route path="/gare-tiro" component={GareTiro} />
+      <Route path="/pesca-tiro" component={PescaTiro} />
       <ProtectedRoute path="/dashboard" component={UserDashboard} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
