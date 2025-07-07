@@ -52,6 +52,8 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - ✅ **Institutional Partners Section**: Added prominent homepage section with ENALCACCIA Nazionale and Regione Veneto links
 - ✅ **Enhanced Footer Links**: Improved partner visibility in footer with logos and direct links
 - ✅ **Generic Competitions**: Replaced specific "Gare Cinofile" with general "Gare e Competizioni" on homepage
+- ✅ **Developer Credits**: Added Alessandro Favero developer credits with copyright in footer
+- ✅ **Public Pricing**: Made membership prices visible publicly without authentication requirement
 
 ### Database Integration (Previous)
 - ✅ Migrated from in-memory storage to PostgreSQL

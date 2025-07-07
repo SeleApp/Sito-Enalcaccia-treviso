@@ -240,20 +240,32 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2024 Enal Caccia Veneto. Tutti i diritti riservati. | P.IVA: 12345678901
-          </p>
-          <div className="flex space-x-6 text-sm">
-            <Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/cookie-policy" className="text-gray-400 hover:text-white transition-colors">
-              Cookie Policy
-            </Link>
-            <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
-              Supporto
-            </Link>
+        <div className="border-t border-gray-800 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+            <p className="text-gray-400 text-sm mb-4 md:mb-0">
+              © 2025 ENAL Caccia - Sezione Provinciale di Treviso. Tutti i diritti riservati.
+            </p>
+            <div className="flex space-x-6 text-sm">
+              <Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/cookie-policy" className="text-gray-400 hover:text-white transition-colors">
+                Cookie Policy
+              </Link>
+              <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                Supporto
+              </Link>
+            </div>
+          </div>
+          
+          {/* Developer Credits */}
+          <div className="border-t border-gray-700 pt-4 text-center">
+            <p className="text-gray-500 text-xs">
+              Sito web sviluppato da <span className="font-medium text-gray-400">Alessandro Favero</span> © 2025
+            </p>
+            <p className="text-gray-600 text-xs mt-1">
+              Tutti i diritti di sviluppo e design riservati
+            </p>
           </div>
         </div>
       </div>
