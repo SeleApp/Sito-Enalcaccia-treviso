@@ -223,25 +223,7 @@ export default function HomePage() {
               className="group"
             >
               <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
-                <div className="mb-6">
-                  <svg 
-                    viewBox="0 0 200 120" 
-                    className="w-32 h-20 mx-auto"
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    {/* Logo ENAL - Scudo con falco */}
-                    <rect x="20" y="10" width="160" height="100" rx="15" fill="#1e3a5f" stroke="#d4af37" strokeWidth="2"/>
-                    <text x="100" y="35" textAnchor="middle" fill="#d4af37" fontSize="16" fontWeight="bold">ENAL</text>
-                    <text x="100" y="55" textAnchor="middle" fill="#ffffff" fontSize="12">CACCIA</text>
-                    <text x="100" y="70" textAnchor="middle" fill="#ffffff" fontSize="10">NAZIONALE</text>
-                    {/* Falco stilizzato */}
-                    <path d="M85 80 Q100 75 115 80 Q110 85 100 87 Q90 85 85 80Z" fill="#d4af37"/>
-                    <circle cx="95" cy="82" r="1" fill="#1e3a5f"/>
-                    <path d="M90 85 Q100 88 110 85" stroke="#d4af37" strokeWidth="1" fill="none"/>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-forest mb-3">ENALCACCIA Nazionale</h3>
+                <h3 className="text-2xl font-semibold text-forest mb-3">ENALCACCIA Nazionale</h3>
                 <p className="text-muted-foreground mb-4">
                   Ente Nazionale per l'Addestramento Lavorativo per la Caccia - Organizzazione nazionale
                 </p>
@@ -260,27 +242,7 @@ export default function HomePage() {
               className="group"
             >
               <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
-                <div className="mb-6">
-                  <svg 
-                    viewBox="0 0 200 120" 
-                    className="w-32 h-20 mx-auto"
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    {/* Logo Regione Veneto - Leone di San Marco stilizzato */}
-                    <rect x="20" y="10" width="160" height="100" rx="15" fill="#c41e3a" stroke="#ffffff" strokeWidth="2"/>
-                    <text x="100" y="30" textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="bold">REGIONE</text>
-                    <text x="100" y="48" textAnchor="middle" fill="#ffffff" fontSize="16" fontWeight="bold">VENETO</text>
-                    {/* Leone stilizzato */}
-                    <ellipse cx="100" cy="65" rx="25" ry="15" fill="#d4af37"/>
-                    <circle cx="90" cy="60" r="3" fill="#c41e3a"/>
-                    <circle cx="110" cy="60" r="3" fill="#c41e3a"/>
-                    <path d="M85 70 Q100 75 115 70" stroke="#c41e3a" strokeWidth="2" fill="none"/>
-                    <text x="100" y="88" textAnchor="middle" fill="#ffffff" fontSize="9">CACCIA E PESCA</text>
-                    <text x="100" y="100" textAnchor="middle" fill="#ffffff" fontSize="8">Provincia di Treviso</text>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-red-600 mb-3">Regione Veneto</h3>
+                <h3 className="text-2xl font-semibold text-red-600 mb-3">Regione Veneto</h3>
                 <p className="text-muted-foreground mb-4">
                   Sezione Agricoltura e Foreste - Provincia di Treviso per la gestione faunistica
                 </p>

@@ -558,29 +558,63 @@ export class DatabaseStorage implements IStorage {
           registrationDeadline: new Date("2024-04-01")
         });
 
-        // Create membership types
+        // Create membership types with official ENALCACCIA 2025 pricing
         await this.createMembership({
-          name: "Tessera Base",
-          description: "Tessera base per l'accesso alle attività dell'associazione",
-          price: 50,
-          features: ["Accesso alle gare", "Newsletter mensile", "Assicurazione base"],
-          duration: "annuale"
+          name: "Tessera Base Nazionale",
+          description: "Tessera ENALCACCIA base con RCA inclusa",
+          price: 10000, // €100.00 in cents
+          features: [
+            "Responsabilità Civile verso Terzi (RCA)",
+            "Massimale €1.500.000",
+            "Validità annuale",
+            "Accesso gare nazionali"
+          ]
         });
 
         await this.createMembership({
-          name: "Tessera Premium",
-          description: "Tessera premium con vantaggi esclusivi e sconti sulle attività",
-          price: 100,
-          features: ["Tutti i vantaggi della tessera base", "Sconti del 20% su corsi", "Accesso prioritario alle gare", "Consulenza tecnica gratuita"],
-          duration: "annuale"
+          name: "Tessera Super Nazionale", 
+          description: "Tessera ENALCACCIA Super con coperture aggiuntive",
+          price: 12500, // €125.00 in cents
+          features: [
+            "Tutti i vantaggi Base Nazionale",
+            "Coperture assicurative ampliate", 
+            "Assistenza legale inclusa",
+            "Sconti presso armerie convenzionate"
+          ]
         });
 
         await this.createMembership({
-          name: "Tessera Elite",
-          description: "Tessera elite per i membri più fedeli con massimi privilegi",
-          price: 200,
-          features: ["Tutti i vantaggi precedenti", "Accesso esclusivo a eventi speciali", "Sconti del 30% su tutte le attività", "Formazione avanzata inclusa"],
-          duration: "annuale"
+          name: "Tessera 2 Cani",
+          description: "Tessera per cacciatori con due cani",
+          price: 18000, // €180.00 in cents
+          features: [
+            "Copertura per due cani da caccia",
+            "RCA per entrambi i cani",
+            "Tessera sanitaria cani inclusa",
+            "Partecipazione gare cinofile"
+          ]
+        });
+
+        await this.createMembership({
+          name: "Tessera Pesca €10",
+          description: "Tessera base per pesca sportiva - contributo minimo",
+          price: 1000, // €10.00 in cents  
+          features: [
+            "Licenza pesca sportiva",
+            "Accesso laghi convenzionati",
+            "Contributo minimo permesso"
+          ]
+        });
+
+        await this.createMembership({
+          name: "Tessera Pesca €6",
+          description: "Tessera pesca sportiva - tariffa ridotta",
+          price: 600, // €6.00 in cents
+          features: [
+            "Licenza pesca sportiva",
+            "Tariffa agevolata",
+            "Valida per gare provinciali"
+          ]
         });
       }
     } catch (error) {
