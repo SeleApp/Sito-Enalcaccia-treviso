@@ -54,12 +54,12 @@ export default function HomePage() {
                   <>
                     <Link href="/membership">
                       <Button size="lg" className="bg-white text-forest hover:bg-gray-100 font-semibold px-8 py-3 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
-                        🏆 Iscriviti Ora
+                        Iscriviti Ora
                       </Button>
                     </Link>
                     <Link href="/auth">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-forest font-semibold px-8 py-3 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
-                        🔐 Accedi
+                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-forest font-semibold px-8 py-3 shadow-lg transition-colors duration-300">
+                        Accedi
                       </Button>
                     </Link>
                   </>
@@ -67,7 +67,7 @@ export default function HomePage() {
                 {user && (
                   <Link href="/dashboard">
                     <Button size="lg" className="bg-white text-forest hover:bg-gray-100 font-semibold px-8 py-3 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
-                      📊 Vai alla Dashboard
+                      Vai alla Dashboard
                     </Button>
                   </Link>
                 )}
