@@ -72,53 +72,56 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <NavigationMenu className="hidden md:flex relative">
-            <NavigationMenuList className="space-x-2">
-              {navigationItems.map((item) => (
-                <NavigationMenuItem key={item.label}>
-                  {item.submenu ? (
-                    <>
-                      <NavigationMenuTrigger className={`px-3 py-2 text-sm font-medium transition-colors bg-transparent hover:bg-transparent ${
+          <nav className="hidden md:flex items-center space-x-6">
+            {navigationItems.map((item) => (
+              <div key={item.label} className="relative group">
+                {item.submenu ? (
+                  <>
+                    <button
+                      className={`px-3 py-2 text-sm font-medium transition-colors flex items-center gap-1 ${
                         item.submenu.some(subItem => isActivePath(subItem.href))
                           ? "text-forest"
-                          : "text-gray-700 hover:text-forest"
-                      }`}>
-                        {item.label}
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <div className="w-48 p-2">
-                          {item.submenu.map((subItem) => (
-                            <Link
-                              key={subItem.href}
-                              href={subItem.href}
-                              className={`block px-3 py-2 text-sm rounded-md transition-colors ${
-                                isActivePath(subItem.href)
-                                  ? "text-forest bg-forest/10"
-                                  : "text-gray-700 hover:text-forest hover:bg-forest/5"
-                              }`}
-                            >
-                              {subItem.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </NavigationMenuContent>
-                    </>
-                  ) : (
-                    <Link
-                      href={item.href!}
-                      className={`block px-3 py-2 text-sm font-medium transition-colors ${
-                        isActivePath(item.href!)
-                          ? "text-forest border-b-2 border-forest"
                           : "text-gray-700 hover:text-forest"
                       }`}
                     >
                       {item.label}
-                    </Link>
-                  )}
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                    
+                    {/* Dropdown menu */}
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="py-2">
+                        {item.submenu.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            className={`block px-4 py-2 text-sm transition-colors ${
+                              isActivePath(subItem.href)
+                                ? "text-forest bg-forest/10"
+                                : "text-gray-700 hover:text-forest hover:bg-forest/5"
+                            }`}
+                          >
+                            {subItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <Link
+                    href={item.href!}
+                    className={`block px-3 py-2 text-sm font-medium transition-colors ${
+                      isActivePath(item.href!)
+                        ? "text-forest border-b-2 border-forest"
+                        : "text-gray-700 hover:text-forest"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </nav>
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
