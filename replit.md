@@ -47,6 +47,8 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - ✅ **Cookie Management**: Banner with preference system and localStorage
 - ✅ **Official Logo**: Updated ENAL logo with falcon design integrated in navbar and footer
 - ✅ **Menu Alignment**: Fixed dropdown positioning for "Gare" section
+- ✅ **Button Improvements**: Refined homepage buttons removing emojis and transitions
+- ✅ **Official Membership Prices**: Updated with authentic ENALCACCIA 2025 pricing structure
 
 ### Database Integration (Previous)
 - ✅ Migrated from in-memory storage to PostgreSQL

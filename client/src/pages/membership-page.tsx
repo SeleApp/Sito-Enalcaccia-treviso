@@ -83,19 +83,22 @@ export default function MembershipPage() {
 
   const getMembershipIcon = (name: string) => {
     if (name.includes("Base")) return Shield;
-    if (name.includes("Premium")) return Star;
-    if (name.includes("Elite")) return Award;
-    return Gift;
+    if (name.includes("Super")) return Star;
+    if (name.includes("Pesca")) return Gift;
+    if (name.includes("Amatoriale")) return Award;
+    return Shield;
   };
 
   const getMembershipColor = (name: string) => {
     if (name.includes("Base")) return "border-gray-200 hover:border-gray-300";
-    if (name.includes("Premium")) return "border-forest border-2";
-    if (name.includes("Elite")) return "border-amber-500 hover:border-amber-600";
+    if (name.includes("Super") && !name.includes("2 Cani")) return "border-forest border-2";
+    if (name.includes("2 Cani")) return "border-amber-500 hover:border-amber-600";
+    if (name.includes("Pesca")) return "border-blue-400 hover:border-blue-500";
+    if (name.includes("Amatoriale")) return "border-green-400 hover:border-green-500";
     return "border-gray-200";
   };
 
-  const isMostPopular = (name: string) => name.includes("Premium");
+  const isMostPopular = (name: string) => name.includes("Super") && !name.includes("2 Cani");
 
   return (
     <div className="min-h-screen bg-background">
@@ -104,11 +107,15 @@ export default function MembershipPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Tesseramento 2025</h1>
+          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Tessere ENALCACCIA 2025</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Diventa socio Enal Caccia Treviso e accedi a tutti i nostri servizi nella provincia. 
-            Scegli la tessera più adatta alle tue esigenze e inizia subito a usufruire dei vantaggi esclusivi.
+            Tessere ufficiali ENALCACCIA con coperture assicurative complete per caccia, pesca e attività sportive. 
+            Scegli la tessera più adatta alle tue esigenze e attività venatorie.
           </p>
+          <div className="mt-6 bg-forest/10 border border-forest/20 rounded-lg p-4">
+            <p className="text-forest font-semibold">✓ Prezzi ufficiali ENALCACCIA 2025</p>
+            <p className="text-sm text-muted-foreground mt-1">Coperture assicurative complete incluse in ogni tessera</p>
+          </div>
         </div>
 
         {/* User Status Alert */}
