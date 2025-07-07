@@ -26,7 +26,7 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 
 ## Recent Changes
 
-### January 7, 2025 - Navigation Menu Restructure & Bug Fixes
+### January 7, 2025 - GDPR Compliance & UI Improvements
 - ✅ Implemented dropdown navigation menu for "Gare" section
 - ✅ Created specialized pages for each competition type:
   - `scuola-venatoria.tsx` - Hunting school courses and information
@@ -43,6 +43,10 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - ✅ Updated home page links to point to correct specialized pages
 - ✅ Improved dropdown menu styling and functionality
 - ✅ Created comprehensive TODO.md with implementation roadmap
+- ✅ **GDPR Compliance**: Privacy Policy and Cookie Policy pages created
+- ✅ **Cookie Management**: Banner with preference system and localStorage
+- ✅ **Official Logo**: ENAL logo integrated in navbar and footer
+- ✅ **Menu Alignment**: Fixed dropdown positioning for "Gare" section
 
 ### Database Integration (Previous)
 - ✅ Migrated from in-memory storage to PostgreSQL
