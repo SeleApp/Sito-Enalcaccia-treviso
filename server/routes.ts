@@ -13,6 +13,8 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
   apiVersion: "2023-10-16",
 }) : null;
 
+
+
 function requireAuth(req: any, res: any, next: any) {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Authentication required" });
@@ -192,6 +194,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch profile" });
     }
   });
+
+
 
   // Admin routes
   app.get("/api/admin/stats", requireAdmin, async (req, res) => {

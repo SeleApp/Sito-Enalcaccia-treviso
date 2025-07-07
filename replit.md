@@ -72,7 +72,7 @@ Complete website for ENAL Caccia - Sezione Provinciale di Treviso (hunting assoc
 - Payment integration setup (requires Stripe API keys from user)
 - Email notification system for membership approvals
 - Advanced competition registration workflow
-- File upload system for competition documents
+- Manual PDF processing: User will provide PDF documents for manual data extraction and entry
 
 ## Architecture Dependencies
 - Navigation menu uses @radix-ui/react-navigation-menu

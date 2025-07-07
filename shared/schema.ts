@@ -20,15 +20,19 @@ export const users = pgTable("users", {
 
 export const pendingUsers = pgTable("pending_users", {
   id: serial("id").primaryKey(),
-  nome: text("nome").notNull(),
-  cognome: text("cognome").notNull(),
-  dataNascita: text("data_nascita").notNull(),
-  luogoNascita: text("luogo_nascita").notNull(),
-  codiceFiscale: text("codice_fiscale").notNull().unique(),
-  numeroLicenza: text("numero_licenza").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  role: text("role").notNull().default("utente"),
+  phone: text("phone"),
+  address: text("address"),
+  city: text("city"),
+  zipCode: text("zip_code"),
+  dateOfBirth: text("date_of_birth"),
+  placeOfBirth: text("place_of_birth"),
+  fiscalCode: text("fiscal_code"),
+  membershipType: text("membership_type").default("base"),
+  notes: text("notes"),
+  pdfExtracted: boolean("pdf_extracted").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
