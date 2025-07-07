@@ -96,31 +96,53 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Links Utili */}
+          {/* Partner Istituzionali */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Collegamenti Utili</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-lg font-semibold mb-4">Partner Istituzionali</h3>
+            <ul className="space-y-3 text-sm">
               <li>
                 <a 
-                  href="https://www.enalcaccia.it" 
+                  href="https://www.enalcaccianazionale.it" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors flex items-center"
+                  className="text-gray-300 hover:text-white transition-colors flex items-center group"
                 >
-                  Enalcaccia Nazionale
-                  <ExternalLink className="w-3 h-3 ml-1" />
+                  <div className="w-8 h-8 bg-blue-900 rounded mr-3 flex items-center justify-center">
+                    <span className="text-xs text-yellow-400 font-bold">EN</span>
+                  </div>
+                  <div>
+                    <div className="font-medium">ENALCACCIA Nazionale</div>
+                    <div className="text-xs text-gray-400">Ente Nazionale Caccia</div>
+                  </div>
+                  <ExternalLink className="w-3 h-3 ml-2 group-hover:scale-110 transition-transform" />
                 </a>
               </li>
               <li>
                 <a 
-                  href="https://www.regione.veneto.it" 
+                  href="https://www.regione.veneto.it/web/agricoltura-e-foreste/treviso" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors flex items-center"
+                  className="text-gray-300 hover:text-white transition-colors flex items-center group"
                 >
-                  Regione Veneto - Caccia
-                  <ExternalLink className="w-3 h-3 ml-1" />
+                  <div className="w-8 h-8 bg-red-700 rounded mr-3 flex items-center justify-center">
+                    <span className="text-xs text-white font-bold">RV</span>
+                  </div>
+                  <div>
+                    <div className="font-medium">Regione Veneto</div>
+                    <div className="text-xs text-gray-400">Caccia e Pesca - Treviso</div>
+                  </div>
+                  <ExternalLink className="w-3 h-3 ml-2 group-hover:scale-110 transition-transform" />
                 </a>
+              </li>
+            </ul>
+            
+            {/* Links Legali */}
+            <h3 className="text-lg font-semibold mb-4 mt-8">Informazioni Legali</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
               </li>
               <li>
                 <Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">
