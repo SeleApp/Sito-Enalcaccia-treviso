@@ -40,16 +40,7 @@ export default function HomePage() {
           }}
         />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="flex items-center gap-8 w-full">
-            {/* Logo grande */}
-            <div className="flex-shrink-0 hidden md:block">
-              <img 
-                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
-                alt="Logo ENAL Caccia Treviso" 
-                className="w-32 h-32 object-cover rounded-full shadow-2xl border-4 border-white/20"
-              />
-            </div>
-            
+          <div className="flex items-center justify-between w-full">
             {/* Contenuto testo */}
             <div className="text-white flex-1">
               <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia, Pesca e Tiro - Treviso</h1>
@@ -81,6 +72,15 @@ export default function HomePage() {
                   </Link>
                 )}
               </div>
+            </div>
+            
+            {/* Logo grande nell'angolo destro */}
+            <div className="flex-shrink-0 hidden md:block">
+              <img 
+                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
+                alt="Logo ENAL Caccia Treviso" 
+                className="w-32 h-32 object-cover rounded-full shadow-2xl border-4 border-white/20"
+              />
             </div>
           </div>
         </div>
