@@ -69,7 +69,7 @@ export function Navbar() {
                   </div>
                 </div>
               </div>
-              <span className="font-serif font-bold text-xl text-forest">Enal Caccia Treviso</span>
+              <span className="font-serif font-bold text-xl text-forest">Enal Caccia, Pesca e Tiro Treviso</span>
             </Link>
           </div>
 
