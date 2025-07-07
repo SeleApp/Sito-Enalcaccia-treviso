@@ -40,35 +40,47 @@ export default function HomePage() {
           }}
         />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="text-white">
-            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia, Pesca e Tiro - Treviso</h1>
-            <p className="text-xl md:text-2xl mb-2">Sezione Provinciale di Treviso</p>
-            <p className="text-lg mb-8 max-w-2xl">
-              Promuoviamo la caccia responsabile e sostenibile nella provincia di Treviso, valorizzando le tradizioni venatorie venete 
-              attraverso formazione, competizioni cinofile e tesseramenti.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              {!user && (
-                <>
-                  <Link href="/membership">
+          <div className="flex items-center gap-8 w-full">
+            {/* Logo grande */}
+            <div className="flex-shrink-0 hidden md:block">
+              <img 
+                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
+                alt="Logo ENAL Caccia Treviso" 
+                className="w-32 h-32 object-cover rounded-full shadow-2xl border-4 border-white/20"
+              />
+            </div>
+            
+            {/* Contenuto testo */}
+            <div className="text-white flex-1">
+              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia, Pesca e Tiro - Treviso</h1>
+              <p className="text-xl md:text-2xl mb-2">Sezione Provinciale di Treviso</p>
+              <p className="text-lg mb-8 max-w-2xl">
+                Promuoviamo la caccia responsabile e sostenibile nella provincia di Treviso, valorizzando le tradizioni venatorie venete 
+                attraverso formazione, competizioni cinofile e tesseramenti.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                {!user && (
+                  <>
+                    <Link href="/membership">
+                      <Button size="lg" className="bg-accent hover:bg-accent/90">
+                        Iscriviti Ora
+                      </Button>
+                    </Link>
+                    <Link href="/auth">
+                      <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+                        Accedi
+                      </Button>
+                    </Link>
+                  </>
+                )}
+                {user && (
+                  <Link href="/dashboard">
                     <Button size="lg" className="bg-accent hover:bg-accent/90">
-                      Iscriviti Ora
+                      Vai alla Dashboard
                     </Button>
                   </Link>
-                  <Link href="/auth">
-                    <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
-                      Accedi
-                    </Button>
-                  </Link>
-                </>
-              )}
-              {user && (
-                <Link href="/dashboard">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90">
-                    Vai alla Dashboard
-                  </Button>
-                </Link>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
