@@ -149,9 +149,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-serif font-bold text-foreground mb-4">Chi Siamo</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              L'Ente Nazionale per l'Assistenza alle Lavoratrici e ai Lavoratori è impegnato nella promozione di una caccia etica e responsabile.
-            </p>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">’ENALCACCIA è un’Associazione venatoria riconosciuta dal Ministero dell’Agricoltura e Foreste con D.M. 20 marzo 1968 n° 4223 e dall’art. 29 Legge 27 dicembre 1977 n° 968 e art. 34 Legge 11 febbraio 1992 n° 157, ed ha lo scopo di propagandare e promuovere attività sociali, sportive, culturali, artistiche, turistiche ed assistenziali, come mezzi di formazione fisica e morale dei soci, con particolare riguardo all’attività venatoria, alla pesca sportiva, al tiro, alla cinofilia, alla protezione civile ed alla difesa ambientale.L’ENALCACCIA è la sola struttura sopravvissuta allo scioglimento dell’Ente Assistenza Lavoratori (ENAL).</p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-12 items-center">
