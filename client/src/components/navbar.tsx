@@ -11,13 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -73,32 +66,31 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navigationItems.map((item) => (
-              <div key={item.label} className="relative group">
+          <nav className="hidden md:flex items-center">
+            {navigationItems.map((item, index) => (
+              <div key={item.label} className="relative">
                 {item.submenu ? (
-                  <>
+                  <div className="group">
                     <button
-                      className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-1 rounded-md ${
+                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-1 ${
                         item.submenu.some(subItem => isActivePath(subItem.href))
-                          ? "text-forest bg-forest/10"
-                          : "text-gray-700 hover:text-forest hover:bg-gray-50"
+                          ? "text-forest"
+                          : "text-gray-700 hover:text-forest"
                       }`}
                     >
                       {item.label}
-                      <ChevronDown className="w-4 h-4" />
+                      <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
                     </button>
                     
-                    {/* Dropdown menu */}
-                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                      <div className="py-2">
+                    <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                      <div className="py-3">
                         {item.submenu.map((subItem) => (
                           <Link
                             key={subItem.href}
                             href={subItem.href}
                             className={`block px-4 py-2 text-sm transition-colors ${
                               isActivePath(subItem.href)
-                                ? "text-forest bg-forest/10"
+                                ? "text-forest bg-forest/10 border-r-2 border-forest"
                                 : "text-gray-700 hover:text-forest hover:bg-forest/5"
                             }`}
                           >
@@ -107,14 +99,14 @@ export function Navbar() {
                         ))}
                       </div>
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <Link
                     href={item.href!}
-                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-md ${
+                    className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
                       isActivePath(item.href!)
-                        ? "text-forest bg-forest/10"
-                        : "text-gray-700 hover:text-forest hover:bg-gray-50"
+                        ? "text-forest border-b-2 border-forest"
+                        : "text-gray-700 hover:text-forest"
                     }`}
                   >
                     {item.label}
@@ -210,23 +202,23 @@ export function Navbar() {
                   )}
 
                   {/* Navigation Items */}
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     {navigationItems.map((item) => (
                       <div key={item.label}>
                         {item.submenu ? (
-                          <>
-                            <div className="px-4 py-3 text-base font-medium text-gray-900 bg-gray-50 rounded-md">
+                          <div className="space-y-1">
+                            <div className="px-4 py-2 text-sm font-semibold text-gray-900 bg-gray-100 rounded-md">
                               {item.label}
                             </div>
-                            <div className="ml-4 mt-1 space-y-1">
+                            <div className="pl-4 space-y-1">
                               {item.submenu.map((subItem) => (
                                 <Link
                                   key={subItem.href}
                                   href={subItem.href}
                                   onClick={() => setMobileMenuOpen(false)}
-                                  className={`block px-4 py-2 rounded-md text-sm transition-colors ${
+                                  className={`block px-3 py-2 rounded-md text-sm transition-colors ${
                                     isActivePath(subItem.href)
-                                      ? "text-forest bg-forest/10"
+                                      ? "text-forest bg-forest/10 border-l-2 border-forest"
                                       : "text-gray-600 hover:text-forest hover:bg-forest/5"
                                   }`}
                                 >
@@ -234,14 +226,14 @@ export function Navbar() {
                                 </Link>
                               ))}
                             </div>
-                          </>
+                          </div>
                         ) : (
                           <Link
                             href={item.href!}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`block px-4 py-3 rounded-md text-base font-medium transition-colors ${
+                            className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                               isActivePath(item.href!)
-                                ? "text-forest bg-forest/10"
+                                ? "text-forest bg-forest/10 border-l-2 border-forest"
                                 : "text-gray-700 hover:text-forest hover:bg-forest/5"
                             }`}
                           >
