@@ -28,34 +28,28 @@ import CookiePolicy from "@/pages/cookie-policy";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      <Route path="/">
-        {() => (
-          <Layout>
-            <Switch>
-              <Route path="/" component={HomePage} />
-              <Route path="/news" component={NewsPage} />
-              <Route path="/competitions" component={CompetitionsPage} />
-              <Route path="/membership" component={MembershipPage} />
-              <Route path="/contact" component={ContactPage} />
-              <Route path="/scuola-venatoria" component={ScuolaVenatoria} />
-              <Route path="/direttivo" component={Direttivo} />
-              <Route path="/gare-cinofile" component={GareCinofile} />
-              <Route path="/gare-pesca" component={GarePesca} />
-              <Route path="/gare-tiro" component={GareTiro} />
-              <Route path="/pesca-tiro" component={PescaTiro} />
-              <Route path="/eventi" component={EventsPage} />
-              <Route path="/privacy-policy" component={PrivacyPolicy} />
-              <Route path="/cookie-policy" component={CookiePolicy} />
-              <ProtectedRoute path="/dashboard" component={UserDashboard} />
-              <ProtectedRoute path="/admin" component={AdminDashboard} />
-              <Route component={NotFound} />
-            </Switch>
-          </Layout>
-        )}
-      </Route>
-    </Switch>
+    <Layout>
+      <Switch>
+        <Route path="/" component={HomePage} />
+        <Route path="/auth" component={AuthPage} />
+        <Route path="/news" component={NewsPage} />
+        <Route path="/competitions" component={CompetitionsPage} />
+        <Route path="/membership" component={MembershipPage} />
+        <Route path="/contact" component={ContactPage} />
+        <Route path="/scuola-venatoria" component={ScuolaVenatoria} />
+        <Route path="/direttivo" component={Direttivo} />
+        <Route path="/gare-cinofile" component={GareCinofile} />
+        <Route path="/gare-pesca" component={GarePesca} />
+        <Route path="/gare-tiro" component={GareTiro} />
+        <Route path="/pesca-tiro" component={PescaTiro} />
+        <Route path="/eventi" component={EventsPage} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/cookie-policy" component={CookiePolicy} />
+        <Route path="/dashboard">{() => <ProtectedRoute path="/dashboard" component={UserDashboard} />}</Route>
+        <Route path="/admin">{() => <ProtectedRoute path="/admin" component={AdminDashboard} />}</Route>
+        <Route component={NotFound} />
+      </Switch>
+    </Layout>
   );
 }
 
