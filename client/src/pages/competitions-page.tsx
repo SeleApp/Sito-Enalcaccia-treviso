@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { Calendar, MapPin, Euro, Users, Download, Search, Filter } from "lucide-react";
 import type { Competition } from "@shared/schema";
 
@@ -71,7 +69,7 @@ export default function CompetitionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -382,7 +380,7 @@ export default function CompetitionsPage() {
         </div>
       </div>
 
-      <Footer />
+      
     </div>
   );
 }

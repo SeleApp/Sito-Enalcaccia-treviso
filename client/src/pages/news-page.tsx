@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+
 import { Calendar, Search, Tag } from "lucide-react";
 import type { News } from "@shared/schema";
 
@@ -30,8 +29,7 @@ export default function NewsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="bg-background">{/* Layout now handles min-h-screen */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -171,7 +169,7 @@ export default function NewsPage() {
         )}
       </div>
 
-      <Footer />
+      
     </div>
   );
 }

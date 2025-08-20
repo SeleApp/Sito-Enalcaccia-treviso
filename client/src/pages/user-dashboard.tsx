@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Navbar } from "@/components/navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { User, CreditCard, Trophy, Calendar, Settings } from "lucide-react";
 import type { UserMembership, User as UserType } from "@shared/schema";
@@ -28,7 +27,7 @@ export default function UserDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

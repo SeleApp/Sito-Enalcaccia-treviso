@@ -3,8 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -101,8 +100,7 @@ export default function MembershipPage() {
   const isMostPopular = (name: string) => name.includes("Super") && !name.includes("2 Cani");
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="bg-background">{/* Layout now handles min-h-screen */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -217,14 +215,14 @@ export default function MembershipPage() {
                         <div className="flex justify-between items-center text-sm">
                           <span>Posti disponibili:</span>
                           <span className="font-semibold">
-                            {membership.maxMembers - membership.currentMembers} / {membership.maxMembers}
+                            {membership.maxMembers - (membership.currentMembers || 0)} / {membership.maxMembers}
                           </span>
                         </div>
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                           <div 
                             className="bg-forest h-2 rounded-full transition-all"
                             style={{ 
-                              width: `${(membership.currentMembers / membership.maxMembers) * 100}%` 
+                              width: `${((membership.currentMembers || 0) / membership.maxMembers) * 100}%` 
                             }}
                           />
                         </div>
@@ -368,8 +366,6 @@ export default function MembershipPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }
