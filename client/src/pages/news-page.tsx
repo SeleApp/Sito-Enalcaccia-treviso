@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,28 +15,35 @@ export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const { data: news = [], isLoading } = useQuery<News[]>({
-    queryKey: ["/api/news"],
+    queryKey: ["/api/news?v=20260307"],
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
+  const publishedNews = news.filter((article) => article.published);
+  const sortedNews = [...publishedNews].sort(
+    (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
+  );
+
   // Get unique categories
-  const categories = Array.from(new Set(news.map(article => article.category)));
+  const categories = Array.from(new Set(sortedNews.map(article => article.category)));
   
   // Filter news based on search and category
-  const filteredNews = news.filter(article => {
+  const filteredNews = sortedNews.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+                         article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         article.content.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || article.category === selectedCategory;
-    return matchesSearch && matchesCategory && article.published;
+    return matchesSearch && matchesCategory;
   });
 
   return (
-    <div className="bg-background">{/* Layout now handles min-h-screen */}
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Notizie</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Notizie</h1>
+          <p className="page-subtitle max-w-2xl">
             Rimani aggiornato sulle ultime novità del mondo venatorio e delle attività di Enal Caccia
           </p>
         </div>
@@ -138,21 +146,23 @@ export default function NewsPage() {
                   <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-2" />
-                      <span>{new Date(article.createdAt).toLocaleDateString('it-IT')}</span>
+                      <span>{article.createdAt ? new Date(article.createdAt).toLocaleDateString('it-IT') : '-'}</span>
                     </div>
                     <Badge variant="secondary">{article.category}</Badge>
                   </div>
-                  <CardTitle className="line-clamp-2 hover:text-primary transition-colors cursor-pointer">
-                    {article.title}
+                  <CardTitle className="line-clamp-2 hover:text-primary transition-colors">
+                    <Link href={`/news/${article.slug}`}>
+                      {article.title}
+                    </Link>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {article.excerpt}
+                    {article.excerpt?.trim() || `${article.content.slice(0, 180)}...`}
                   </p>
-                  <Button variant="link" className="p-0 h-auto">
-                    Leggi tutto →
-                  </Button>
+                  <Link href={`/news/${article.slug}`}>
+                    <Button variant="link" className="p-0 h-auto">Leggi articolo →</Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}

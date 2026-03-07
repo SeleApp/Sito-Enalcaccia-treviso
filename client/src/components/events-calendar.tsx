@@ -68,16 +68,16 @@ export function EventsCalendar() {
       events.push({
         id: comp.id,
         title: comp.title,
-        start: new Date(comp.date),
-        end: new Date(comp.date),
+        start: new Date(comp.eventDate),
+        end: new Date(comp.eventDate),
         resource: {
           type: 'competition',
           description: comp.description,
           location: comp.location,
-          maxParticipants: comp.maxParticipants,
-          currentParticipants: comp.currentParticipants,
+          maxParticipants: comp.maxParticipants ?? undefined,
+          currentParticipants: comp.registeredParticipants ?? undefined,
           registrationDeadline: new Date(comp.registrationDeadline),
-          price: comp.price,
+          price: comp.cost,
           competition: comp
         }
       });

@@ -100,13 +100,12 @@ export default function MembershipPage() {
   const isMostPopular = (name: string) => name.includes("Super") && !name.includes("2 Cani");
 
   return (
-    <div className="bg-background">{/* Layout now handles min-h-screen */}
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Tessere ENALCACCIA 2025</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Tessere ENALCACCIA 2025</h1>
+          <p className="page-subtitle">
             Tessere ufficiali ENALCACCIA con coperture assicurative complete per caccia, pesca e attività sportive. 
             Scegli la tessera più adatta alle tue esigenze e attività venatorie.
           </p>

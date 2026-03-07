@@ -16,23 +16,23 @@ export function Navbar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
 
-  const navigationItems = [
-    { href: "/", label: "Home & News" },
-    { href: "/eventi", label: "Eventi" },
-    { href: "/scuola-venatoria", label: "Scuola Venatoria" },
+  const mainNavigationItems = [
+    { href: "/", label: "Home" },
+    { href: "/news", label: "Notizie" },
     { href: "/direttivo", label: "Direttivo" },
-    { 
-      label: "Gare", 
-      submenu: [
-        { href: "/gare-cinofile", label: "Gare Cinofile" },
-        { href: "/gare-pesca", label: "Gare Pesca" },
-        { href: "/gare-tiro", label: "Gare Tiro" }
-      ]
-    },
-    { href: "/pesca-tiro", label: "Pesca & Tiro" },
     { href: "/membership", label: "Tesseramento" },
     { href: "/contact", label: "Contatti" },
+  ];
+
+  const activitiesItems = [
+    { href: "/eventi", label: "Eventi" },
+    { href: "/scuola-venatoria", label: "Scuola Venatoria" },
+    { href: "/gare-cinofile", label: "Gare Cinofile" },
+    { href: "/gare-pesca", label: "Gare Pesca" },
+    { href: "/gare-tiro", label: "Gare Tiro" },
+    { href: "/pesca-tiro", label: "Pesca & Tiro" },
   ];
 
   const isActivePath = (path: string) => {
@@ -49,6 +49,8 @@ export function Navbar() {
     }
   };
 
+  const isActivitiesActive = activitiesItems.some((item) => isActivePath(item.href));
+
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50 border-b">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,64 +59,58 @@ export function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3">
               <img 
-                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
+                src="/attached_assets/logo-enalcaccia-treviso.png?v=20260307" 
                 alt="Logo ENAL Caccia Treviso" 
                 className="w-12 h-12 object-cover rounded-full"
               />
-              <span className="font-serif font-bold text-xl text-forest">Enal Caccia, Pesca e Tiro - Treviso</span>
+              <span className="font-serif font-bold text-lg text-forest hidden lg:block">ENAL Caccia Treviso</span>
+              <span className="font-serif font-bold text-base text-forest lg:hidden">ENAL Treviso</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center">
-            {navigationItems.map((item, index) => (
-              <div key={item.label} className="relative">
-                {item.submenu ? (
-                  <div className="group">
-                    <button
-                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-1 ${
-                        item.submenu.some(subItem => isActivePath(subItem.href))
-                          ? "text-forest"
-                          : "text-gray-700 hover:text-forest"
-                      }`}
-                    >
-                      {item.label}
-                      <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
-                    </button>
-                    
-                    <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                      <div className="py-3">
-                        {item.submenu.map((subItem) => (
-                          <Link
-                            key={subItem.href}
-                            href={subItem.href}
-                            className={`block px-4 py-2 text-sm transition-colors ${
-                              isActivePath(subItem.href)
-                                ? "text-forest bg-forest/10 border-r-2 border-forest"
-                                : "text-gray-700 hover:text-forest hover:bg-forest/5"
-                            }`}
-                          >
-                            {subItem.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <Link
-                    href={item.href!}
-                    className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                      isActivePath(item.href!)
-                        ? "text-forest border-b-2 border-forest"
-                        : "text-gray-700 hover:text-forest"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </div>
+          <div className="hidden md:flex items-center gap-1">
+            {mainNavigationItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                  isActivePath(item.href)
+                    ? "text-forest border-b-2 border-forest"
+                    : "text-gray-700 hover:text-forest"
+                }`}
+              >
+                {item.label}
+              </Link>
             ))}
-          </nav>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`px-3 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-1 ${
+                    isActivitiesActive
+                      ? "text-forest border-b-2 border-forest"
+                      : "text-gray-700 hover:text-forest"
+                  }`}
+                >
+                  Attività
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                {activitiesItems.map((activityItem) => (
+                  <DropdownMenuItem asChild key={activityItem.href}>
+                    <Link
+                      href={activityItem.href}
+                      className={`w-full ${isActivePath(activityItem.href) ? "text-forest" : ""}`}
+                    >
+                      {activityItem.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
@@ -184,7 +180,7 @@ export function Navbar() {
                 <SheetHeader>
                   <SheetTitle className="flex items-center space-x-3">
                     <img 
-                      src="/attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
+                      src="/attached_assets/logo-enalcaccia-treviso.png?v=20260307" 
                       alt="Logo ENAL Caccia Treviso" 
                       className="w-10 h-10 object-cover rounded-full"
                     />
@@ -203,45 +199,57 @@ export function Navbar() {
 
                   {/* Navigation Items */}
                   <div className="space-y-2">
-                    {navigationItems.map((item) => (
-                      <div key={item.label}>
-                        {item.submenu ? (
-                          <div className="space-y-1">
-                            <div className="px-4 py-2 text-sm font-semibold text-gray-900 bg-gray-100 rounded-md">
-                              {item.label}
-                            </div>
-                            <div className="pl-4 space-y-1">
-                              {item.submenu.map((subItem) => (
-                                <Link
-                                  key={subItem.href}
-                                  href={subItem.href}
-                                  onClick={() => setMobileMenuOpen(false)}
-                                  className={`block px-3 py-2 rounded-md text-sm transition-colors ${
-                                    isActivePath(subItem.href)
-                                      ? "text-forest bg-forest/10 border-l-2 border-forest"
-                                      : "text-gray-600 hover:text-forest hover:bg-forest/5"
-                                  }`}
-                                >
-                                  {subItem.label}
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <Link
-                            href={item.href!}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                              isActivePath(item.href!)
-                                ? "text-forest bg-forest/10 border-l-2 border-forest"
-                                : "text-gray-700 hover:text-forest hover:bg-forest/5"
-                            }`}
-                          >
-                            {item.label}
-                          </Link>
-                        )}
-                      </div>
+                    {mainNavigationItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          isActivePath(item.href)
+                            ? "text-forest bg-forest/10 border-l-2 border-forest"
+                            : "text-gray-700 hover:text-forest hover:bg-forest/5"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
                     ))}
+
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setMobileActivitiesOpen((prev) => !prev)}
+                        className={`w-full flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          isActivitiesActive
+                            ? "text-forest bg-forest/10"
+                            : "text-gray-700 hover:text-forest hover:bg-forest/5"
+                        }`}
+                      >
+                        <span>Attività</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${mobileActivitiesOpen ? "rotate-180" : ""}`} />
+                      </button>
+
+                      {mobileActivitiesOpen && (
+                        <div className="mt-1 pl-4 space-y-1">
+                          {activitiesItems.map((activityItem) => (
+                            <Link
+                              key={activityItem.href}
+                              href={activityItem.href}
+                              onClick={() => {
+                                setMobileMenuOpen(false);
+                                setMobileActivitiesOpen(false);
+                              }}
+                              className={`block px-3 py-2 rounded-md text-sm transition-colors ${
+                                isActivePath(activityItem.href)
+                                  ? "text-forest bg-forest/10 border-l-2 border-forest"
+                                  : "text-gray-600 hover:text-forest hover:bg-forest/5"
+                              }`}
+                            >
+                              {activityItem.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* User Actions (Mobile) */}

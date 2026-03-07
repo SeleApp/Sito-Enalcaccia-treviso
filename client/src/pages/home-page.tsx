@@ -13,7 +13,9 @@ export default function HomePage() {
   const { user } = useAuth();
   
   const { data: news = [] } = useQuery<News[]>({
-    queryKey: ["/api/news"],
+    queryKey: ["/api/news?v=20260307"],
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   const { data: competitions = [] } = useQuery<Competition[]>({
@@ -24,7 +26,10 @@ export default function HomePage() {
     queryKey: ["/api/memberships"],
   });
 
-  const latestNews = news.slice(0, 3);
+  const latestNews = [...news]
+    .filter((article) => article.published)
+    .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+    .slice(0, 3);
   const upcomingCompetitions = competitions.slice(0, 3);
 
   return (
@@ -43,7 +48,7 @@ export default function HomePage() {
             <div className="text-white flex-1">
               <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">Enal Caccia, Pesca e Tiro - Treviso</h1>
               <p className="text-xl md:text-2xl mb-2">Sezione Provinciale di Treviso</p>
-              <p className="text-lg mb-8 max-w-2xl">Promuoviamo la caccia responsabile e sostenibile nella provincia di Treviso, valorizzando le tradizioni venatorie venete attraverso formazione, competizioni cinofile e salvaguardia della biodiversità.</p>
+              <p className="text-lg mb-8 max-w-2xl">Attività associative, supporto ai soci, formazione e iniziative sul territorio: un punto di riferimento per caccia, pesca e tiro nella provincia di Treviso, nel rispetto delle norme e dell'ambiente.</p>
               <div className="flex flex-wrap gap-4">
                 {!user && (
                   <>
@@ -72,7 +77,7 @@ export default function HomePage() {
             {/* Logo grande nell'angolo destro */}
             <div className="flex-shrink-0 hidden md:block">
               <img 
-                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
+                src="/attached_assets/logo-enalcaccia-treviso.png?v=20260307" 
                 alt="Logo ENAL Caccia Treviso" 
                 className="w-32 h-32 object-cover rounded-full shadow-2xl border-4 border-white/20"
               />
@@ -147,7 +152,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-serif font-bold text-foreground mb-4">Chi Siamo</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">’ENALCACCIA è un’Associazione venatoria riconosciuta dal Ministero dell’Agricoltura e Foreste con D.M. 20 marzo 1968 n° 4223 e dall’art. 29 Legge 27 dicembre 1977 n° 968 e art. 34 Legge 11 febbraio 1992 n° 157, ed ha lo scopo di propagandare e promuovere attività sociali, sportive, culturali, artistiche, turistiche ed assistenziali, come mezzi di formazione fisica e morale dei soci, con particolare riguardo all’attività venatoria, alla pesca sportiva, al tiro, alla cinofilia, alla protezione civile ed alla difesa ambientale.L’ENALCACCIA è la sola struttura sopravvissuta allo scioglimento dell’Ente Assistenza Lavoratori (ENAL).</p>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">La sezione provinciale opera sul territorio con finalità associative, formative e organizzative, promuovendo una pratica responsabile dell'attività venatoria, cinofila, alieutica e sportiva.</p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -223,7 +228,7 @@ export default function HomePage() {
               <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
                 <h3 className="text-2xl font-semibold text-forest mb-3">ENALCACCIA Nazionale</h3>
                 <p className="text-muted-foreground mb-4">
-                  Ente Nazionale per l'Addestramento Lavorativo per la Caccia - Organizzazione nazionale
+                  Associazione venatoria di riferimento a livello nazionale
                 </p>
                 <div className="flex items-center justify-center text-forest group-hover:text-forest/80">
                   <ExternalLink className="w-4 h-4 mr-2" />
@@ -242,7 +247,7 @@ export default function HomePage() {
               <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
                 <h3 className="text-2xl font-semibold text-red-600 mb-3">Regione Veneto</h3>
                 <p className="text-muted-foreground mb-4">
-                  Sezione Agricoltura e Foreste - Provincia di Treviso per la gestione faunistica
+                  Portale istituzionale regionale con informazioni normative e amministrative
                 </p>
                 <div className="flex items-center justify-center text-red-600 group-hover:text-red-500">
                   <ExternalLink className="w-4 h-4 mr-2" />
@@ -282,7 +287,7 @@ export default function HomePage() {
                 <CardHeader>
                   <div className="flex items-center text-sm text-muted-foreground mb-2">
                     <Calendar className="w-4 h-4 mr-2" />
-                    <span>{new Date(article.createdAt).toLocaleDateString('it-IT')}</span>
+                    <span>{article.createdAt ? new Date(article.createdAt).toLocaleDateString('it-IT') : '-'}</span>
                     <Badge variant="secondary" className="ml-2">
                       {article.category}
                     </Badge>
@@ -290,8 +295,10 @@ export default function HomePage() {
                   <CardTitle className="line-clamp-2">{article.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">{article.excerpt}</p>
-                  <Button variant="link" className="p-0">Leggi tutto →</Button>
+                  <p className="text-muted-foreground mb-4 line-clamp-3">{article.excerpt?.trim() || `${article.content.slice(0, 160)}...`}</p>
+                  <Link href="/news">
+                    <Button variant="link" className="p-0">Vai alle notizie →</Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}

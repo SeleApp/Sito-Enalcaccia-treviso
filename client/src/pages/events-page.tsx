@@ -5,15 +5,14 @@ import { Calendar, Clock, MapPin, Target, GraduationCap, Users } from "lucide-re
 
 export default function EventsPage() {
   return (
-    <div className="bg-background">{/* Layout now handles min-h-screen */}
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">
+        <div className="page-header">
+          <h1 className="page-title">
             Calendario Eventi
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="page-subtitle">
             Resta aggiornato su tutte le attività dell'associazione: gare, corsi di formazione, 
             riunioni e eventi speciali. Iscriviti direttamente dal calendario.
           </p>

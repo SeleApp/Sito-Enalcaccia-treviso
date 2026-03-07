@@ -6,16 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users, Trophy, Clock, Euro } from "lucide-react";
 import { Competition } from "@shared/schema";
 
+const DOG_PHOTO_1 = "/attached_assets/cane-caccia-1.jpg";
+const DOG_PHOTO_2 = "/attached_assets/cane-caccia-2.jpg";
+
 export default function GareCinofile() {
   const { data: competitions = [], isLoading } = useQuery<Competition[]>({
     queryKey: ["/api/competitions"],
   });
 
-  const gareCinofile = competitions.filter(comp => 
-    comp.discipline.toLowerCase().includes('cinofil') || 
-    comp.discipline.toLowerCase().includes('cane') ||
-    comp.discipline.toLowerCase().includes('caccia')
-  );
+  const gareCinofile = competitions.filter((competition) => {
+    const searchText = `${competition.title} ${competition.description} ${competition.discipline}`.toLowerCase();
+    return ["cinofil", "cane", "caccia", "segugi", "ferma", "addestramento"].some((keyword) =>
+      searchText.includes(keyword)
+    );
+  });
 
   const isRegistrationOpen = (competition: Competition) => {
     const today = new Date();
@@ -35,15 +39,27 @@ export default function GareCinofile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="page-shell min-h-screen">
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-forest mb-4">Gare Cinofile</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Gare Cinofile</h1>
+          <p className="page-subtitle">
             Competizioni dedicate all'addestramento e alle performance dei cani da caccia. 
             Partecipa alle nostre gare specialistiche e metti alla prova le abilità del tuo compagno a quattro zampe.
           </p>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <img
+              src={DOG_PHOTO_1}
+              alt="Cane da caccia in ferma"
+              className="w-full h-64 object-cover rounded-xl shadow"
+            />
+            <img
+              src={DOG_PHOTO_2}
+              alt="Cane da caccia in campo"
+              className="w-full h-64 object-cover rounded-xl shadow"
+            />
+          </div>
         </div>
 
         {/* Informazioni Generali */}
@@ -225,8 +241,8 @@ export default function GareCinofile() {
                 <h4 className="font-semibold text-forest mb-2">Contatti</h4>
                 <p className="text-gray-700 text-sm">
                   Per informazioni sulle gare cinofile:<br />
-                  <strong>Tel:</strong> 0422 123456<br />
-                  <strong>Email:</strong> gare@enalcacciatreviso.it
+                  <strong>Canale ufficiale:</strong> pagina Contatti del sito<br />
+                  <strong>Segreteria:</strong> riscontro tramite modulo online
                 </p>
               </div>
             </CardContent>

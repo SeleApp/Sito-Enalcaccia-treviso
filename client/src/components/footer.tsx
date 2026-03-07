@@ -46,15 +46,15 @@ export function Footer() {
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               <img 
-                src="/attached_assets/ChatGPT Image 7 lug 2025, 21_18_39_1751916102927.png" 
+                src="/attached_assets/logo-enalcaccia-treviso.png?v=20260307" 
                 alt="Logo ENAL Caccia Treviso" 
                 className="w-10 h-10 object-cover rounded-full"
               />
               <span className="font-serif font-bold text-xl">Enal Caccia</span>
             </div>
             <p className="text-gray-300 mb-6 text-sm leading-relaxed">
-              Ente Nazionale Associazioni Libere della Caccia - Promuoviamo la caccia responsabile, 
-              la cinofilia e la tutela del patrimonio ambientale italiano.
+              Associazione venatoria attiva sul territorio provinciale, con iniziative dedicate
+              a caccia, pesca sportiva, tiro, cinofilia e formazione dei soci.
             </p>
             <div className="flex space-x-4">
               <a 
@@ -202,9 +202,9 @@ export function Footer() {
               <div>
                 <h4 className="font-semibold mb-1">Sede Principale</h4>
                 <p className="text-gray-300 text-sm">
-                  Via della Caccia, 123<br />
-                  31100 Treviso (TV)<br />
-                  Veneto, Italia
+                  Provincia di Treviso (TV)<br />
+                  Dettagli sede disponibili<br />
+                  tramite segreteria
                 </p>
               </div>
             </div>
@@ -214,9 +214,8 @@ export function Footer() {
               <div>
                 <h4 className="font-semibold mb-1">Telefono</h4>
                 <p className="text-gray-300 text-sm">
-                  +39 0422 123456<br />
-                  Lun-Ven: 9:00-17:00<br />
-                  Sab: 9:00-12:00
+                  Recapiti aggiornati su richiesta<br />
+                  tramite modulo contatti
                 </p>
               </div>
             </div>
@@ -226,8 +225,8 @@ export function Footer() {
               <div>
                 <h4 className="font-semibold mb-1">Email</h4>
                 <p className="text-gray-300 text-sm">
-                  info@enalcaccia-veneto.it<br />
-                  segretario@enalcaccia-veneto.it
+                  Le richieste inviate dal sito<br />
+                  sono gestite dalla segreteria
                 </p>
               </div>
             </div>

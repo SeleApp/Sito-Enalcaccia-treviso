@@ -68,12 +68,12 @@ export default function PescaTiro() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-green-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="page-shell min-h-screen">
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-forest mb-4">Pesca & Tiro</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Pesca & Tiro</h1>
+          <p className="page-subtitle">
             Scopri le nostre attività di pesca sportiva e tiro, con corsi, eventi e strutture 
             per praticare i tuoi sport preferiti in un ambiente sicuro e professionale.
           </p>

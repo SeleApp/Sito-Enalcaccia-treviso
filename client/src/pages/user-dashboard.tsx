@@ -19,7 +19,7 @@ export default function UserDashboard() {
   });
 
   if (!user) {
-    return null; // This should be handled by ProtectedRoute
+    return <div className="min-h-screen" />;
   }
 
   const activeMemberships = userMemberships.filter(m => 
@@ -27,16 +27,14 @@ export default function UserDashboard() {
   );
 
   return (
-    <div className="bg-background">
-      <Navbar />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-shell">
+      <div className="page-wrap">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
+        <div className="page-header text-left mb-8">
+          <h1 className="page-title mb-2">
             Benvenuto, {user.nome} {user.cognome}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="section-subtitle">
             Gestisci il tuo profilo e i tuoi tesseramenti
           </p>
         </div>

@@ -31,11 +31,10 @@ export default function PrivacyPolicy() {
                 <strong>ENAL Caccia - Sezione Provinciale di Treviso</strong>
               </p>
               <p className="text-gray-600">
-                Sede legale: Via Roma, 123 - 31100 Treviso (TV)<br/>
-                Codice Fiscale: 12345678901<br/>
-                Telefono: 0422 123456<br/>
-                Email: privacy@enalcacciatreviso.it<br/>
-                PEC: enalcacciatreviso@pec.it
+                Sede operativa: Provincia di Treviso (TV)<br/>
+                Recapiti ufficiali: comunicati tramite canali associativi<br/>
+                Richieste privacy: tramite modulo contatti del sito<br/>
+                PEC e riferimenti formali: disponibili su richiesta
               </p>
             </div>
           </CardContent>
@@ -211,9 +210,9 @@ export default function PrivacyPolicy() {
               <p className="text-forest font-semibold mb-2">Come Esercitare i Diritti</p>
               <p className="text-gray-700">
                 Per esercitare i diritti sopra elencati, contattare:<br/>
-                <strong>Email:</strong> privacy@enalcacciatreviso.it<br/>
-                <strong>Telefono:</strong> 0422 123456<br/>
-                <strong>Indirizzo:</strong> Via Roma, 123 - 31100 Treviso (TV)
+                <strong>Canale preferenziale:</strong> modulo contatti del sito<br/>
+                <strong>Oggetto:</strong> "Richiesta privacy/GDPR"<br/>
+                <strong>Riscontro:</strong> nei tempi previsti dalla normativa applicabile
               </p>
             </div>
           </CardContent>

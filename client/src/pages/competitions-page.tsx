@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Euro, Users, Download, Search, Filter } from "lucide-react";
+import { Calendar, MapPin, Euro, Users, Download, Search, Filter, Trophy } from "lucide-react";
 import type { Competition } from "@shared/schema";
 
 export default function CompetitionsPage() {
@@ -35,8 +35,8 @@ export default function CompetitionsPage() {
     return matchesSearch && matchesDiscipline && matchesMonth;
   });
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('it-IT', {
+  const formatDate = (dateValue: string | Date) => {
+    return new Date(dateValue).toLocaleDateString('it-IT', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -44,8 +44,8 @@ export default function CompetitionsPage() {
     });
   };
 
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('it-IT', {
+  const formatTime = (dateValue: string | Date) => {
+    return new Date(dateValue).toLocaleDateString('it-IT', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
@@ -69,14 +69,12 @@ export default function CompetitionsPage() {
   };
 
   return (
-    <div className="bg-background">
-      <Navbar />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-shell">
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Gare e Competizioni</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Gare e Competizioni</h1>
+          <p className="page-subtitle">
             Scopri tutte le competizioni organizzate da ENAL Caccia Treviso: gare cinofile, di pesca e di tiro. 
             Partecipa e metti alla prova le tue abilità in diverse discipline sportive.
           </p>
@@ -251,7 +249,7 @@ export default function CompetitionsPage() {
             {filteredCompetitions.map((competition) => {
               const registrationOpen = isRegistrationOpen(competition);
               const spotsAvailable = competition.maxParticipants ? 
-                competition.maxParticipants - competition.registeredParticipants : null;
+                competition.maxParticipants - (competition.registeredParticipants ?? 0) : null;
 
               return (
                 <Card key={competition.id} className="hover:shadow-lg transition-shadow">

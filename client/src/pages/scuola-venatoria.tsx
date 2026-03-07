@@ -6,43 +6,43 @@ export default function ScuolaVenatoria() {
   const corsi = [
     {
       id: 1,
-      titolo: "Corso Base di Addestramento Cani",
-      descrizione: "Corso introduttivo per l'addestramento dei cani da caccia, rivolto a principianti.",
-      durata: "8 settimane",
-      frequenza: "2 volte a settimana",
-      prossimo: "15 Marzo 2024",
-      posti: 20,
-      prezzo: "€ 150"
+      titolo: "Percorso Base di Formazione Venatoria",
+      descrizione: "Modulo introduttivo su sicurezza, etica venatoria, normativa e comportamento sul territorio.",
+      durata: "Calendario modulare",
+      frequenza: "Lezioni teorico-pratiche",
+      prossimo: "In programmazione",
+      posti: 25,
+      prezzo: "Quote comunicate dalla segreteria"
     },
     {
       id: 2,
-      titolo: "Addestramento Avanzato - Seguita",
-      descrizione: "Corso specialistico per cani da seguita su cinghiale e capriolo.",
-      durata: "12 settimane",
-      frequenza: "3 volte a settimana",
-      prossimo: "1 Aprile 2024",
-      posti: 15,
-      prezzo: "€ 250"
+      titolo: "Percorso Cinofilo Specialistico",
+      descrizione: "Approfondimenti su conduzione, gestione in prova e preparazione dei cani da lavoro.",
+      durata: "Calendario modulare",
+      frequenza: "Sessioni pratiche guidate",
+      prossimo: "In programmazione",
+      posti: 18,
+      prezzo: "Quote comunicate dalla segreteria"
     },
     {
       id: 3,
-      titolo: "Preparazione Esami Patente",
-      descrizione: "Corso di preparazione per l'esame della patente di caccia.",
-      durata: "4 settimane",
-      frequenza: "1 volta a settimana",
-      prossimo: "20 Marzo 2024",
+      titolo: "Supporto alla Preparazione Abilitazioni",
+      descrizione: "Incontri orientativi su iter, documentazione e studio per le prove di abilitazione.",
+      durata: "Ciclo di incontri",
+      frequenza: "Programmazione periodica",
+      prossimo: "In programmazione",
       posti: 30,
-      prezzo: "€ 80"
+      prezzo: "Quote comunicate dalla segreteria"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="page-shell min-h-screen">
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-forest mb-4">Scuola Venatoria</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Scuola Venatoria</h1>
+          <p className="page-subtitle">
             Formazione professionale per cacciatori e addestratori, con corsi teorici e pratici 
             per tutti i livelli di esperienza.
           </p>
@@ -120,11 +120,11 @@ export default function ScuolaVenatoria() {
             <CardContent>
               <p className="text-gray-700 mb-4">
                 Per iscriversi ai corsi è necessario essere tesserati ENAL Caccia. 
-                Le iscrizioni devono essere effettuate almeno 7 giorni prima dell'inizio del corso.
+                Le modalità di adesione e i documenti richiesti vengono comunicati dalla segreteria.
               </p>
               <p className="text-gray-700">
-                Per informazioni e iscrizioni contattare la segreteria al numero: 
-                <strong className="text-forest"> 0422 123456</strong>
+                Per informazioni e iscrizioni utilizza la pagina contatti del sito:
+                <strong className="text-forest"> modulo contatti</strong>
               </p>
             </CardContent>
           </Card>
@@ -136,13 +136,13 @@ export default function ScuolaVenatoria() {
             <CardContent>
               <p className="text-gray-700 mb-4">
                 <strong>Sede Corsi:</strong><br />
-                Centro Cinofilo ENAL Caccia<br />
-                Via dei Cacciatori, 15 - Treviso
+                Strutture convenzionate sul territorio provinciale<br />
+                (dettagli comunicati in fase di iscrizione)
               </p>
               <p className="text-gray-700">
                 <strong>Orari:</strong><br />
-                Mattina: 9:00 - 12:00<br />
-                Pomeriggio: 14:00 - 17:00
+                Definiti in base al calendario del corso<br />
+                e alle disponibilità delle strutture
               </p>
             </CardContent>
           </Card>

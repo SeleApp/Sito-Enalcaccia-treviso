@@ -66,9 +66,8 @@ export default function AdminDashboard() {
   // Redirect if not admin
   if (user?.role !== 'admin') {
     return (
-      <div className="bg-background">
-        <Navbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="page-shell">
+        <div className="page-wrap py-16">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
@@ -152,7 +151,7 @@ export default function AdminDashboard() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/news?v=20260307"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       setNewsDialogOpen(false);
       newsForm.reset();
@@ -176,7 +175,7 @@ export default function AdminDashboard() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/news?v=20260307"] });
       setEditingNews(null);
       setNewsDialogOpen(false);
       newsForm.reset();
@@ -199,7 +198,7 @@ export default function AdminDashboard() {
       await apiRequest("DELETE", `/api/admin/news/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/news?v=20260307"] });
       toast({
         title: "Articolo eliminato",
         description: "L'articolo è stato eliminato con successo",
@@ -347,14 +346,12 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="bg-background">
-      <Navbar />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-shell">
+      <div className="page-wrap">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-serif font-bold text-foreground mb-2">Dashboard Amministrativa</h1>
-          <p className="text-muted-foreground">Benvenuto, {user.nome} {user.cognome}</p>
+        <div className="page-header text-left mb-8">
+          <h1 className="page-title mb-2">Dashboard Amministrativa</h1>
+          <p className="section-subtitle">Benvenuto, {user.nome} {user.cognome}</p>
         </div>
 
         {/* Stats Cards */}
@@ -437,12 +434,12 @@ export default function AdminDashboard() {
                       {pendingUsers.map((user) => (
                         <TableRow key={user.id}>
                           <TableCell className="font-medium">
-                            {user.nome} {user.cognome}
+                            {user.firstName} {user.lastName}
                           </TableCell>
                           <TableCell>{user.email}</TableCell>
-                          <TableCell>{user.codiceFiscale}</TableCell>
+                          <TableCell>{user.fiscalCode || "-"}</TableCell>
                           <TableCell>
-                            {new Date(user.createdAt).toLocaleDateString('it-IT')}
+                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString('it-IT') : "-"}
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
@@ -505,7 +502,7 @@ export default function AdminDashboard() {
                           <TableCell>{contact.email}</TableCell>
                           <TableCell>{contact.subject}</TableCell>
                           <TableCell>
-                            {new Date(contact.createdAt).toLocaleDateString('it-IT')}
+                            {contact.createdAt ? new Date(contact.createdAt).toLocaleDateString('it-IT') : "-"}
                           </TableCell>
                           <TableCell>
                             <Badge variant={contact.replied ? "default" : "secondary"}>
@@ -683,7 +680,7 @@ export default function AdminDashboard() {
                             <Badge variant="outline">{article.category}</Badge>
                           </TableCell>
                           <TableCell>
-                            {new Date(article.createdAt).toLocaleDateString('it-IT')}
+                            {article.createdAt ? new Date(article.createdAt).toLocaleDateString('it-IT') : "-"}
                           </TableCell>
                           <TableCell>
                             <Badge variant={article.published ? "default" : "secondary"}>

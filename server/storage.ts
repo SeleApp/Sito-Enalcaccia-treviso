@@ -31,14 +31,17 @@ import {
 const MemoryStore = createMemoryStore(session);
 const PostgresSessionStore = connectPg(session);
 
+type MembershipInput = Omit<Membership, 'id' | 'currentMembers'>;
+
 export interface IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
   
   // User management
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: Omit<InsertUser, 'passwordConfirm'>): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
+  deleteUser(id: number): Promise<boolean>;
   getAllUsers(): Promise<User[]>;
   
   // Pending users
@@ -66,7 +69,7 @@ export interface IStorage {
   // Memberships
   getMembership(id: number): Promise<Membership | undefined>;
   getAllMemberships(): Promise<Membership[]>;
-  createMembership(membership: Omit<Membership, 'id' | 'currentMembers'>): Promise<Membership>;
+  createMembership(membership: MembershipInput): Promise<Membership>;
   
   // User memberships
   getUserMembership(userId: number, membershipId: number): Promise<UserMembership | undefined>;
@@ -87,7 +90,7 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  public sessionStore: session.SessionStore;
+  public sessionStore: session.Store;
   
   private users: Map<number, User> = new Map();
   private pendingUsers: Map<number, PendingUser> = new Map();
@@ -188,43 +191,67 @@ export class MemStorage implements IStorage {
     this.memberships.set(premiumMembership.id, premiumMembership);
     this.memberships.set(eliteMembership.id, eliteMembership);
 
-    // Sample news articles
+    // Sample news articles (ispirate a temi recenti di Caccia Magazine, testi originali)
     const sampleNews: News[] = [
       {
         id: this.currentNewsId++,
-        title: "Campionato Regionale di Caccia Pratica",
-        slug: "campionato-regionale-caccia-pratica",
-        content: "Si terrà il prossimo mese il campionato regionale di caccia pratica. Un evento che vedrà la partecipazione dei migliori cacciatori della regione...",
-        excerpt: "Si terrà il prossimo mese il campionato regionale di caccia pratica. Iscrizioni aperte fino al 28 gennaio.",
-        featuredImage: "https://images.unsplash.com/photo-1551717743-49959800b1f6",
+        title: "Riforma della legge sulla caccia: aggiornamento sul calendario parlamentare",
+        slug: "riforma-legge-caccia-aggiornamento-calendario-parlamentare",
+        content: "Nel dibattito nazionale sulla riforma della normativa venatoria si registra una fase di attesa sui passaggi in calendario. La sezione provinciale raccomanda ai soci di seguire gli sviluppi istituzionali con attenzione, evitando interpretazioni non ufficiali e verificando sempre le fonti primarie. Per approfondire il tema, è disponibile un monitoraggio periodico nella rassegna stampa dedicata alle principali testate di settore.",
+        excerpt: "Aggiornamento sulla riforma venatoria: fase di attesa sui prossimi passaggi istituzionali.",
+        featuredImage: null,
+        category: "Normativa",
+        published: true,
+        createdAt: new Date("2026-03-06"),
+        updatedAt: new Date("2026-03-06"),
+      },
+      {
+        id: this.currentNewsId++,
+        title: "Comitato faunistico-venatorio: proseguono i lavori tecnici",
+        slug: "comitato-faunistico-venatorio-proseguono-lavori-tecnici",
+        content: "Nel confronto tra istituzioni e rappresentanze del settore proseguono le attività del comitato faunistico-venatorio nazionale. La sezione sottolinea l'importanza di un approccio tecnico, basato su dati territoriali, sicurezza e gestione sostenibile della fauna. I soci interessati riceveranno aggiornamenti sintetici sui punti che possono avere ricadute operative a livello locale.",
+        excerpt: "Proseguono i lavori del comitato faunistico-venatorio con focus su aspetti tecnici e gestione sostenibile.",
+        featuredImage: null,
+        category: "Comunicati",
+        published: true,
+        createdAt: new Date("2026-03-06"),
+        updatedAt: new Date("2026-03-06"),
+      },
+      {
+        id: this.currentNewsId++,
+        title: "Cinofilia venatoria: calendario verifiche attitudinali di primavera",
+        slug: "cinofilia-venatoria-calendario-verifiche-attitudinali-primavera",
+        content: "Le attività cinofile primaverili entrano nel vivo con verifiche attitudinali dedicate ai cani da ferma. La sezione invita i conduttori a consultare i bandi prima dell'iscrizione, con particolare attenzione a requisiti sanitari, documentazione e limiti numerici. L'obiettivo è garantire prove ordinate, trasparenti e coerenti con i regolamenti vigenti.",
+        excerpt: "In arrivo le verifiche attitudinali di primavera: controllare requisiti e bandi prima dell'iscrizione.",
+        featuredImage: "/attached_assets/cane-caccia-1.jpg",
         category: "Gare Cinofile",
         published: true,
-        createdAt: new Date("2024-01-15"),
-        updatedAt: new Date("2024-01-15"),
+        createdAt: new Date("2026-03-04"),
+        updatedAt: new Date("2026-03-04"),
       },
       {
         id: this.currentNewsId++,
-        title: "Nuovo Corso di Formazione Venatoria",
-        slug: "nuovo-corso-formazione-venatoria",
-        content: "Al via il corso per aspiranti cacciatori con focus sulla sostenibilità ambientale e sicurezza. Il corso si terrà presso la nostra sede...",
-        excerpt: "Al via il corso per aspiranti cacciatori con focus sulla sostenibilità ambientale e sicurezza.",
-        featuredImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
-        category: "Formazione",
+        title: "Cinofilia specialistica: appuntamenti su beccaccia tra febbraio e marzo",
+        slug: "cinofilia-specialistica-appuntamenti-beccaccia-febbraio-marzo",
+        content: "Il calendario cinofilo specialistico prevede appuntamenti concentrati tra fine inverno e inizio primavera, con formule dedicate ai cani da ferma. La sezione ricorda che la partecipazione richiede preparazione tecnica, rispetto delle regole di campo e attenzione al benessere animale. Eventuali variazioni logistiche saranno comunicate tempestivamente nei canali ufficiali.",
+        excerpt: "Appuntamenti cinofili specialistici su beccaccia: focus su regole di campo e benessere animale.",
+        featuredImage: "/attached_assets/cane-caccia-2.jpg",
+        category: "Gare Cinofile",
         published: true,
-        createdAt: new Date("2024-01-12"),
-        updatedAt: new Date("2024-01-12"),
+        createdAt: new Date("2026-03-03"),
+        updatedAt: new Date("2026-03-03"),
       },
       {
         id: this.currentNewsId++,
-        title: "Addestramento Cani da Caccia",
-        slug: "addestramento-cani-caccia",
-        content: "Workshop specializzato per l'addestramento di cani da ferma e da cerca, condotto da esperti cinofili certificati...",
-        excerpt: "Workshop specializzato per l'addestramento di cani da ferma e da cerca, condotto da esperti cinofili.",
-        featuredImage: "https://images.unsplash.com/photo-1551717743-49959800b1f6",
-        category: "Attività",
+        title: "Rassegna tecnica: ottiche e attrezzature, come scegliere in modo consapevole",
+        slug: "rassegna-tecnica-ottiche-attrezzature-scelta-consapevole",
+        content: "Le ultime uscite editoriali del settore evidenziano una crescita dell'interesse verso prove pratiche su ottiche, armi e accessori. La sezione consiglia ai soci di valutare sempre l'attrezzatura in funzione dell'impiego reale, della sicurezza e della conformità normativa. Le schede comparative hanno valore orientativo e non sostituiscono la verifica diretta presso operatori autorizzati.",
+        excerpt: "Prove e test di settore: criteri pratici per scegliere ottiche e attrezzature con maggiore consapevolezza.",
+        featuredImage: null,
+        category: "Attrezzature",
         published: true,
-        createdAt: new Date("2024-01-10"),
-        updatedAt: new Date("2024-01-10"),
+        createdAt: new Date("2026-03-01"),
+        updatedAt: new Date("2026-03-01"),
       },
     ];
 
@@ -236,30 +263,44 @@ export class MemStorage implements IStorage {
     const sampleCompetitions: Competition[] = [
       {
         id: this.currentCompetitionId++,
-        title: "Gara di Caccia al Cinghiale - Treviso",
-        description: "Gara di caccia al cinghiale con cani segugi. Iscrizioni aperte fino al 15 dicembre.",
-        discipline: "Caccia al Cinghiale",
-        location: "Treviso, Località Monte Grappa",
-        eventDate: new Date("2024-12-20"),
-        cost: 4500, // €45.00 in cents
-        bandoUrl: "/docs/bando-treviso-cinghiale.pdf",
-        maxParticipants: 50,
-        registeredParticipants: 23,
-        registrationDeadline: new Date("2024-12-15"),
+        title: "Prova cinofila su selvaggina naturale - Razze da ferma",
+        description: "Prova individuale su terreno naturale dedicata alle razze da ferma. Valutazione tecnica su cerca, ferma e consenso secondo regolamento in vigore.",
+        discipline: "Razze da ferma",
+        location: "Provincia di Treviso - area collinare",
+        eventDate: new Date("2026-04-19"),
+        cost: 40,
+        bandoUrl: "/docs/bando-prova-ferma-aprile-2026.pdf",
+        maxParticipants: 36,
+        registeredParticipants: 14,
+        registrationDeadline: new Date("2026-04-12"),
         createdAt: new Date(),
       },
       {
         id: this.currentCompetitionId++,
-        title: "Prova di Lavoro per Segugi - Vicenza",
-        description: "Prova di lavoro su lepre per cani segugi. Valida per qualifica ENCI.",
-        discipline: "Segugio",
-        location: "Vicenza, Altopiano di Asiago",
-        eventDate: new Date("2024-12-28"),
-        cost: 3500, // €35.00 in cents
-        bandoUrl: "/docs/bando-vicenza-segugi.pdf",
-        maxParticipants: 40,
-        registeredParticipants: 18,
-        registrationDeadline: new Date("2024-12-22"),
+        title: "Prova di lavoro per segugi su lepre",
+        description: "Manifestazione cinofila con batterie a sorteggio e giudizio tecnico su accostamento, seguita e correttezza di voce.",
+        discipline: "Segugi",
+        location: "Provincia di Treviso - zona pedemontana",
+        eventDate: new Date("2026-05-10"),
+        cost: 35,
+        bandoUrl: "/docs/bando-segugi-maggio-2026.pdf",
+        maxParticipants: 48,
+        registeredParticipants: 19,
+        registrationDeadline: new Date("2026-05-03"),
+        createdAt: new Date(),
+      },
+      {
+        id: this.currentCompetitionId++,
+        title: "Giornata addestrativa cinofila controllata",
+        description: "Sessione pratica non competitiva con briefing iniziale sulla sicurezza, turni in campo e verifica documentale all'accredito.",
+        discipline: "Addestramento cinofilo",
+        location: "Campo addestramento convenzionato - Treviso",
+        eventDate: new Date("2026-05-24"),
+        cost: 25,
+        bandoUrl: "/docs/programma-giornata-addestrativa-2026.pdf",
+        maxParticipants: 30,
+        registeredParticipants: 11,
+        registrationDeadline: new Date("2026-05-18"),
         createdAt: new Date(),
       },
     ];
@@ -281,6 +322,7 @@ export class MemStorage implements IStorage {
   async createUser(userData: Omit<InsertUser, 'passwordConfirm'>): Promise<User> {
     const user: User = {
       ...userData,
+      role: userData.role ?? "utente",
       id: this.currentUserId++,
       approved: false,
       approvedAt: null,
@@ -297,6 +339,10 @@ export class MemStorage implements IStorage {
     const updatedUser = { ...user, ...updates };
     this.users.set(id, updatedUser);
     return updatedUser;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    return this.users.delete(id);
   }
 
   async getAllUsers(): Promise<User[]> {
@@ -316,6 +362,16 @@ export class MemStorage implements IStorage {
     const user: PendingUser = {
       ...userData,
       id: this.currentPendingUserId++,
+      phone: userData.phone ?? null,
+      address: userData.address ?? null,
+      city: userData.city ?? null,
+      zipCode: userData.zipCode ?? null,
+      dateOfBirth: userData.dateOfBirth ?? null,
+      placeOfBirth: userData.placeOfBirth ?? null,
+      fiscalCode: userData.fiscalCode ?? null,
+      membershipType: userData.membershipType ?? "base",
+      notes: userData.notes ?? null,
+      pdfExtracted: userData.pdfExtracted ?? false,
       createdAt: new Date(),
     };
     this.pendingUsers.set(user.id, user);
@@ -341,7 +397,7 @@ export class MemStorage implements IStorage {
 
   async getAllNews(): Promise<News[]> {
     return Array.from(this.news.values()).sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
     );
   }
 
@@ -349,6 +405,8 @@ export class MemStorage implements IStorage {
     const article: News = {
       ...newsData,
       id: this.currentNewsId++,
+      featuredImage: newsData.featuredImage ?? null,
+      published: newsData.published ?? true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -384,6 +442,8 @@ export class MemStorage implements IStorage {
     const competition: Competition = {
       ...competitionData,
       id: this.currentCompetitionId++,
+      bandoUrl: competitionData.bandoUrl ?? null,
+      maxParticipants: competitionData.maxParticipants ?? null,
       registeredParticipants: 0,
       createdAt: new Date(),
     };
@@ -413,7 +473,7 @@ export class MemStorage implements IStorage {
     return Array.from(this.memberships.values()).filter(m => m.active);
   }
 
-  async createMembership(membershipData: Omit<Membership, 'id' | 'currentMembers'>): Promise<Membership> {
+  async createMembership(membershipData: MembershipInput): Promise<Membership> {
     const membership: Membership = {
       ...membershipData,
       id: this.currentMembershipId++,
@@ -460,7 +520,7 @@ export class MemStorage implements IStorage {
 
   async getAllContacts(): Promise<Contact[]> {
     return Array.from(this.contacts.values()).sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
     );
   }
 
@@ -506,7 +566,7 @@ export class MemStorage implements IStorage {
 
 // Database storage implementation
 export class DatabaseStorage implements IStorage {
-  public sessionStore: session.SessionStore;
+  public sessionStore: session.Store;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
@@ -536,26 +596,27 @@ export class DatabaseStorage implements IStorage {
           role: "admin"
         });
         
-        // Create sample news
-        await this.createNews({
-          title: "Campionato Regionale di Caccia Pratica 2024",
-          content: "Si è concluso con grande successo il Campionato Regionale di Caccia Pratica 2024, organizzato dalla sezione provinciale di Treviso dell'ENAL Caccia. L'evento ha visto la partecipazione di oltre 200 cacciatori provenienti da tutto il Veneto, che si sono sfidati nelle diverse specialità cinofile. La competizione si è svolta presso i nostri terreni di addestramento a Treviso, dove i partecipanti hanno potuto dimostrare le proprie abilità e quelle dei loro compagni a quattro zampe. Un ringraziamento particolare va a tutti i volontari che hanno reso possibile questo evento e ai nostri sponsor che ci sostengono nelle nostre attività.",
-          slug: "campionato-regionale-caccia-pratica-2024",
-          excerpt: "Grande successo per il Campionato Regionale 2024 con oltre 200 partecipanti",
-          category: "Competizioni",
-          published: true
+        // Create sample competitions
+        await this.createCompetition({
+          title: "Prova cinofila su selvaggina naturale - Razze da ferma",
+          description: "Prova tecnica individuale su terreno naturale con valutazione di cerca, ferma e correttezza di condotta.",
+          discipline: "Razze da ferma",
+          location: "Provincia di Treviso - area collinare",
+          eventDate: new Date("2026-04-19"),
+          cost: 40,
+          maxParticipants: 36,
+          registrationDeadline: new Date("2026-04-12")
         });
 
-        // Create sample competition
         await this.createCompetition({
-          title: "Gara di Caccia al Cinghiale - Primavera 2024",
-          description: "Gara specialistica dedicata alla caccia al cinghiale con cani da seguita. L'evento si terrà presso i nostri terreni di addestramento e sarà aperto a tutti i cacciatori in possesso di regolare licenza.",
-          discipline: "Caccia al Cinghiale",
-          location: "Terreni ENAL Caccia, Treviso",
-          eventDate: new Date("2024-04-15"),
-          cost: 50,
-          maxParticipants: 40,
-          registrationDeadline: new Date("2024-04-01")
+          title: "Prova di lavoro per segugi su lepre",
+          description: "Manifestazione cinofila con batterie a sorteggio e giudizio tecnico su accostamento e seguita.",
+          discipline: "Segugi",
+          location: "Provincia di Treviso - zona pedemontana",
+          eventDate: new Date("2026-05-10"),
+          cost: 35,
+          maxParticipants: 48,
+          registrationDeadline: new Date("2026-05-03")
         });
 
         // Create membership types with official ENALCACCIA 2025 pricing
@@ -563,6 +624,8 @@ export class DatabaseStorage implements IStorage {
           name: "Tessera Base Nazionale",
           description: "Tessera ENALCACCIA base con RCA inclusa",
           price: 10000, // €100.00 in cents
+          maxMembers: null,
+          active: true,
           features: [
             "Responsabilità Civile verso Terzi (RCA)",
             "Massimale €1.500.000",
@@ -575,6 +638,8 @@ export class DatabaseStorage implements IStorage {
           name: "Tessera Super Nazionale", 
           description: "Tessera ENALCACCIA Super con coperture aggiuntive",
           price: 12500, // €125.00 in cents
+          maxMembers: null,
+          active: true,
           features: [
             "Tutti i vantaggi Base Nazionale",
             "Coperture assicurative ampliate", 
@@ -587,6 +652,8 @@ export class DatabaseStorage implements IStorage {
           name: "Tessera 2 Cani",
           description: "Tessera per cacciatori con due cani",
           price: 18000, // €180.00 in cents
+          maxMembers: null,
+          active: true,
           features: [
             "Copertura per due cani da caccia",
             "RCA per entrambi i cani",
@@ -599,6 +666,8 @@ export class DatabaseStorage implements IStorage {
           name: "Tessera Pesca €10",
           description: "Tessera base per pesca sportiva - contributo minimo",
           price: 1000, // €10.00 in cents  
+          maxMembers: null,
+          active: true,
           features: [
             "Licenza pesca sportiva",
             "Accesso laghi convenzionati",
@@ -610,12 +679,116 @@ export class DatabaseStorage implements IStorage {
           name: "Tessera Pesca €6",
           description: "Tessera pesca sportiva - tariffa ridotta",
           price: 600, // €6.00 in cents
+          maxMembers: null,
+          active: true,
           features: [
             "Licenza pesca sportiva",
             "Tariffa agevolata",
             "Valida per gare provinciali"
           ]
         });
+      }
+
+      const curatedNews: InsertNews[] = [
+        {
+          title: "Riforma della legge sulla caccia: aggiornamento sul calendario parlamentare",
+          content: "Nel dibattito nazionale sulla riforma della normativa venatoria si registra una fase di attesa sui passaggi in calendario. La sezione provinciale raccomanda ai soci di seguire gli sviluppi istituzionali con attenzione, evitando interpretazioni non ufficiali e verificando sempre le fonti primarie. Per approfondire il tema, è disponibile un monitoraggio periodico nella rassegna stampa dedicata alle principali testate di settore.",
+          slug: "riforma-legge-caccia-aggiornamento-calendario-parlamentare",
+          excerpt: "Aggiornamento sulla riforma venatoria: fase di attesa sui prossimi passaggi istituzionali.",
+          category: "Normativa",
+          published: true,
+          featuredImage: null,
+        },
+        {
+          title: "Comitato faunistico-venatorio: proseguono i lavori tecnici",
+          content: "Nel confronto tra istituzioni e rappresentanze del settore proseguono le attività del comitato faunistico-venatorio nazionale. La sezione sottolinea l'importanza di un approccio tecnico, basato su dati territoriali, sicurezza e gestione sostenibile della fauna. I soci interessati riceveranno aggiornamenti sintetici sui punti che possono avere ricadute operative a livello locale.",
+          slug: "comitato-faunistico-venatorio-proseguono-lavori-tecnici",
+          excerpt: "Proseguono i lavori del comitato faunistico-venatorio con focus su aspetti tecnici e gestione sostenibile.",
+          category: "Comunicati",
+          published: true,
+          featuredImage: null,
+        },
+        {
+          title: "Cinofilia venatoria: calendario verifiche attitudinali di primavera",
+          content: "Le attività cinofile primaverili entrano nel vivo con verifiche attitudinali dedicate ai cani da ferma. La sezione invita i conduttori a consultare i bandi prima dell'iscrizione, con particolare attenzione a requisiti sanitari, documentazione e limiti numerici. L'obiettivo è garantire prove ordinate, trasparenti e coerenti con i regolamenti vigenti.",
+          slug: "cinofilia-venatoria-calendario-verifiche-attitudinali-primavera",
+          excerpt: "In arrivo le verifiche attitudinali di primavera: controllare requisiti e bandi prima dell'iscrizione.",
+          category: "Gare Cinofile",
+          published: true,
+          featuredImage: "/attached_assets/cane-caccia-1.jpg",
+        },
+        {
+          title: "Cinofilia specialistica: appuntamenti su beccaccia tra febbraio e marzo",
+          content: "Il calendario cinofilo specialistico prevede appuntamenti concentrati tra fine inverno e inizio primavera, con formule dedicate ai cani da ferma. La sezione ricorda che la partecipazione richiede preparazione tecnica, rispetto delle regole di campo e attenzione al benessere animale. Eventuali variazioni logistiche saranno comunicate tempestivamente nei canali ufficiali.",
+          slug: "cinofilia-specialistica-appuntamenti-beccaccia-febbraio-marzo",
+          excerpt: "Appuntamenti cinofili specialistici su beccaccia: focus su regole di campo e benessere animale.",
+          category: "Gare Cinofile",
+          published: true,
+          featuredImage: "/attached_assets/cane-caccia-2.jpg",
+        },
+        {
+          title: "Rassegna tecnica: ottiche e attrezzature, come scegliere in modo consapevole",
+          content: "Le ultime uscite editoriali del settore evidenziano una crescita dell'interesse verso prove pratiche su ottiche, armi e accessori. La sezione consiglia ai soci di valutare sempre l'attrezzatura in funzione dell'impiego reale, della sicurezza e della conformità normativa. Le schede comparative hanno valore orientativo e non sostituiscono la verifica diretta presso operatori autorizzati.",
+          slug: "rassegna-tecnica-ottiche-attrezzature-scelta-consapevole",
+          excerpt: "Prove e test di settore: criteri pratici per scegliere ottiche e attrezzature con maggiore consapevolezza.",
+          category: "Attrezzature",
+          published: true,
+          featuredImage: null,
+        },
+      ];
+
+      const allExistingNews = await this.getAllNews();
+      for (const article of allExistingNews) {
+        await this.deleteNews(article.id);
+      }
+
+      for (const article of curatedNews) {
+        await this.createNews(article);
+      }
+
+      const curatedCompetitions: InsertCompetition[] = [
+        {
+          title: "Prova cinofila su selvaggina naturale - Razze da ferma",
+          description: "Prova tecnica individuale su terreno naturale con valutazione di cerca, ferma e correttezza di condotta.",
+          discipline: "Razze da ferma",
+          location: "Provincia di Treviso - area collinare",
+          eventDate: new Date("2026-04-19"),
+          cost: 40,
+          bandoUrl: "/docs/bando-prova-ferma-aprile-2026.pdf",
+          maxParticipants: 36,
+          registrationDeadline: new Date("2026-04-12"),
+        },
+        {
+          title: "Prova di lavoro per segugi su lepre",
+          description: "Manifestazione cinofila con batterie a sorteggio e giudizio tecnico su accostamento, seguita e correttezza di voce.",
+          discipline: "Segugi",
+          location: "Provincia di Treviso - zona pedemontana",
+          eventDate: new Date("2026-05-10"),
+          cost: 35,
+          bandoUrl: "/docs/bando-segugi-maggio-2026.pdf",
+          maxParticipants: 48,
+          registrationDeadline: new Date("2026-05-03"),
+        },
+        {
+          title: "Giornata addestrativa cinofila controllata",
+          description: "Sessione pratica non competitiva con briefing iniziale sulla sicurezza, turni in campo e verifica documentale all'accredito.",
+          discipline: "Addestramento cinofilo",
+          location: "Campo addestramento convenzionato - Treviso",
+          eventDate: new Date("2026-05-24"),
+          cost: 25,
+          bandoUrl: "/docs/programma-giornata-addestrativa-2026.pdf",
+          maxParticipants: 30,
+          registrationDeadline: new Date("2026-05-18"),
+        },
+      ];
+
+      const allExistingCompetitions = await this.getAllCompetitions();
+      for (const competition of allExistingCompetitions) {
+        await this.deleteCompetition(competition.id);
+      }
+
+      for (const competition of curatedCompetitions) {
+        await this.createCompetition(competition);
       }
     } catch (error) {
       console.log("Inizializzazione dati completata o già presente");
@@ -638,7 +811,7 @@ export class DatabaseStorage implements IStorage {
       .insert(users)
       .values({
         ...userData,
-        role: userData.role || 'user',
+        role: userData.role || 'utente',
         approved: true,
         approvedAt: new Date(),
         createdAt: new Date()
@@ -654,6 +827,11 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user || undefined;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   async getAllUsers(): Promise<User[]> {
@@ -688,7 +866,7 @@ export class DatabaseStorage implements IStorage {
 
   async deletePendingUser(id: number): Promise<boolean> {
     const result = await db.delete(pendingUsers).where(eq(pendingUsers.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // News
@@ -731,7 +909,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteNews(id: number): Promise<boolean> {
     const result = await db.delete(news).where(eq(news.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Competitions
@@ -769,7 +947,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCompetition(id: number): Promise<boolean> {
     const result = await db.delete(competitions).where(eq(competitions.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Memberships
@@ -782,7 +960,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(memberships);
   }
 
-  async createMembership(membershipData: Omit<Membership, 'id' | 'currentMembers'>): Promise<Membership> {
+  async createMembership(membershipData: MembershipInput): Promise<Membership> {
     const [membership] = await db
       .insert(memberships)
       .values({
@@ -867,7 +1045,7 @@ export class DatabaseStorage implements IStorage {
       .insert(newsletter)
       .values({
         ...subscriberData,
-        subscriptionDate: new Date()
+        subscribedAt: new Date()
       })
       .returning();
     return subscriber;
@@ -878,4 +1056,6 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = process.env.DATABASE_URL
+  ? new DatabaseStorage()
+  : new MemStorage();

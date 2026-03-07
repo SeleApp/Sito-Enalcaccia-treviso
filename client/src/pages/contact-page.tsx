@@ -64,13 +64,12 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="bg-background">{/* Layout now handles min-h-screen */}
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Contattaci</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Contattaci</h1>
+          <p className="page-subtitle">
             Siamo qui per rispondere alle tue domande e fornirti tutte le informazioni 
             di cui hai bisogno. Non esitare a contattarci!
           </p>
@@ -202,9 +201,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Sede Principale</h3>
                     <p className="text-muted-foreground">
-                      Via Roma, 45<br />
-                      31100 Treviso (TV)<br />
-                      Veneto, Italia
+                      Provincia di Treviso (TV)<br />
+                      Il dettaglio sede e ricevimento è comunicato ai soci<br />
+                      tramite i canali ufficiali della sezione
                     </p>
                   </div>
                 </div>
@@ -216,12 +215,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Telefono</h3>
                     <p className="text-muted-foreground">
-                      <a href="tel:+390422785432" className="hover:text-forest transition-colors">
-                        +39 0422 785432
-                      </a>
-                      <br />
-                      Lun-Ven: 9:00-17:00<br />
-                      Sab: 9:00-12:00
+                      Per recapiti aggiornati usa il modulo contatti<br />
+                      o consulta i canali ufficiali della sezione
                     </p>
                   </div>
                 </div>
@@ -233,13 +228,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
                     <p className="text-muted-foreground">
-                      <a href="mailto:info@enalcaccia-treviso.it" className="hover:text-forest transition-colors">
-                        info@enalcaccia-treviso.it
-                      </a>
-                      <br />
-                      <a href="mailto:segretario@enalcaccia-treviso.it" className="hover:text-forest transition-colors">
-                        segretario@enalcaccia-treviso.it
-                      </a>
+                      Le richieste inviate dal modulo vengono prese in carico<br />
+                      dalla segreteria della sezione provinciale
                     </p>
                   </div>
                 </div>
@@ -251,9 +241,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Orari di Apertura</h3>
                     <p className="text-muted-foreground">
-                      Lunedì - Venerdì: 9:00 - 17:00<br />
-                      Sabato: 9:00 - 12:00<br />
-                      Domenica: Chiuso
+                      Gli orari di sportello possono variare in base alla stagione<br />
+                      e al calendario venatorio
                     </p>
                   </div>
                 </div>
@@ -311,16 +300,16 @@ export default function ContactPage() {
                     <MapPin className="w-12 h-12 mx-auto mb-2" />
                     <p className="text-sm">Mappa interattiva</p>
                     <p className="text-xs">
-                      Via Roma, 45 - Treviso (TV)
+                      Provincia di Treviso (TV)
                     </p>
                   </div>
                 </div>
                 <div className="mt-4 text-sm text-muted-foreground">
                   <p>
-                    <strong>In auto:</strong> Uscita A27 Treviso Sud, seguire indicazioni centro città.
+                    <strong>In auto:</strong> indicazioni dettagliate fornite al momento dell'appuntamento.
                   </p>
                   <p className="mt-1">
-                    <strong>Trasporto pubblico:</strong> Fermata autobus "Centro" a 200 metri.
+                    <strong>Trasporto pubblico:</strong> disponibilità e fermate variano in base all'area.
                   </p>
                 </div>
               </CardContent>

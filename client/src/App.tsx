@@ -13,6 +13,7 @@ import AuthPage from "@/pages/auth-page";
 import AdminDashboard from "@/pages/admin-dashboard";
 import UserDashboard from "@/pages/user-dashboard";
 import NewsPage from "@/pages/news-page";
+import NewsDetailPage from "@/pages/news-detail-page";
 import CompetitionsPage from "@/pages/competitions-page";
 import MembershipPage from "@/pages/membership-page";
 import ContactPage from "@/pages/contact-page";
@@ -33,6 +34,7 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/auth" component={AuthPage} />
         <Route path="/news" component={NewsPage} />
+        <Route path="/news/:slug" component={NewsDetailPage} />
         <Route path="/competitions" component={CompetitionsPage} />
         <Route path="/membership" component={MembershipPage} />
         <Route path="/contact" component={ContactPage} />

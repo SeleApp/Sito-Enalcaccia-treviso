@@ -52,7 +52,7 @@ export function SEOHead({
       "name": "ENAL Caccia - Sezione Provinciale di Treviso",
       "description": "Associazione venatoria provinciale di Treviso per caccia, pesca sportiva e tiro. Tessere ufficiali, gare cinofile e corsi di formazione.",
       "url": "https://enalcaccia-treviso.replit.app",
-      "logo": "https://enalcaccia-treviso.replit.app/logo.png",
+      "logo": "https://enalcaccia-treviso.replit.app/attached_assets/logo-enalcaccia-treviso.png?v=20260307",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Via della Caccia, 123",

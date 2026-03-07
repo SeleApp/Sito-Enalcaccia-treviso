@@ -1,6 +1,8 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import type { AddressInfo } from "net";
 
 const app = express();
 app.use(express.json());
@@ -59,15 +61,32 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  // In development, start from 5001 and auto-increment if the port is busy.
+  // In production, keep default 5000 unless PORT is explicitly provided.
+  const defaultPort = app.get("env") === "development" ? 5001 : 5000;
+  const hasExplicitPort = Boolean(process.env.PORT);
+  const initialPort = Number(process.env.PORT || defaultPort);
+
+  const tryListen = (port: number) => {
+    server.once("error", (error: NodeJS.ErrnoException) => {
+      const isDevAutoFallback = !hasExplicitPort && app.get("env") === "development";
+      if (error.code === "EADDRINUSE" && isDevAutoFallback) {
+        log(`port ${port} in use, trying ${port + 1}`);
+        tryListen(port + 1);
+        return;
+      }
+      throw error;
+    });
+
+    server.listen({
+      port,
+      host: "0.0.0.0",
+    }, () => {
+      server.removeAllListeners("error");
+      const address = server.address() as AddressInfo | null;
+      log(`serving on port ${address?.port ?? port}`);
+    });
+  };
+
+  tryListen(initialPort);
 })();

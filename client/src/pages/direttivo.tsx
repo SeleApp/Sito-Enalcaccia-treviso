@@ -5,80 +5,80 @@ import { Mail, Phone, MapPin, Calendar } from "lucide-react";
 export default function Direttivo() {
   const membri = [
     {
-      nome: "Mario Rossi",
+      nome: "Presidente Provinciale",
       ruolo: "Presidente",
-      descrizione: "Guida l'associazione dal 2018, con oltre 30 anni di esperienza nella caccia.",
-      email: "presidente@enalcacciatreviso.it",
-      telefono: "339 123 4567",
-      mandato: "2022-2025"
+      descrizione: "Coordina le attività istituzionali della sezione e rappresenta l'associazione sul territorio.",
+      email: "Contatto tramite segreteria",
+      telefono: "Disponibile su richiesta",
+      mandato: "In corso"
     },
     {
-      nome: "Giuseppe Bianchi",
+      nome: "Vicepresidenza",
       ruolo: "Vice Presidente",
-      descrizione: "Esperto in cinofilia, responsabile dei corsi di addestramento.",
-      email: "vicepresidente@enalcacciatreviso.it",
-      telefono: "347 234 5678",
-      mandato: "2022-2025"
+      descrizione: "Supporta la Presidenza e segue i progetti operativi della sezione.",
+      email: "Contatto tramite segreteria",
+      telefono: "Disponibile su richiesta",
+      mandato: "In corso"
     },
     {
-      nome: "Anna Verdi",
+      nome: "Segreteria",
       ruolo: "Segretario",
-      descrizione: "Gestisce la parte amministrativa e i rapporti con gli enti.",
-      email: "segretario@enalcacciatreviso.it",
-      telefono: "333 345 6789",
-      mandato: "2022-2025"
+      descrizione: "Gestisce comunicazioni, pratiche amministrative e supporto ai soci.",
+      email: "Contatto tramite modulo",
+      telefono: "Disponibile su richiesta",
+      mandato: "In corso"
     },
     {
-      nome: "Franco Neri",
+      nome: "Tesoreria",
       ruolo: "Tesoriere",
-      descrizione: "Responsabile della gestione finanziaria dell'associazione.",
-      email: "tesoriere@enalcacciatreviso.it",
-      telefono: "338 456 7890",
-      mandato: "2022-2025"
+      descrizione: "Cura la gestione economica, i bilanci e i flussi amministrativi.",
+      email: "Contatto tramite segreteria",
+      telefono: "Disponibile su richiesta",
+      mandato: "In corso"
     },
     {
-      nome: "Luca Blu",
+      nome: "Consigliere Area Venatoria",
       ruolo: "Consigliere",
-      descrizione: "Esperto in normative venatorie e gestione del territorio.",
-      email: "consigliere1@enalcacciatreviso.it",
-      telefono: "349 567 8901",
-      mandato: "2022-2025"
+      descrizione: "Supporta attività tecniche e iniziative legate al territorio e alla normativa.",
+      email: "Contatto tramite segreteria",
+      telefono: "Disponibile su richiesta",
+      mandato: "In corso"
     },
     {
-      nome: "Marco Gialli",
+      nome: "Consigliere Attività Sportive",
       ruolo: "Consigliere",
-      descrizione: "Specialista in pesca sportiva e organizzazione eventi.",
-      email: "consigliere2@enalcacciatreviso.it",
-      telefono: "331 678 9012",
-      mandato: "2022-2025"
+      descrizione: "Segue progetti legati a cinofilia, pesca sportiva e attività formative.",
+      email: "Contatto tramite segreteria",
+      telefono: "Disponibile su richiesta",
+      mandato: "In corso"
     }
   ];
 
   const riunioni = [
     {
-      data: "15 Marzo 2024",
-      ora: "20:30",
-      argomenti: ["Bilancio 2023", "Programmazione gare primaverili", "Manutenzione strutture"]
+      data: "Calendario annuale",
+      ora: "Comunicata ai soci",
+      argomenti: ["Programmazione attività", "Gestione associativa", "Aggiornamenti normativi"]
     },
     {
-      data: "20 Aprile 2024", 
-      ora: "20:30",
-      argomenti: ["Risultati gare", "Nuove iscrizioni", "Progetti estivi"]
+      data: "Assemblea soci",
+      ora: "Convocazione ufficiale",
+      argomenti: ["Relazioni annuali", "Bilancio", "Linee guida stagione successiva"]
     },
     {
-      data: "18 Maggio 2024",
-      ora: "20:30", 
-      argomenti: ["Assemblea soci", "Elezioni cariche", "Bilancio preventivo"]
+      data: "Riunioni straordinarie",
+      ora: "Quando necessario", 
+      argomenti: ["Temi urgenti", "Coordinamento eventi", "Supporto ai soci"]
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="page-shell min-h-screen">
+      <div className="page-wrap">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-forest mb-4">Consiglio Direttivo</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <div className="page-header">
+          <h1 className="page-title">Consiglio Direttivo</h1>
+          <p className="page-subtitle">
             Il nostro team di dirigenti lavora con passione per promuovere le attività venatorie 
             e sportive nella provincia di Treviso.
           </p>
@@ -106,13 +106,13 @@ export default function Direttivo() {
                 <CardContent className="space-y-3">
                   <div className="flex items-center text-sm text-gray-600">
                     <Mail className="w-4 h-4 mr-2 text-forest" />
-                    <a href={`mailto:${membro.email}`} className="hover:text-forest transition-colors">
+                    <a href="/contact" className="hover:text-forest transition-colors">
                       {membro.email}
                     </a>
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <Phone className="w-4 h-4 mr-2 text-forest" />
-                    <a href={`tel:${membro.telefono}`} className="hover:text-forest transition-colors">
+                    <a href="/contact" className="hover:text-forest transition-colors">
                       {membro.telefono}
                     </a>
                   </div>
@@ -165,8 +165,8 @@ export default function Direttivo() {
                 <div className="flex items-start text-gray-600">
                   <MapPin className="w-4 h-4 mr-2 mt-1 text-forest" />
                   <div>
-                    <p>Via Roma, 123</p>
-                    <p>31100 Treviso (TV)</p>
+                    <p>Provincia di Treviso (TV)</p>
+                    <p>Dettagli disponibili tramite segreteria</p>
                   </div>
                 </div>
               </div>
@@ -174,9 +174,9 @@ export default function Direttivo() {
               <div>
                 <h4 className="font-semibold text-forest mb-2">Orari di Ricevimento</h4>
                 <div className="text-gray-600 space-y-1">
-                  <p><strong>Lunedì - Venerdì:</strong> 18:00 - 20:00</p>
-                  <p><strong>Sabato:</strong> 9:00 - 12:00</p>
-                  <p><strong>Domenica:</strong> Chiuso</p>
+                  <p><strong>Sportello:</strong> su appuntamento</p>
+                  <p><strong>Comunicazioni:</strong> tramite modulo contatti</p>
+                  <p><strong>Aggiornamenti:</strong> pubblicati sui canali ufficiali</p>
                 </div>
               </div>
 
@@ -185,11 +185,11 @@ export default function Direttivo() {
                 <div className="space-y-2">
                   <div className="flex items-center text-gray-600">
                     <Phone className="w-4 h-4 mr-2 text-forest" />
-                    <span>0422 123456</span>
+                    <span>Disponibile su richiesta</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <Mail className="w-4 h-4 mr-2 text-forest" />
-                    <span>info@enalcacciatreviso.it</span>
+                    <span>Usa il modulo nella pagina Contatti</span>
                   </div>
                 </div>
               </div>

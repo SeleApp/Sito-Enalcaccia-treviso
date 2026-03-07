@@ -5,7 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { User as SelectUser, insertUserSchema } from "@shared/schema";
 
 declare global {
   namespace Express {
@@ -29,8 +29,13 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  const toSafeUser = (user: SelectUser) => {
+    const { password, ...safeUser } = user;
+    return safeUser;
+  };
+
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.SESSION_SECRET || "dev-session-secret-change-me",
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
@@ -42,10 +47,12 @@ export function setupAuth(app: Express) {
   app.use(passport.session());
 
   passport.use(
-    new LocalStrategy(async (username, password, done) => {
-      const user = await storage.getUserByEmail(username);
+    new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
+      const user = await storage.getUserByEmail(email);
       if (!user || !(await comparePasswords(password, user.password))) {
         return done(null, false);
+      } else if (!user.approved) {
+        return done(null, false, { message: "Account in attesa di approvazione" });
       } else {
         return done(null, user);
       }
@@ -59,24 +66,49 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/register", async (req, res, next) => {
-    const existingUser = await storage.getUserByEmail(req.body.email);
-    if (existingUser) {
-      return res.status(400).send("Email already exists");
+    const parsed = insertUserSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        message: "Dati registrazione non validi",
+        errors: parsed.error.issues.map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        })),
+      });
     }
 
+    const payload = parsed.data;
+
+    const existingUser = await storage.getUserByEmail(payload.email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email già registrata" });
+    }
+
+    const { passwordConfirm, ...userData } = payload;
+
     const user = await storage.createUser({
-      ...req.body,
-      password: await hashPassword(req.body.password),
+      ...userData,
+      password: await hashPassword(payload.password),
     });
 
-    req.login(user, (err) => {
-      if (err) return next(err);
-      res.status(201).json(user);
+    res.status(201).json({
+      message: "Registrazione completata. Account in attesa di approvazione.",
+      user: toSafeUser(user),
     });
   });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json(req.user);
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err: any, user: SelectUser | false, info: { message?: string } | undefined) => {
+      if (err) return next(err);
+      if (!user) {
+        return res.status(401).send(info?.message || "Credenziali non valide");
+      }
+
+      req.login(user, (loginErr) => {
+        if (loginErr) return next(loginErr);
+        return res.status(200).json(toSafeUser(user));
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
@@ -88,6 +120,6 @@ export function setupAuth(app: Express) {
 
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    res.json(req.user);
+    res.json(toSafeUser(req.user));
   });
 }

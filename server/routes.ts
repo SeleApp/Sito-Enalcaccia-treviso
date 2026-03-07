@@ -10,7 +10,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-05-28.basil",
 }) : null;
 
 
@@ -116,6 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (stripe) {
     app.post("/api/create-payment-intent", requireAuth, async (req, res) => {
       try {
+        const authUser = req.user!;
         const { membershipId } = req.body;
         const membership = await storage.getMembership(membershipId);
         
@@ -127,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           amount: membership.price,
           currency: "eur",
           metadata: {
-            userId: req.user.id.toString(),
+            userId: authUser.id.toString(),
             membershipId: membershipId.toString(),
           },
         });
@@ -174,7 +175,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Protected user routes
   app.get("/api/user/memberships", requireAuth, async (req, res) => {
     try {
-      const memberships = await storage.getUserMemberships(req.user.id);
+      const authUser = req.user!;
+      const memberships = await storage.getUserMemberships(authUser.id);
       res.json(memberships);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch user memberships" });
@@ -183,7 +185,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.user.id);
+      const authUser = req.user!;
+      const user = await storage.getUser(authUser.id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -204,10 +207,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pendingUsers = await storage.getAllPendingUsers();
       const contacts = await storage.getAllContacts();
       const memberships = await storage.getAllMemberships();
+      const unapprovedUsers = users.filter((u) => !u.approved);
       
       const stats = {
         approvedUsers: users.filter(u => u.approved).length,
-        pendingUsers: pendingUsers.length,
+        pendingUsers: pendingUsers.length + unapprovedUsers.length,
         totalContacts: contacts.length,
         totalMemberships: memberships.length,
       };
@@ -221,7 +225,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/pending-users", requireAdmin, async (req, res) => {
     try {
       const pendingUsers = await storage.getAllPendingUsers();
-      res.json(pendingUsers);
+      const users = await storage.getAllUsers();
+      const unapprovedUsers = users
+        .filter((user) => !user.approved)
+        .map((user) => ({
+          id: user.id,
+          firstName: user.nome,
+          lastName: user.cognome,
+          email: user.email,
+          phone: null,
+          address: null,
+          city: null,
+          zipCode: null,
+          dateOfBirth: user.dataNascita,
+          placeOfBirth: user.luogoNascita,
+          fiscalCode: user.codiceFiscale,
+          membershipType: "base",
+          notes: "Registrazione web in attesa di approvazione",
+          pdfExtracted: false,
+          createdAt: user.createdAt,
+        }));
+
+      res.json([...pendingUsers, ...unapprovedUsers]);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch pending users" });
     }
@@ -229,17 +254,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/approve-user/:id", requireAdmin, async (req, res) => {
     try {
-      const pendingUser = await storage.getPendingUser(parseInt(req.params.id));
+      const userId = parseInt(req.params.id);
+      const pendingUser = await storage.getPendingUser(userId);
       if (!pendingUser) {
-        return res.status(404).json({ message: "Pending user not found" });
+        const users = await storage.getAllUsers();
+        const unapprovedUser = users.find((user) => user.id === userId && !user.approved);
+        if (!unapprovedUser) {
+          return res.status(404).json({ message: "Pending user not found" });
+        }
+
+        const approvedUser = await storage.updateUser(unapprovedUser.id, {
+          approved: true,
+          approvedAt: new Date(),
+        });
+
+        return res.json({ message: "User approved successfully", user: approvedUser });
       }
 
       // Move to approved users
       const { id, createdAt, ...userData } = pendingUser;
       const approvedUser = await storage.createUser({
-        ...userData,
-        approved: true,
-        approvedAt: new Date(),
+        nome: userData.firstName,
+        cognome: userData.lastName,
+        dataNascita: userData.dateOfBirth || "",
+        luogoNascita: userData.placeOfBirth || "",
+        codiceFiscale: userData.fiscalCode || `${Date.now()}-${id}`,
+        numeroLicenza: "DA_VERIFICARE",
+        email: userData.email,
+        password: "pending-approval-migrated",
+        role: "utente",
       });
 
       // Remove from pending
@@ -253,10 +296,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/admin/reject-user/:id", requireAdmin, async (req, res) => {
     try {
-      const deleted = await storage.deletePendingUser(parseInt(req.params.id));
-      if (!deleted) {
+      const userId = parseInt(req.params.id);
+      const deletedPending = await storage.deletePendingUser(userId);
+      if (deletedPending) {
+        return res.json({ message: "User registration rejected" });
+      }
+
+      const deletedUser = await storage.deleteUser(userId);
+      if (!deletedUser) {
         return res.status(404).json({ message: "Pending user not found" });
       }
+
       res.json({ message: "User registration rejected" });
     } catch (error) {
       res.status(500).json({ message: "Failed to reject user" });
