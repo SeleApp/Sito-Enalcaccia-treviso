@@ -386,10 +386,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: "utente",
       });
 
+      const activatedUser = await storage.updateUser(approvedUser.id, {
+        approved: true,
+        approvedAt: new Date(),
+      });
+
       // Remove from pending
       await storage.deletePendingUser(pendingUser.id);
 
-      res.json({ message: "User approved successfully", user: approvedUser });
+      res.json({ message: "User approved successfully", user: activatedUser ?? approvedUser });
     } catch (error) {
       res.status(500).json({ message: "Failed to approve user" });
     }

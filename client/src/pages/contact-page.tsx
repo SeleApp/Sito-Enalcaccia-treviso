@@ -365,7 +365,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-semibold mb-2">Quanto costa il tesseramento annuale?</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Offriamo diverse tipologie di tessera a partire da €85/anno. 
+                    Offriamo diverse tipologie di tessera a partire da €6/anno. 
                     Visita la sezione tesseramento per tutti i dettagli.
                   </p>
                 </div>

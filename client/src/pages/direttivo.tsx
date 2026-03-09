@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, Calendar } from "lucide-react";
 export default function Direttivo() {
   const membri = [
     {
-      nome: "Presidente Provinciale",
+      nome: "Dr. Franco Ravagnan",
       ruolo: "Presidente",
       descrizione: "Coordina le attività istituzionali della sezione e rappresenta l'associazione sul territorio.",
       email: "Contatto tramite segreteria",

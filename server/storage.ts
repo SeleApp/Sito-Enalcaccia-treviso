@@ -33,6 +33,113 @@ const PostgresSessionStore = connectPg(session);
 
 type MembershipInput = Omit<Membership, 'id' | 'currentMembers'>;
 
+const OFFICIAL_MEMBERSHIP_CATALOG: MembershipInput[] = [
+  {
+    name: "Tessera semplice",
+    description: "Copertura annuale per attivita venatoria di base.",
+    price: 6500,
+    features: ["Copertura base", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera caccia super 1 cane",
+    description: "Copertura estesa per caccia con un cane.",
+    price: 14000,
+    features: ["Copertura super", "Inclusione 1 cane", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera caccia super 2 cani",
+    description: "Copertura estesa per caccia con due cani.",
+    price: 16500,
+    features: ["Copertura super", "Inclusione 2 cani", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera base nazionale",
+    description: "Tessera nazionale con copertura base.",
+    price: 8500,
+    features: ["Copertura nazionale base", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera super",
+    description: "Tessera nazionale con copertura super.",
+    price: 11000,
+    features: ["Copertura super", "Servizi estesi", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera pesca semplice",
+    description: "Copertura annuale per attivita di pesca.",
+    price: 8000,
+    features: ["Copertura pesca base", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera pesca super 1 cane",
+    description: "Copertura pesca super con opzione 1 cane.",
+    price: 15500,
+    features: ["Copertura pesca super", "Opzione 1 cane", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera pesca",
+    description: "Tessera pesca essenziale.",
+    price: 2000,
+    features: ["Accesso pesca", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera pesca lago (giovani 14-90 anni)",
+    description: "Formula lago dedicata ai giovani 14-90 anni.",
+    price: 1000,
+    features: ["Accesso pesca lago", "Tariffa agevolata"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera pesca ragazzi 7-14 anni",
+    description: "Formula pesca dedicata ai ragazzi 7-14 anni.",
+    price: 600,
+    features: ["Accesso pesca ragazzi", "Tariffa agevolata"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Tessera amatoriale",
+    description: "Tessera per attivita amatoriali.",
+    price: 3000,
+    features: ["Copertura amatoriale", "Validita annuale"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Capanno richiami vivi",
+    description: "Opzione aggiuntiva per capanno richiami vivi.",
+    price: 1000,
+    features: ["Opzione aggiuntiva"],
+    maxMembers: null,
+    active: true,
+  },
+  {
+    name: "Morte del cane (opzione assicurativa)",
+    description: "Opzione assicurativa aggiuntiva per morte del cane.",
+    price: 3000,
+    features: ["Opzione assicurativa aggiuntiva"],
+    maxMembers: null,
+    active: true,
+  },
+];
+
 export interface IStorage {
   sessionStore: session.Store;
   
@@ -136,60 +243,15 @@ export class MemStorage implements IStorage {
     };
     this.users.set(adminUser.id, adminUser);
 
-    // Initialize membership types
-    const baseMembership: Membership = {
-      id: this.currentMembershipId++,
-      name: "Tessera Base",
-      description: "Ideale per cacciatori occasionali",
-      price: 8500, // €85.00 in cents
-      features: [
-        "Licenza di caccia valida",
-        "Accesso alle riserve convenzionate", 
-        "Newsletter mensile",
-        "Supporto base"
-      ],
-      maxMembers: null,
-      currentMembers: 0,
-      active: true,
-    };
-
-    const premiumMembership: Membership = {
-      id: this.currentMembershipId++,
-      name: "Tessera Premium",
-      description: "Per cacciatori esperti e appassionati",
-      price: 15000, // €150.00 in cents
-      features: [
-        "Tutti i vantaggi della tessera base",
-        "Partecipazione gare cinofile",
-        "Sconti presso armerie convenzionate",
-        "Corsi di formazione gratuiti",
-        "Supporto prioritario"
-      ],
-      maxMembers: null,
-      currentMembers: 0,
-      active: true,
-    };
-
-    const eliteMembership: Membership = {
-      id: this.currentMembershipId++,
-      name: "Tessera Elite",
-      description: "Massimo livello di servizi",
-      price: 25000, // €250.00 in cents
-      features: [
-        "Tutti i vantaggi Premium",
-        "Accesso esclusivo riserve premium",
-        "Consulenza personalizzata",
-        "Eventi esclusivi",
-        "Kit cacciatore personalizzato"
-      ],
-      maxMembers: 100,
-      currentMembers: 0,
-      active: true,
-    };
-
-    this.memberships.set(baseMembership.id, baseMembership);
-    this.memberships.set(premiumMembership.id, premiumMembership);
-    this.memberships.set(eliteMembership.id, eliteMembership);
+    // Initialize membership types from official catalog
+    OFFICIAL_MEMBERSHIP_CATALOG.forEach((membershipData) => {
+      const membership: Membership = {
+        ...membershipData,
+        id: this.currentMembershipId++,
+        currentMembers: 0,
+      };
+      this.memberships.set(membership.id, membership);
+    });
 
     // Sample news articles (ispirate a temi recenti di Caccia Magazine, testi originali)
     const sampleNews: News[] = [
@@ -580,7 +642,7 @@ export class DatabaseStorage implements IStorage {
       const existingAdmin = await this.getUserByEmail("admin@enalcaccia.it");
       if (!existingAdmin) {
         // Create default admin user
-        await this.createUser({
+        const adminUser = await this.createUser({
           nome: "Amministratore",
           cognome: "Sistema",
           dataNascita: "1980-01-01",
@@ -590,6 +652,11 @@ export class DatabaseStorage implements IStorage {
           email: "admin@enalcaccia.it",
           password: "$2b$10$K8Q8K8K8K8K8K8K8K8K8KO8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8", // "admin123"
           role: "admin"
+        });
+
+        await this.updateUser(adminUser.id, {
+          approved: true,
+          approvedAt: new Date(),
         });
         
         // Create sample competition (official programmed event)
@@ -605,75 +672,9 @@ export class DatabaseStorage implements IStorage {
           registrationDeadline: new Date("2026-04-15")
         });
 
-        // Create membership types with official ENALCACCIA 2025 pricing
-        await this.createMembership({
-          name: "Tessera Base Nazionale",
-          description: "Tessera ENALCACCIA base con RCA inclusa",
-          price: 10000, // €100.00 in cents
-          maxMembers: null,
-          active: true,
-          features: [
-            "Responsabilità Civile verso Terzi (RCA)",
-            "Massimale €1.500.000",
-            "Validità annuale",
-            "Accesso gare nazionali"
-          ]
-        });
-
-        await this.createMembership({
-          name: "Tessera Super Nazionale", 
-          description: "Tessera ENALCACCIA Super con coperture aggiuntive",
-          price: 12500, // €125.00 in cents
-          maxMembers: null,
-          active: true,
-          features: [
-            "Tutti i vantaggi Base Nazionale",
-            "Coperture assicurative ampliate", 
-            "Assistenza legale inclusa",
-            "Sconti presso armerie convenzionate"
-          ]
-        });
-
-        await this.createMembership({
-          name: "Tessera 2 Cani",
-          description: "Tessera per cacciatori con due cani",
-          price: 18000, // €180.00 in cents
-          maxMembers: null,
-          active: true,
-          features: [
-            "Copertura per due cani da caccia",
-            "RCA per entrambi i cani",
-            "Tessera sanitaria cani inclusa",
-            "Partecipazione gare cinofile"
-          ]
-        });
-
-        await this.createMembership({
-          name: "Tessera Pesca €10",
-          description: "Tessera base per pesca sportiva - contributo minimo",
-          price: 1000, // €10.00 in cents  
-          maxMembers: null,
-          active: true,
-          features: [
-            "Licenza pesca sportiva",
-            "Accesso laghi convenzionati",
-            "Contributo minimo permesso"
-          ]
-        });
-
-        await this.createMembership({
-          name: "Tessera Pesca €6",
-          description: "Tessera pesca sportiva - tariffa ridotta",
-          price: 600, // €6.00 in cents
-          maxMembers: null,
-          active: true,
-          features: [
-            "Licenza pesca sportiva",
-            "Tariffa agevolata",
-            "Valida per gare provinciali"
-          ]
-        });
       }
+
+      await this.syncOfficialMemberships();
 
       const curatedNews: InsertNews[] = [
         {
@@ -777,6 +778,66 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  private async syncOfficialMemberships() {
+    const existingMemberships = await db.select().from(memberships);
+    const byLowerName = new Map(existingMemberships.map((m) => [m.name.toLowerCase(), m]));
+
+    const legacyNameMap: Record<string, string> = {
+      "tessera base nazionale": "Tessera base nazionale",
+      "tessera super nazionale": "Tessera super",
+      "tessera 2 cani": "Tessera caccia super 2 cani",
+      "tessera pesca €10": "Tessera pesca lago (giovani 14-90 anni)",
+      "tessera pesca €6": "Tessera pesca ragazzi 7-14 anni",
+    };
+
+    for (const [legacyName, targetName] of Object.entries(legacyNameMap)) {
+      const legacyMembership = byLowerName.get(legacyName);
+      const targetMembership = OFFICIAL_MEMBERSHIP_CATALOG.find((item) => item.name === targetName);
+
+      if (!legacyMembership || !targetMembership) continue;
+
+      await db
+        .update(memberships)
+        .set({
+          name: targetMembership.name,
+          description: targetMembership.description,
+          price: targetMembership.price,
+          features: targetMembership.features,
+          maxMembers: targetMembership.maxMembers,
+          active: true,
+        })
+        .where(eq(memberships.id, legacyMembership.id));
+
+      byLowerName.delete(legacyName);
+      byLowerName.set(targetMembership.name.toLowerCase(), { ...legacyMembership, name: targetMembership.name });
+    }
+
+    for (const membershipData of OFFICIAL_MEMBERSHIP_CATALOG) {
+      const existing = byLowerName.get(membershipData.name.toLowerCase());
+
+      if (existing) {
+        await db
+          .update(memberships)
+          .set({
+            description: membershipData.description,
+            price: membershipData.price,
+            features: membershipData.features,
+            maxMembers: membershipData.maxMembers,
+            active: true,
+          })
+          .where(eq(memberships.id, existing.id));
+        continue;
+      }
+
+      await db
+        .insert(memberships)
+        .values({
+          ...membershipData,
+          currentMembers: 0,
+        });
+    }
+  }
+
   // User management
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -794,8 +855,8 @@ export class DatabaseStorage implements IStorage {
       .values({
         ...userData,
         role: userData.role || 'utente',
-        approved: true,
-        approvedAt: new Date(),
+        approved: false,
+        approvedAt: null,
         createdAt: new Date()
       })
       .returning();
