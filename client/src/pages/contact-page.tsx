@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { SEOHead } from "@/components/seo-head";
 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -72,6 +73,11 @@ export default function ContactPage() {
 
   return (
     <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <SEOHead
+        title="Contatti"
+        description="Contatta ENAL Caccia Treviso per tesseramento, eventi, scuola venatoria e informazioni generali."
+        url="https://enalcaccia-treviso.replit.app/contact"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

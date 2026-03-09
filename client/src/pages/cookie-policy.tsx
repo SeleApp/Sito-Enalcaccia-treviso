@@ -1,12 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SEOHead } from "@/components/seo-head";
 import { Cookie, Settings, Shield, BarChart, Target, Globe } from "lucide-react";
 import { Link } from "wouter";
 
 export default function CookiePolicy() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <SEOHead
+        title="Cookie Policy"
+        description="Informativa cookie ENAL Caccia Treviso con dettagli su categorie cookie e gestione del consenso."
+        url="https://enalcaccia-treviso.replit.app/cookie-policy"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -15,7 +21,7 @@ export default function CookiePolicy() {
             Informativa sull'utilizzo dei cookie e tecnologie simili
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Ultimo aggiornamento: {new Date().toLocaleDateString('it-IT')}
+            Ultimo aggiornamento: 09/03/2026
           </p>
         </div>
 
@@ -61,8 +67,8 @@ export default function CookiePolicy() {
               preferenze dell'utente per un periodo di tempo.
             </p>
             <p className="text-gray-700">
-              Utilizziamo i cookie per migliorare l'esperienza di navigazione, analizzare il traffico 
-              e personalizzare i contenuti secondo le normative vigenti.
+              Utilizziamo i cookie per migliorare l'esperienza di navigazione. I cookie non necessari 
+              (analitici/marketing) sono attivabili solo previo consenso, quando presenti.
             </p>
           </CardContent>
         </Card>
@@ -90,6 +96,7 @@ export default function CookiePolicy() {
                   <li><strong>connect.sid:</strong> Cookie di sessione per autenticazione (durata: sessione)</li>
                   <li><strong>cookie_consent (localStorage):</strong> Preferenze consenso cookie (durata: 12 mesi)</li>
                   <li><strong>cookie_consent_date (localStorage):</strong> Data del consenso (durata: 12 mesi)</li>
+                  <li><strong>cookie_consent_version (localStorage):</strong> Versione informativa cookie accettata</li>
                 </ul>
               </div>
             </div>
@@ -129,9 +136,9 @@ export default function CookiePolicy() {
               </p>
               <div className="bg-yellow-50 p-3 rounded-lg">
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li><strong>_ga:</strong> Google Analytics (durata tipica: 2 anni, solo se attivato)</li>
-                  <li><strong>_ga_*:</strong> Google Analytics sessione/campagne (solo se attivato)</li>
-                  <li><strong>_gid:</strong> Google Analytics identificatore giornaliero (solo se attivato)</li>
+                  <li><strong>_ga:</strong> identificatore statistico (solo se analytics viene attivato)</li>
+                  <li><strong>_ga_*:</strong> identificatore sessione/campagne (solo se analytics viene attivato)</li>
+                  <li><strong>_gid:</strong> identificatore giornaliero (solo se analytics viene attivato)</li>
                 </ul>
               </div>
             </div>
@@ -150,8 +157,8 @@ export default function CookiePolicy() {
               </p>
               <div className="bg-red-50 p-3 rounded-lg">
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li><strong>_fbp:</strong> Meta Pixel tracciamento conversioni (durata tipica: 3 mesi, solo se attivato)</li>
-                  <li><strong>ads_prefs:</strong> Preferenze pubblicitarie (solo se attivato)</li>
+                  <li><strong>_fbp:</strong> identificatore marketing (solo se strumenti marketing vengono attivati)</li>
+                  <li><strong>ads_prefs:</strong> preferenze pubblicitarie (solo se strumenti marketing vengono attivati)</li>
                 </ul>
               </div>
             </div>
@@ -169,7 +176,7 @@ export default function CookiePolicy() {
           <CardContent className="space-y-4">
             <p className="text-gray-700">
               Eventuali cookie di terze parti vengono installati solo dopo consenso esplicito.
-              Al momento non vengono attivati automaticamente strumenti di tracciamento non necessari.
+              Al momento non risultano attivati automaticamente strumenti di tracciamento non necessari.
             </p>
             
             <div className="grid md:grid-cols-2 gap-4">

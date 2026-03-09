@@ -1,10 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { SEOHead } from "@/components/seo-head";
 import { Shield, Mail, Database, Eye, Users, FileText } from "lucide-react";
 
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+      <SEOHead
+        title="Privacy Policy"
+        description="Informativa privacy ENAL Caccia Treviso sul trattamento dei dati personali ai sensi del GDPR."
+        url="https://enalcaccia-treviso.replit.app/privacy-policy"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">

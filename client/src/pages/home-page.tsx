@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 import { useAuth } from "@/hooks/use-auth";
+import { SEOHead } from "@/components/seo-head";
 import { Trophy, Users, GraduationCap, Shield, Leaf, Calendar, ExternalLink } from "lucide-react";
 import type { News } from "@shared/schema";
 
@@ -103,6 +104,11 @@ export default function HomePage() {
 
   return (
     <div className="bg-background">{/* Layout now handles min-h-screen */}
+      <SEOHead
+        title="Home"
+        description="ENAL Caccia Treviso: notizie, gare cinofile, attivita di pesca e tiro, tesseramento e servizi per i soci sul territorio provinciale."
+        url="https://enalcaccia-treviso.replit.app/"
+      />
       {/* Hero Section */}
       <section className="relative h-96 bg-gradient-to-r from-primary to-secondary overflow-hidden">
         <div 

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/seo-head";
 import { Calendar, MapPin, Users, Fish, Clock, Euro, Waves } from "lucide-react";
 
 export default function GarePesca() {
@@ -54,6 +55,11 @@ export default function GarePesca() {
 
   return (
     <div className="page-shell min-h-screen">
+      <SEOHead
+        title="Gare Pesca"
+        description="Calendario gare di pesca ENAL Caccia Treviso: eventi in acque interne e marine con modalita di iscrizione e categorie."
+        url="https://enalcaccia-treviso.replit.app/gare-pesca"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

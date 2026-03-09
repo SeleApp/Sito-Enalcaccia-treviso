@@ -1,0 +1,35 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Logo ENAL Caccia Treviso</title>
+  <desc id="desc">Logo circolare con monogramma ECT e simbolo foglia nel centro.</desc>
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F5134"/>
+      <stop offset="1" stop-color="#2E7A4F"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="96" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7C56B"/>
+      <stop offset="1" stop-color="#C89E38"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="256" cy="256" r="246" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="214" fill="none" stroke="url(#ring)" stroke-width="20"/>
+  <circle cx="256" cy="256" r="176" fill="#F4F8F5" fill-opacity="0.12"/>
+
+  <path d="M256 164C286 164 309 180 320 206C303 208 286 216 273 229C260 242 252 259 250 277C224 266 204 242 204 214C204 186 227 164 256 164Z" fill="#E9F3EC"/>
+  <path d="M321 206C323 244 294 282 256 284C258 246 286 214 321 206Z" fill="#D7EADA"/>
+
+  <g fill="#F9E5A6">
+    <rect x="146" y="318" width="220" height="10" rx="5"/>
+    <rect x="166" y="338" width="180" height="8" rx="4"/>
+  </g>
+
+  <g fill="#FFFFFF" font-family="Georgia, Times New Roman, serif" text-anchor="middle">
+    <text x="256" y="120" font-size="42" font-weight="700">ENAL CACCIA</text>
+    <text x="256" y="392" font-size="34" font-weight="700" letter-spacing="3">TREVISO</text>
+  </g>
+
+  <g fill="#FFFFFF" font-family="Georgia, Times New Roman, serif" text-anchor="middle">
+    <text x="256" y="312" font-size="96" font-weight="700" letter-spacing="4">ECT</text>
+  </g>
+</svg>

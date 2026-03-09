@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SEOHead } from "@/components/seo-head";
 import { Calendar, ArrowLeft } from "lucide-react";
 import type { News } from "@shared/schema";
 
@@ -15,9 +16,45 @@ export default function NewsDetailPage() {
     enabled: Boolean(slug),
   });
 
+  const pageUrl = slug ? `https://enalcaccia-treviso.replit.app/news/${slug}` : "https://enalcaccia-treviso.replit.app/news";
+  const pageTitle = article?.title || "Dettaglio Notizia";
+  const pageDescription = article?.excerpt || "Approfondimento su notizie e comunicati di ENAL Caccia Treviso.";
+  const pageImage = article?.featuredImage || "/attached_assets/enalcaccia-associazione-venatoria.png";
+  const articleStructuredData = article
+    ? {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": article.title,
+        "description": article.excerpt,
+        "image": [
+          pageImage.startsWith("http")
+            ? pageImage
+            : `https://enalcaccia-treviso.replit.app${pageImage.startsWith("/") ? pageImage : `/${pageImage}`}`,
+        ],
+        "datePublished": article.createdAt ? new Date(article.createdAt).toISOString() : undefined,
+        "dateModified": (article.updatedAt || article.createdAt)
+          ? new Date(article.updatedAt || article.createdAt as Date).toISOString()
+          : undefined,
+        "mainEntityOfPage": pageUrl,
+        "author": {
+          "@type": "Organization",
+          "name": "ENAL Caccia Treviso",
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "ENAL Caccia Treviso",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://enalcaccia-treviso.replit.app/attached_assets/logo-enalcaccia-treviso.png?v=20260307",
+          },
+        },
+      }
+    : undefined;
+
   if (isLoading) {
     return (
       <div className="page-shell">
+        <SEOHead title={pageTitle} description={pageDescription} type="article" url={pageUrl} image={pageImage} structuredData={articleStructuredData} />
         <div className="page-wrap max-w-4xl">
           <Card className="animate-pulse">
             <CardContent className="pt-6">
@@ -38,6 +75,7 @@ export default function NewsDetailPage() {
   if (isError || !article) {
     return (
       <div className="page-shell">
+        <SEOHead title="Notizia non trovata" description="La notizia richiesta non e disponibile." url={pageUrl} />
         <div className="page-wrap max-w-4xl">
           <Card>
             <CardContent className="pt-6 text-center">
@@ -60,6 +98,7 @@ export default function NewsDetailPage() {
 
   return (
     <div className="page-shell">
+      <SEOHead title={pageTitle} description={pageDescription} type="article" url={pageUrl} image={pageImage} structuredData={articleStructuredData} />
       <div className="page-wrap max-w-4xl">
         <div className="mb-6">
           <Link href="/news">

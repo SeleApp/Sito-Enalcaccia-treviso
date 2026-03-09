@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SEOHead } from "@/components/seo-head";
 import { Mail, Phone, MapPin, Calendar } from "lucide-react";
 
 export default function Direttivo() {
@@ -74,6 +75,11 @@ export default function Direttivo() {
 
   return (
     <div className="page-shell min-h-screen">
+      <SEOHead
+        title="Direttivo"
+        description="Comitato direttivo ENAL Caccia Treviso: ruoli, informazioni istituzionali e riferimenti della sezione provinciale."
+        url="https://enalcaccia-treviso.replit.app/direttivo"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

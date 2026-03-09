@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { MagazineSection } from "@/components/magazine-section";
+import { SEOHead } from "@/components/seo-head";
 
 export default function MagazinePage() {
   const initialTab = useMemo(() => {
@@ -9,6 +10,11 @@ export default function MagazinePage() {
 
   return (
     <div className="page-shell">
+      <SEOHead
+        title="Magazine"
+        description="Archivio magazine ENAL Caccia Treviso: Caccia e Natura e Il Beccaccino in formato PDF."
+        url="https://enalcaccia-treviso.replit.app/magazine"
+      />
       <div className="page-wrap">
         <div className="page-header">
           <h1 className="page-title">Magazine</h1>

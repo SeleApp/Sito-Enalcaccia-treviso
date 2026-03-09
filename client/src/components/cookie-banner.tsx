@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Cookie, Settings, X } from "lucide-react";
+import { Cookie, Settings } from "lucide-react";
 import { Link } from "wouter";
 
 interface CookiePreferences {
@@ -20,6 +20,8 @@ const DEFAULT_PREFERENCES: CookiePreferences = {
   marketing: false,
 };
 
+const COOKIE_CONSENT_VERSION = "2026-03-09";
+
 export function CookieBanner() {
   const [showBanner, setShowBanner] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
@@ -28,7 +30,9 @@ export function CookieBanner() {
   useEffect(() => {
     // Check if user has already made a choice
     const savedConsent = localStorage.getItem('cookie_consent');
-    if (!savedConsent) {
+    const savedVersion = localStorage.getItem('cookie_consent_version');
+
+    if (!savedConsent || savedVersion !== COOKIE_CONSENT_VERSION) {
       setShowBanner(true);
     } else {
       const savedPreferences = JSON.parse(savedConsent);
@@ -46,6 +50,7 @@ export function CookieBanner() {
   const savePreferences = (newPreferences: CookiePreferences) => {
     localStorage.setItem('cookie_consent', JSON.stringify(newPreferences));
     localStorage.setItem('cookie_consent_date', new Date().toISOString());
+    localStorage.setItem('cookie_consent_version', COOKIE_CONSENT_VERSION);
     setPreferences(newPreferences);
     
     // Apply cookie preferences
@@ -113,7 +118,7 @@ export function CookieBanner() {
                   </h3>
                   <p className="text-sm text-gray-600 mb-3">
                     Utilizziamo cookie tecnici necessari per il funzionamento del sito e, 
-                    previo tuo consenso, cookie per analisi e marketing. Puoi gestire le tue 
+                    previo tuo consenso, eventuali cookie per analisi e marketing. Puoi gestire le tue 
                     preferenze in qualsiasi momento.
                   </p>
                   <div className="flex flex-wrap gap-2 text-xs">
@@ -232,7 +237,7 @@ export function CookieBanner() {
                 />
               </div>
               <div className="text-xs text-gray-500">
-                Include: Google Analytics, statistiche di utilizzo, analisi delle performance
+                Include: eventuali strumenti statistici attivati solo dopo consenso esplicito
               </div>
             </div>
 
@@ -251,7 +256,7 @@ export function CookieBanner() {
                 />
               </div>
               <div className="text-xs text-gray-500">
-                Include: Facebook Pixel, remarketing, pubblicità personalizzata
+                Include: eventuali strumenti pubblicitari attivati solo dopo consenso esplicito
               </div>
             </div>
           </div>

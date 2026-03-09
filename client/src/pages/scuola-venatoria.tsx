@@ -1,10 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SEOHead } from "@/components/seo-head";
 import { BookOpen } from "lucide-react";
 
 export default function ScuolaVenatoria() {
   return (
     <div className="page-shell min-h-screen">
+      <SEOHead
+        title="Scuola Venatoria"
+        description="Scuola venatoria ENAL Caccia Treviso: formazione teorica e pratica per cacciatori e percorsi di aggiornamento."
+        url="https://enalcaccia-treviso.replit.app/scuola-venatoria"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

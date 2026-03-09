@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { SEOHead } from "@/components/seo-head";
 import { insertUserSchema } from "@shared/schema";
 import { Shield, Users, Trophy } from "lucide-react";
 
@@ -96,6 +97,12 @@ export default function AuthPage() {
 
   return (
     <div className="bg-background">
+      <SEOHead
+        title="Area Riservata"
+        description="Accedi o registrati all'area riservata ENAL Caccia Treviso."
+        url="https://enalcaccia-treviso.replit.app/auth"
+        noIndex
+      />
       <div className="grid lg:grid-cols-2 min-h-screen">
         {/* Left side - Forms */}
         <div className="flex items-center justify-center p-8">

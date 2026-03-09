@@ -34,6 +34,113 @@ function requireAdmin(req: any, res: any, next: any) {
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
+  const escapeXml = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
+  app.get("/sitemap.xml", async (_req, res) => {
+    const baseUrl = "https://enalcaccia-treviso.replit.app";
+    const staticRoutes = [
+      "/",
+      "/news",
+      "/eventi",
+      "/competitions",
+      "/magazine",
+      "/membership",
+      "/contact",
+      "/scuola-venatoria",
+      "/direttivo",
+      "/gare-cinofile",
+      "/gare-pesca",
+      "/gare-tiro",
+      "/pesca-tiro",
+      "/privacy-policy",
+      "/cookie-policy",
+    ];
+
+    try {
+      const publishedNews = (await storage.getAllNews()).filter((article) => article.published);
+
+      const staticXml = staticRoutes
+        .map((route) => {
+          const priority = route === "/" ? "1.0" : route === "/news" ? "0.9" : "0.7";
+          const changefreq = route === "/" || route === "/news" ? "daily" : "weekly";
+          return `\n  <url>\n    <loc>${baseUrl}${route}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+        })
+        .join("");
+
+      const newsXml = publishedNews
+        .map((article) => {
+          const lastmodDate = article.updatedAt || article.createdAt;
+          const lastmod = lastmodDate ? `\n    <lastmod>${new Date(lastmodDate).toISOString()}</lastmod>` : "";
+          return `\n  <url>\n    <loc>${baseUrl}/news/${encodeURIComponent(article.slug)}</loc>${lastmod}\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+        })
+        .join("");
+
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticXml}${newsXml}\n</urlset>`;
+
+      res.setHeader("Content-Type", "application/xml");
+      res.send(xml);
+    } catch (error) {
+      res.status(500).send("Failed to generate sitemap");
+    }
+  });
+
+  app.get("/feed.xml", async (_req, res) => {
+    const baseUrl = "https://enalcaccia-treviso.replit.app";
+
+    try {
+      const publishedNews = (await storage.getAllNews())
+        .filter((article) => article.published)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime(),
+        );
+
+      const itemsXml = publishedNews
+        .map((article) => {
+          const link = `${baseUrl}/news/${encodeURIComponent(article.slug)}`;
+          const pubDate = new Date(article.createdAt ?? new Date()).toUTCString();
+          const description = article.excerpt || article.content.slice(0, 220);
+
+          return `
+  <item>
+    <title>${escapeXml(article.title)}</title>
+    <link>${link}</link>
+    <guid isPermaLink="true">${link}</guid>
+    <pubDate>${pubDate}</pubDate>
+    <description>${escapeXml(description)}</description>
+    <category>${escapeXml(article.category)}</category>
+  </item>`;
+        })
+        .join("");
+
+      const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>ENAL Caccia Treviso - Notizie</title>
+  <link>${baseUrl}/news</link>
+  <description>Feed RSS ufficiale delle notizie ENAL Caccia Treviso</description>
+  <language>it-IT</language>
+  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>${itemsXml}
+</channel>
+</rss>`;
+
+      res.setHeader("Content-Type", "application/rss+xml; charset=utf-8");
+      res.send(rss);
+    } catch (error) {
+      res.status(500).send("Failed to generate feed");
+    }
+  });
+
+  app.get("/rss.xml", (_req, res) => {
+    res.redirect(301, "/feed.xml");
+  });
+
   app.get("/api/magazines", async (_req, res) => {
     try {
       const assetsDir = path.resolve(process.cwd(), "attached_assets", "Magazine");

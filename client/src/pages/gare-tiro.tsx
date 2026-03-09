@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/seo-head";
 import { Calendar, MapPin, Users, Target, Clock, Euro, Crosshair } from "lucide-react";
 
 export default function GareTiro() {
@@ -64,6 +65,11 @@ export default function GareTiro() {
 
   return (
     <div className="page-shell min-h-screen">
+      <SEOHead
+        title="Gare Tiro"
+        description="Gare di tiro ENAL Caccia Treviso: calendario eventi, categorie, iscrizioni e dettagli organizzativi."
+        url="https://enalcaccia-treviso.replit.app/gare-tiro"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

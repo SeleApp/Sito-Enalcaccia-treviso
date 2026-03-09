@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/seo-head";
 import { Fish, Target, Users, MapPin, Clock, BookOpen } from "lucide-react";
 
 export default function PescaTiro() {
@@ -30,6 +31,11 @@ export default function PescaTiro() {
 
   return (
     <div className="page-shell min-h-screen">
+      <SEOHead
+        title="Pesca e Tiro"
+        description="Attivita pesca e tiro ENAL Caccia Treviso: strutture, servizi e iniziative dedicate agli associati."
+        url="https://enalcaccia-treviso.replit.app/pesca-tiro"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/seo-head";
 import { Calendar, MapPin, Users, Trophy, Clock } from "lucide-react";
 
 const DOG_PHOTO_1 = "/attached_assets/cane-caccia-1.jpg";
@@ -20,6 +21,11 @@ export default function GareCinofile() {
 
   return (
     <div className="page-shell min-h-screen">
+      <SEOHead
+        title="Gare Cinofile"
+        description="Programma gare cinofile ENAL Caccia Treviso: eventi ufficiali, regolamenti e informazioni di partecipazione."
+        url="https://enalcaccia-treviso.replit.app/gare-cinofile"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SEOHead } from "@/components/seo-head";
 import { Calendar, Search, Tag } from "lucide-react";
 import type { News } from "@shared/schema";
 
@@ -53,6 +54,12 @@ export default function NewsPage() {
 
   return (
     <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <SEOHead
+        title="Notizie"
+        description="Ultime notizie e comunicati ENAL Caccia Treviso: aggiornamenti su attivita, eventi, normativa e iniziative associative."
+        type="website"
+        url="https://enalcaccia-treviso.replit.app/news"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { SEOHead } from "@/components/seo-head";
 import { Calendar } from "lucide-react";
 
 const eventPosters = [
@@ -32,6 +33,11 @@ const eventPosters = [
 export default function EventsPage() {
   return (
     <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <SEOHead
+        title="Eventi"
+        description="Calendario eventi ufficiali ENAL Caccia Treviso con locandine, date e aggiornamenti organizzativi."
+        url="https://enalcaccia-treviso.replit.app/eventi"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

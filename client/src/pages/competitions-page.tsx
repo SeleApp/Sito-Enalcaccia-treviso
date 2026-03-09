@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SEOHead } from "@/components/seo-head";
 import { Calendar, MapPin, Euro, Users, Download, Search, Filter, Trophy } from "lucide-react";
 import type { Competition } from "@shared/schema";
 
@@ -70,6 +71,11 @@ export default function CompetitionsPage() {
 
   return (
     <div className="page-shell">
+      <SEOHead
+        title="Competizioni"
+        description="Calendario competizioni ENAL Caccia Treviso: gare cinofile, pesca e tiro con dettagli su iscrizioni, date e regolamenti."
+        url="https://enalcaccia-treviso.replit.app/competitions"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">

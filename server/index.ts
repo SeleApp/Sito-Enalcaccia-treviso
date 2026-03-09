@@ -4,6 +4,56 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import type { AddressInfo } from "net";
 
+async function pingSearchEngines() {
+  if (process.env.NODE_ENV !== "production") return;
+
+  const siteUrl = process.env.PUBLIC_SITE_URL || "https://enalcaccia-treviso.replit.app";
+  const sitemapUrl = `${siteUrl.replace(/\/$/, "")}/sitemap.xml`;
+  const feedUrl = `${siteUrl.replace(/\/$/, "")}/feed.xml`;
+
+  const pingUrls = [
+    `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+  ];
+
+  for (const pingUrl of pingUrls) {
+    try {
+      const response = await fetch(pingUrl, { method: "GET" });
+      log(`SEO ping ${pingUrl} -> ${response.status}`);
+    } catch (error) {
+      log(`SEO ping failed for ${pingUrl}`);
+    }
+  }
+
+  const indexNowKey = process.env.INDEXNOW_KEY;
+  if (!indexNowKey) return;
+
+  try {
+    const hostname = new URL(siteUrl).hostname;
+    const indexNowPayload = {
+      host: hostname,
+      key: indexNowKey,
+      keyLocation: `${siteUrl.replace(/\/$/, "")}/${indexNowKey}.txt`,
+      urlList: [
+        `${siteUrl.replace(/\/$/, "")}/`,
+        sitemapUrl,
+        feedUrl,
+      ],
+    };
+
+    const response = await fetch("https://api.indexnow.org/indexnow", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(indexNowPayload),
+    });
+
+    log(`IndexNow ping -> ${response.status}`);
+  } catch (_error) {
+    log("IndexNow ping failed");
+  }
+}
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -85,6 +135,7 @@ app.use((req, res, next) => {
       server.removeAllListeners("error");
       const address = server.address() as AddressInfo | null;
       log(`serving on port ${address?.port ?? port}`);
+      void pingSearchEngines();
     });
   };
 

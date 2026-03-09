@@ -34,11 +34,28 @@ export function setupAuth(app: Express) {
     return safeUser;
   };
 
+  const isProduction = process.env.NODE_ENV === "production";
+  const sessionSecret = process.env.SESSION_SECRET;
+
+  if (isProduction && !sessionSecret) {
+    throw new Error("SESSION_SECRET is required in production");
+  }
+
+  if (!sessionSecret) {
+    console.warn("SESSION_SECRET not set: using development fallback secret");
+  }
+
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "dev-session-secret-change-me",
+    secret: sessionSecret || "dev-session-secret-change-me",
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: isProduction,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
   };
 
   app.set("trust proxy", 1);

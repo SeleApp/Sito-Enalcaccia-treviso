@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SEOHead } from "@/components/seo-head";
 
 import { useAuth } from "@/hooks/use-auth";
 import { Shield, CreditCard, Award } from "lucide-react";
@@ -17,8 +18,13 @@ const membershipCatalog = [
   { title: "Tessera Caccia Super 2 Cani", image: "/attached_assets/Tessera-caccia-super-2-cani.jpg", category: "Cinofilia", priceLabel: "€165,00" },
   { title: "Tessera Caccia Super 2 Cani di Benvenuto", image: "/attached_assets/Tessera-caccia-super-2-cani-di-benvenuto.jpg", category: "Cinofilia" },
   { title: "Tessera Pesca Standard", image: "/attached_assets/Tessera-pesca-stamdard.jpg", category: "Pesca", priceLabel: "€80,00" },
+  { title: "Tessera Pesca Super 1 Cane", image: "/attached_assets/Tessera-caccia-super-1-cane.jpg", category: "Pesca", priceLabel: "€155,00" },
+  { title: "Tessera Pesca", image: "/attached_assets/Tessera-pesca-stamdard.jpg", category: "Pesca", priceLabel: "€20,00" },
   { title: "Tessera Pesca Lago", image: "/attached_assets/Tessera-pesca-lago.jpg", category: "Pesca", priceLabel: "€10,00" },
+  { title: "Tessera Pesca Ragazzi 7-14 Anni", image: "/attached_assets/Tessera-pesca-lago.jpg", category: "Pesca", priceLabel: "€6,00" },
   { title: "Tesseramento Amatoriale", image: "/attached_assets/Tesseramento-amatoriale.jpg", category: "Amatoriale", priceLabel: "€30,00" },
+  { title: "Capanno Richiami Vivi", image: "/attached_assets/Tessera-caccia-semplice.jpg", category: "Opzioni", priceLabel: "€10,00" },
+  { title: "Morte del Cane (Opzione Assicurativa)", image: "/attached_assets/Tessera-caccia-super.jpg", category: "Opzioni", priceLabel: "€30,00" },
   { title: "Tesseramento Tiravolisti", image: "/attached_assets/Tesseramento-tiravolisti.jpg", category: "Tiro" },
 ];
 
@@ -27,6 +33,11 @@ export default function MembershipPage() {
 
   return (
     <div className="page-shell">{/* Layout now handles min-h-screen */}
+      <SEOHead
+        title="Tesseramento"
+        description="Catalogo tessere ENAL Caccia Treviso con quote aggiornate per caccia, pesca, cinofilia e opzioni aggiuntive."
+        url="https://enalcaccia-treviso.replit.app/membership"
+      />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">
