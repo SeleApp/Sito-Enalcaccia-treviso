@@ -265,9 +265,8 @@ export default function GarePesca() {
               <div>
                 <h4 className="font-semibold text-blue-800 mb-2">Contatti Sezione Pesca</h4>
                 <p className="text-gray-700 text-sm">
-                  <strong>Responsabile:</strong> Marco Gialli<br />
-                  <strong>Tel:</strong> 331 678 9012<br />
-                  <strong>Email:</strong> pesca@enalcacciatreviso.it
+                  Per iscrizioni, regolamenti e chiarimenti operativi
+                  contatta la segreteria tramite la pagina Contatti del sito.
                 </p>
               </div>
             </CardContent>

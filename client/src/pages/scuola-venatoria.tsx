@@ -16,8 +16,8 @@ export default function ScuolaVenatoria() {
         <div className="page-header">
           <h1 className="page-title">Scuola Venatoria</h1>
           <p className="page-subtitle">
-            Formazione professionale per cacciatori e addestratori, con corsi teorici e pratici 
-            per tutti i livelli di esperienza.
+            Percorsi formativi dedicati ai soci per aggiornamento normativo, sicurezza operativa 
+            e cultura venatoria responsabile.
           </p>
         </div>
 
@@ -33,13 +33,12 @@ export default function ScuolaVenatoria() {
             <CardContent className="prose max-w-none">
               <p className="text-gray-700 text-lg leading-relaxed">
                 La Scuola Venatoria dell'ENAL Caccia - Sezione Provinciale di Treviso offre una formazione 
-                completa e professionale per tutti coloro che desiderano approfondire le proprie conoscenze 
-                nel mondo venatorio. I nostri corsi coprono tutti gli aspetti della caccia moderna, 
-                dall'addestramento cinofilo alla preparazione per gli esami di abilitazione.
+                completa per chi desidera consolidare competenze tecniche, normative e organizzative 
+                legate all'attivita venatoria sul territorio provinciale.
               </p>
               <p className="text-gray-700 text-lg leading-relaxed mt-4">
-                Con istruttori qualificati e strutture all'avanguardia, garantiamo un'esperienza formativa 
-                di alta qualità, rispettosa dell'ambiente e della tradizione venatoria italiana.
+                I moduli formativi vengono pubblicati con comunicazioni ufficiali e possono includere 
+                aggiornamenti su sicurezza, gestione faunistica, adempimenti amministrativi e pratica responsabile.
               </p>
             </CardContent>
           </Card>
@@ -50,15 +49,15 @@ export default function ScuolaVenatoria() {
           <h2 className="text-3xl font-bold text-forest mb-8 text-center">Programmazione Corsi</h2>
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-forest">Corsi in aggiornamento</CardTitle>
+              <CardTitle className="text-xl text-forest">Calendario formativo</CardTitle>
               <CardDescription>
-                Al momento non sono pubblicati corsi attivi. La programmazione formativa verra aggiornata appena disponibile.
+                Il calendario viene aggiornato periodicamente in base alle disponibilita organizzative e ai fabbisogni della sezione.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Badge variant="secondary">In aggiornamento</Badge>
+              <Badge variant="secondary">Pubblicazione periodica</Badge>
               <p className="text-sm text-muted-foreground">
-                Nessun evento formativo confermato al momento.
+                Le date confermate vengono comunicate tramite notizie, avvisi e canali ufficiali della sezione.
               </p>
             </CardContent>
           </Card>

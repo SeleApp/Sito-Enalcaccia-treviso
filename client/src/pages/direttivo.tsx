@@ -9,48 +9,48 @@ export default function Direttivo() {
       nome: "Dr. Franco Ravagnan",
       ruolo: "Presidente",
       descrizione: "Coordina le attività istituzionali della sezione e rappresenta l'associazione sul territorio.",
-      email: "Contatto tramite segreteria",
-      telefono: "Disponibile su richiesta",
+      email: "Segreteria provinciale",
+      telefono: "Canale ufficiale sezione",
       mandato: "In corso"
     },
     {
       nome: "Vicepresidenza",
       ruolo: "Vice Presidente",
       descrizione: "Supporta la Presidenza e segue i progetti operativi della sezione.",
-      email: "Contatto tramite segreteria",
-      telefono: "Disponibile su richiesta",
+      email: "Segreteria provinciale",
+      telefono: "Canale ufficiale sezione",
       mandato: "In corso"
     },
     {
       nome: "Segreteria",
       ruolo: "Segretario",
       descrizione: "Gestisce comunicazioni, pratiche amministrative e supporto ai soci.",
-      email: "Contatto tramite modulo",
-      telefono: "Disponibile su richiesta",
+      email: "Modulo contatti",
+      telefono: "Canale ufficiale sezione",
       mandato: "In corso"
     },
     {
       nome: "Tesoreria",
       ruolo: "Tesoriere",
       descrizione: "Cura la gestione economica, i bilanci e i flussi amministrativi.",
-      email: "Contatto tramite segreteria",
-      telefono: "Disponibile su richiesta",
+      email: "Segreteria provinciale",
+      telefono: "Canale ufficiale sezione",
       mandato: "In corso"
     },
     {
       nome: "Consigliere Area Venatoria",
       ruolo: "Consigliere",
       descrizione: "Supporta attività tecniche e iniziative legate al territorio e alla normativa.",
-      email: "Contatto tramite segreteria",
-      telefono: "Disponibile su richiesta",
+      email: "Segreteria provinciale",
+      telefono: "Canale ufficiale sezione",
       mandato: "In corso"
     },
     {
       nome: "Consigliere Attività Sportive",
       ruolo: "Consigliere",
       descrizione: "Segue progetti legati a cinofilia, pesca sportiva e attività formative.",
-      email: "Contatto tramite segreteria",
-      telefono: "Disponibile su richiesta",
+      email: "Segreteria provinciale",
+      telefono: "Canale ufficiale sezione",
       mandato: "In corso"
     }
   ];
@@ -85,8 +85,8 @@ export default function Direttivo() {
         <div className="page-header">
           <h1 className="page-title">Consiglio Direttivo</h1>
           <p className="page-subtitle">
-            Il nostro team di dirigenti lavora con passione per promuovere le attività venatorie 
-            e sportive nella provincia di Treviso.
+            Organo di coordinamento della sezione provinciale, responsabile della programmazione associativa,
+            della gestione organizzativa e delle linee operative annuali.
           </p>
         </div>
 
@@ -191,11 +191,11 @@ export default function Direttivo() {
                 <div className="space-y-2">
                   <div className="flex items-center text-gray-600">
                     <Phone className="w-4 h-4 mr-2 text-forest" />
-                    <span>Disponibile su richiesta</span>
+                    <span>Segreteria provinciale su canale ufficiale</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <Mail className="w-4 h-4 mr-2 text-forest" />
-                    <span>Usa il modulo nella pagina Contatti</span>
+                    <span>Modulo Contatti del sito</span>
                   </div>
                 </div>
               </div>

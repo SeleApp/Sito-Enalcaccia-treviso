@@ -283,35 +283,32 @@ export default function GareTiro() {
         {/* Informazioni Poligoni */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl text-red-800">Poligoni Affiliati</CardTitle>
+            <CardTitle className="text-xl text-red-800">Strutture Convenzionate</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-6">
               <div>
-                <h4 className="font-semibold text-red-800 mb-2">TSN Treviso</h4>
+                <h4 className="font-semibold text-red-800 mb-2">Area Tiro a Volo</h4>
                 <p className="text-sm text-gray-600 mb-2">Specialità: Tiro a volo</p>
                 <p className="text-sm text-gray-700">
-                  Via delle Rose, 45<br />
-                  31100 Treviso<br />
-                  Tel: 0422 456789
+                  Struttura convenzionata sul territorio provinciale.<br />
+                  Dettagli logistici comunicati nell'avviso gara.
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold text-red-800 mb-2">Poligono Castelfranco</h4>
+                <h4 className="font-semibold text-red-800 mb-2">Area Tiro di Precisione</h4>
                 <p className="text-sm text-gray-600 mb-2">Specialità: Tiro di precisione</p>
                 <p className="text-sm text-gray-700">
-                  Via del Tiro, 12<br />
-                  31033 Castelfranco Veneto<br />
-                  Tel: 0423 123456
+                  Struttura convenzionata sul territorio provinciale.<br />
+                  Dettagli logistici comunicati nell'avviso gara.
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold text-red-800 mb-2">Campo Tiro Montebelluna</h4>
+                <h4 className="font-semibold text-red-800 mb-2">Area Compak Sporting</h4>
                 <p className="text-sm text-gray-600 mb-2">Specialità: Compak sporting</p>
                 <p className="text-sm text-gray-700">
-                  Località Biscani, 8<br />
-                  31044 Montebelluna<br />
-                  Tel: 0423 987654
+                  Struttura convenzionata sul territorio provinciale.<br />
+                  Dettagli logistici comunicati nell'avviso gara.
                 </p>
               </div>
             </div>

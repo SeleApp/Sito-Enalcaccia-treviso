@@ -76,7 +76,7 @@ export default function PescaTiro() {
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  Gare e competizioni mensili
+                  Calendario eventi pubblicato con avvisi ufficiali
                 </div>
               </div>
             </CardContent>
@@ -222,27 +222,23 @@ export default function PescaTiro() {
               <div>
                 <h4 className="font-semibold text-blue-800 mb-2">Responsabile Pesca</h4>
                 <p className="text-gray-700 text-sm">
-                  <strong>Marco Gialli</strong><br />
-                  Tel: 331 678 9012<br />
-                  Email: pesca@enalcacciatreviso.it<br />
-                  Ricevimento: Mer-Ven 18:00-20:00
+                  Contatto tramite segreteria provinciale.<br />
+                  Per richieste operative utilizza il modulo nella pagina Contatti.
                 </p>
               </div>
               
               <div>
                 <h4 className="font-semibold text-red-800 mb-2">Responsabile Tiro</h4>
                 <p className="text-gray-700 text-sm">
-                  <strong>Giuseppe Bianchi</strong><br />
-                  Tel: 347 234 5678<br />
-                  Email: tiro@enalcacciatreviso.it<br />
-                  Ricevimento: Lun-Mer 18:00-20:00
+                  Contatto tramite segreteria provinciale.<br />
+                  Per richieste operative utilizza il modulo nella pagina Contatti.
                 </p>
               </div>
 
               <div className="pt-4 border-t">
                 <p className="text-gray-600 text-sm">
-                  <strong>Sede:</strong> Via Roma, 123 - Treviso<br />
-                  <strong>Orari:</strong> Lun-Ven 18:00-20:00, Sab 9:00-12:00
+                  Informazioni logistiche, sedi e orari vengono comunicate
+                  in base all'attivita programmata dalla sezione.
                 </p>
               </div>
             </CardContent>
