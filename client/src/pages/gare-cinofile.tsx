@@ -1,42 +1,22 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Trophy, Clock, Euro } from "lucide-react";
-import { Competition } from "@shared/schema";
+import { Calendar, MapPin, Users, Trophy, Clock } from "lucide-react";
 
 const DOG_PHOTO_1 = "/attached_assets/cane-caccia-1.jpg";
 const DOG_PHOTO_2 = "/attached_assets/cane-caccia-2.jpg";
 
 export default function GareCinofile() {
-  const { data: competitions = [], isLoading } = useQuery<Competition[]>({
-    queryKey: ["/api/competitions"],
-  });
-
-  const gareCinofile = competitions.filter((competition) => {
-    const searchText = `${competition.title} ${competition.description} ${competition.discipline}`.toLowerCase();
-    return ["cinofil", "cane", "caccia", "segugi", "ferma", "addestramento"].some((keyword) =>
-      searchText.includes(keyword)
-    );
-  });
-
-  const isRegistrationOpen = (competition: Competition) => {
-    const today = new Date();
-    const deadline = new Date(competition.registrationDeadline);
-    return deadline > today;
+  const eventoUfficiale = {
+    titolo: "Evento programmato ENAL Caccia Treviso",
+    disciplina: "Cinofilia venatoria",
+    descrizione:
+      "Evento ufficiale confermato dalla sezione. Per programma completo, modalita di partecipazione e dettagli organizzativi, consultare la locandina ufficiale.",
+    data: "18/04/2026",
+    scadenza: "Come da locandina",
+    luogo: "Provincia di Treviso",
+    partecipanti: "Disponibilita come da locandina",
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest mx-auto mb-4"></div>
-          <p className="text-gray-600">Caricamento gare cinofile...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="page-shell min-h-screen">
@@ -106,90 +86,52 @@ export default function GareCinofile() {
         {/* Gare Programmate */}
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-forest mb-8 text-center">Gare Programmate</h2>
-          {gareCinofile.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-12">
-                <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">Nessuna gara cinofila programmata</h3>
-                <p className="text-gray-500">Le prossime gare saranno pubblicate presto. Controlla regolarmente per aggiornamenti.</p>
+          <div className="grid lg:grid-cols-1 gap-8">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <CardTitle className="text-xl text-forest">{eventoUfficiale.titolo}</CardTitle>
+                    <Badge variant="secondary" className="mt-2">
+                      {eventoUfficiale.disciplina}
+                    </Badge>
+                  </div>
+                </div>
+                <CardDescription className="text-gray-600 mt-3">{eventoUfficiale.descrizione}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Calendar className="w-4 h-4 mr-2 text-forest" />
+                    <span>{eventoUfficiale.data}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Clock className="w-4 h-4 mr-2 text-forest" />
+                    <span>{eventoUfficiale.scadenza}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <MapPin className="w-4 h-4 mr-2 text-forest" />
+                    <span>{eventoUfficiale.luogo}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Users className="w-4 h-4 mr-2 text-forest" />
+                    <span>{eventoUfficiale.partecipanti}</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t flex flex-wrap gap-3">
+                  <Button className="bg-forest hover:bg-forest/90" asChild>
+                    <a href="/attached_assets/Locandina 18-04-26.pdf" target="_blank" rel="noopener noreferrer">
+                      Apri locandina ufficiale
+                    </a>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <a href="/contact">Richiedi informazioni</a>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
-          ) : (
-            <div className="grid lg:grid-cols-2 gap-8">
-              {gareCinofile.map((gara) => (
-                <Card key={gara.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <CardTitle className="text-xl text-forest">{gara.title}</CardTitle>
-                        <Badge variant="secondary" className="mt-2">
-                          {gara.discipline}
-                        </Badge>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-forest">€{gara.cost.toFixed(2)}</div>
-                        <div className="text-sm text-gray-500">Quota iscrizione</div>
-                      </div>
-                    </div>
-                    <CardDescription className="text-gray-600 mt-3">
-                      {gara.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Calendar className="w-4 h-4 mr-2 text-forest" />
-                        <span>{new Date(gara.eventDate).toLocaleDateString('it-IT')}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Clock className="w-4 h-4 mr-2 text-forest" />
-                        <span>Iscrizioni entro: {new Date(gara.registrationDeadline).toLocaleDateString('it-IT')}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="w-4 h-4 mr-2 text-forest" />
-                        <span>{gara.location}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Users className="w-4 h-4 mr-2 text-forest" />
-                        <span>
-                          {gara.registeredParticipants || 0}
-                          {gara.maxParticipants ? ` / ${gara.maxParticipants}` : ''} partecipanti
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="pt-4 border-t">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                          {isRegistrationOpen(gara) ? (
-                            <Badge variant="default" className="bg-green-100 text-green-800">
-                              Iscrizioni Aperte
-                            </Badge>
-                          ) : (
-                            <Badge variant="destructive">
-                              Iscrizioni Chiuse
-                            </Badge>
-                          )}
-                          {gara.bandoUrl && (
-                            <Badge variant="outline">
-                              Bando Disponibile
-                            </Badge>
-                          )}
-                        </div>
-                        <Button 
-                          variant={isRegistrationOpen(gara) ? "default" : "outline"} 
-                          className={isRegistrationOpen(gara) ? "bg-forest hover:bg-forest/90" : ""}
-                          disabled={!isRegistrationOpen(gara)}
-                        >
-                          {isRegistrationOpen(gara) ? "Iscriviti" : "Visualizza"}
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
 
         {/* Regolamento e Informazioni */}

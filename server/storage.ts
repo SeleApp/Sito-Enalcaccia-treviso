@@ -195,6 +195,18 @@ export class MemStorage implements IStorage {
     const sampleNews: News[] = [
       {
         id: this.currentNewsId++,
+        title: "Gara cinofila provinciale 18 aprile 2026: locandina ufficiale",
+        slug: "gara-cinofila-provinciale-18-aprile-2026-locandina-ufficiale",
+        content: "E' online la locandina ufficiale della gara cinofila provinciale in programma sabato 18 aprile 2026.\n\nL'evento e' dedicato alle razze da ferma, con ritrovo alle ore 7:00 e inizio prove alle ore 8:00.\n\nConsulta la locandina completa per regolamento, iscrizioni e indicazioni organizzative.",
+        excerpt: "Pubblicata la locandina ufficiale della gara cinofila del 18 aprile 2026 con dettagli su regolamento e iscrizioni.",
+        featuredImage: "/attached_assets/Locandina 18-04-26.pdf",
+        category: "Gare Cinofile",
+        published: true,
+        createdAt: new Date("2026-03-09"),
+        updatedAt: new Date("2026-03-09"),
+      },
+      {
+        id: this.currentNewsId++,
         title: "Riforma della legge sulla caccia: aggiornamento sul calendario parlamentare",
         slug: "riforma-legge-caccia-aggiornamento-calendario-parlamentare",
         content: "Nel dibattito nazionale sulla riforma della normativa venatoria si registra una fase di attesa sui passaggi in calendario. La sezione provinciale raccomanda ai soci di seguire gli sviluppi istituzionali con attenzione, evitando interpretazioni non ufficiali e verificando sempre le fonti primarie. Per approfondire il tema, è disponibile un monitoraggio periodico nella rassegna stampa dedicata alle principali testate di settore.",
@@ -263,44 +275,16 @@ export class MemStorage implements IStorage {
     const sampleCompetitions: Competition[] = [
       {
         id: this.currentCompetitionId++,
-        title: "Prova cinofila su selvaggina naturale - Razze da ferma",
-        description: "Prova individuale su terreno naturale dedicata alle razze da ferma. Valutazione tecnica su cerca, ferma e consenso secondo regolamento in vigore.",
-        discipline: "Razze da ferma",
-        location: "Provincia di Treviso - area collinare",
-        eventDate: new Date("2026-04-19"),
-        cost: 40,
-        bandoUrl: "/docs/bando-prova-ferma-aprile-2026.pdf",
-        maxParticipants: 36,
-        registeredParticipants: 14,
-        registrationDeadline: new Date("2026-04-12"),
-        createdAt: new Date(),
-      },
-      {
-        id: this.currentCompetitionId++,
-        title: "Prova di lavoro per segugi su lepre",
-        description: "Manifestazione cinofila con batterie a sorteggio e giudizio tecnico su accostamento, seguita e correttezza di voce.",
-        discipline: "Segugi",
-        location: "Provincia di Treviso - zona pedemontana",
-        eventDate: new Date("2026-05-10"),
-        cost: 35,
-        bandoUrl: "/docs/bando-segugi-maggio-2026.pdf",
-        maxParticipants: 48,
-        registeredParticipants: 19,
-        registrationDeadline: new Date("2026-05-03"),
-        createdAt: new Date(),
-      },
-      {
-        id: this.currentCompetitionId++,
-        title: "Giornata addestrativa cinofila controllata",
-        description: "Sessione pratica non competitiva con briefing iniziale sulla sicurezza, turni in campo e verifica documentale all'accredito.",
-        discipline: "Addestramento cinofilo",
-        location: "Campo addestramento convenzionato - Treviso",
-        eventDate: new Date("2026-05-24"),
-        cost: 25,
-        bandoUrl: "/docs/programma-giornata-addestrativa-2026.pdf",
-        maxParticipants: 30,
-        registeredParticipants: 11,
-        registrationDeadline: new Date("2026-05-18"),
+        title: "Gara cinofila provinciale - locandina ufficiale",
+        description: "Evento ufficiale ENAL Caccia Treviso in programma il 18/04/2026. Consultare la locandina per regolamento, iscrizioni e dettagli organizzativi.",
+        discipline: "Cinofilia venatoria",
+        location: "Provincia di Treviso",
+        eventDate: new Date("2026-04-18"),
+        cost: 4000,
+        bandoUrl: "/attached_assets/Locandina 18-04-26.pdf",
+        maxParticipants: 40,
+        registeredParticipants: 0,
+        registrationDeadline: new Date("2026-04-15"),
         createdAt: new Date(),
       },
     ];
@@ -596,27 +580,17 @@ export class DatabaseStorage implements IStorage {
           role: "admin"
         });
         
-        // Create sample competitions
+        // Create sample competition (official programmed event)
         await this.createCompetition({
-          title: "Prova cinofila su selvaggina naturale - Razze da ferma",
-          description: "Prova tecnica individuale su terreno naturale con valutazione di cerca, ferma e correttezza di condotta.",
-          discipline: "Razze da ferma",
-          location: "Provincia di Treviso - area collinare",
-          eventDate: new Date("2026-04-19"),
-          cost: 40,
-          maxParticipants: 36,
-          registrationDeadline: new Date("2026-04-12")
-        });
-
-        await this.createCompetition({
-          title: "Prova di lavoro per segugi su lepre",
-          description: "Manifestazione cinofila con batterie a sorteggio e giudizio tecnico su accostamento e seguita.",
-          discipline: "Segugi",
-          location: "Provincia di Treviso - zona pedemontana",
-          eventDate: new Date("2026-05-10"),
-          cost: 35,
-          maxParticipants: 48,
-          registrationDeadline: new Date("2026-05-03")
+          title: "Gara cinofila provinciale - locandina ufficiale",
+          description: "Evento ufficiale ENAL Caccia Treviso in programma il 18/04/2026. Consultare la locandina per regolamento, iscrizioni e dettagli organizzativi.",
+          discipline: "Cinofilia venatoria",
+          location: "Provincia di Treviso",
+          eventDate: new Date("2026-04-18"),
+          cost: 4000,
+          bandoUrl: "/attached_assets/Locandina 18-04-26.pdf",
+          maxParticipants: 40,
+          registrationDeadline: new Date("2026-04-15")
         });
 
         // Create membership types with official ENALCACCIA 2025 pricing
@@ -735,6 +709,15 @@ export class DatabaseStorage implements IStorage {
           published: true,
           featuredImage: null,
         },
+        {
+          title: "Gara cinofila provinciale 18 aprile 2026: locandina ufficiale",
+          content: "E' online la locandina ufficiale della gara cinofila provinciale in programma sabato 18 aprile 2026.\n\nL'evento e' dedicato alle razze da ferma, con ritrovo alle ore 7:00 e inizio prove alle ore 8:00.\n\nConsulta la locandina completa per regolamento, iscrizioni e indicazioni organizzative: /attached_assets/Locandina 18-04-26.pdf",
+          slug: "gara-cinofila-provinciale-18-aprile-2026-locandina-ufficiale",
+          excerpt: "Pubblicata la locandina ufficiale della gara cinofila del 18 aprile 2026 con dettagli su regolamento e iscrizioni.",
+          category: "Gare Cinofile",
+          published: true,
+          featuredImage: "/attached_assets/Locandina 18-04-26.pdf",
+        },
       ];
 
       const allExistingNews = await this.getAllNews();
@@ -748,37 +731,15 @@ export class DatabaseStorage implements IStorage {
 
       const curatedCompetitions: InsertCompetition[] = [
         {
-          title: "Prova cinofila su selvaggina naturale - Razze da ferma",
-          description: "Prova tecnica individuale su terreno naturale con valutazione di cerca, ferma e correttezza di condotta.",
-          discipline: "Razze da ferma",
-          location: "Provincia di Treviso - area collinare",
-          eventDate: new Date("2026-04-19"),
-          cost: 40,
-          bandoUrl: "/docs/bando-prova-ferma-aprile-2026.pdf",
-          maxParticipants: 36,
-          registrationDeadline: new Date("2026-04-12"),
-        },
-        {
-          title: "Prova di lavoro per segugi su lepre",
-          description: "Manifestazione cinofila con batterie a sorteggio e giudizio tecnico su accostamento, seguita e correttezza di voce.",
-          discipline: "Segugi",
-          location: "Provincia di Treviso - zona pedemontana",
-          eventDate: new Date("2026-05-10"),
-          cost: 35,
-          bandoUrl: "/docs/bando-segugi-maggio-2026.pdf",
-          maxParticipants: 48,
-          registrationDeadline: new Date("2026-05-03"),
-        },
-        {
-          title: "Giornata addestrativa cinofila controllata",
-          description: "Sessione pratica non competitiva con briefing iniziale sulla sicurezza, turni in campo e verifica documentale all'accredito.",
-          discipline: "Addestramento cinofilo",
-          location: "Campo addestramento convenzionato - Treviso",
-          eventDate: new Date("2026-05-24"),
-          cost: 25,
-          bandoUrl: "/docs/programma-giornata-addestrativa-2026.pdf",
-          maxParticipants: 30,
-          registrationDeadline: new Date("2026-05-18"),
+          title: "Gara cinofila provinciale - locandina ufficiale",
+          description: "Evento ufficiale ENAL Caccia Treviso in programma il 18/04/2026. Consultare la locandina per regolamento, iscrizioni e dettagli organizzativi.",
+          discipline: "Cinofilia venatoria",
+          location: "Provincia di Treviso",
+          eventDate: new Date("2026-04-18"),
+          cost: 4000,
+          bandoUrl: "/attached_assets/Locandina 18-04-26.pdf",
+          maxParticipants: 40,
+          registrationDeadline: new Date("2026-04-15"),
         },
       ];
 

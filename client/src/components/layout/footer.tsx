@@ -141,7 +141,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2024 Enal Caccia. Tutti i diritti riservati.
+            © 2026 Enal Caccia. Tutti i diritti riservati.
           </p>
           <div className="flex space-x-6">
             <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">

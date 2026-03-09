@@ -18,16 +18,19 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
 
-  const mainNavigationItems = [
+  const mainNavigationItemsBeforeActivities = [
     { href: "/", label: "Home" },
     { href: "/news", label: "Notizie" },
+    { href: "/eventi", label: "Eventi" },
+  ];
+
+  const mainNavigationItemsAfterActivities = [
     { href: "/direttivo", label: "Direttivo" },
     { href: "/membership", label: "Tesseramento" },
     { href: "/contact", label: "Contatti" },
   ];
 
   const activitiesItems = [
-    { href: "/eventi", label: "Eventi" },
     { href: "/scuola-venatoria", label: "Scuola Venatoria" },
     { href: "/gare-cinofile", label: "Gare Cinofile" },
     { href: "/gare-pesca", label: "Gare Pesca" },
@@ -70,7 +73,7 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
-            {mainNavigationItems.map((item) => (
+            {mainNavigationItemsBeforeActivities.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -110,6 +113,20 @@ export function Navbar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {mainNavigationItemsAfterActivities.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                  isActivePath(item.href)
+                    ? "text-forest border-b-2 border-forest"
+                    : "text-gray-700 hover:text-forest"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
 
           {/* Desktop Auth Section */}
@@ -155,13 +172,8 @@ export function Navbar() {
             ) : (
               <div className="flex items-center space-x-4">
                 <Link href="/auth">
-                  <Button variant="ghost" className="text-forest hover:text-forest hover:bg-forest/10">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/auth">
                   <Button className="bg-forest hover:bg-forest/90 text-white">
-                    Registrazione
+                    Area riservata
                   </Button>
                 </Link>
               </div>
@@ -199,7 +211,7 @@ export function Navbar() {
 
                   {/* Navigation Items */}
                   <div className="space-y-2">
-                    {mainNavigationItems.map((item) => (
+                    {mainNavigationItemsBeforeActivities.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
@@ -250,6 +262,21 @@ export function Navbar() {
                         </div>
                       )}
                     </div>
+
+                    {mainNavigationItemsAfterActivities.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          isActivePath(item.href)
+                            ? "text-forest bg-forest/10 border-l-2 border-forest"
+                            : "text-gray-700 hover:text-forest hover:bg-forest/5"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
                   </div>
 
                   {/* User Actions (Mobile) */}
@@ -287,13 +314,8 @@ export function Navbar() {
                   ) : (
                     <div className="space-y-2 border-t pt-4">
                       <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
-                        <Button variant="outline" className="w-full justify-center">
-                          Login
-                        </Button>
-                      </Link>
-                      <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
                         <Button className="w-full justify-center bg-forest hover:bg-forest/90">
-                          Registrazione
+                          Area riservata
                         </Button>
                       </Link>
                     </div>

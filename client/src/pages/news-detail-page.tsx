@@ -56,6 +56,8 @@ export default function NewsDetailPage() {
     );
   }
 
+  const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
+
   return (
     <div className="page-shell">
       <div className="page-wrap max-w-4xl">
@@ -71,11 +73,19 @@ export default function NewsDetailPage() {
         <article>
           {article.featuredImage && (
             <div className="aspect-video bg-muted overflow-hidden rounded-lg mb-6">
-              <img
-                src={article.featuredImage}
-                alt={article.title}
-                className="w-full h-full object-cover"
-              />
+              {isPdfAsset(article.featuredImage) ? (
+                <iframe
+                  src={`${article.featuredImage}#toolbar=1&navpanes=0`}
+                  title={`Locandina ${article.title}`}
+                  className="w-full h-full border-0"
+                />
+              ) : (
+                <img
+                  src={article.featuredImage}
+                  alt={article.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
           )}
 

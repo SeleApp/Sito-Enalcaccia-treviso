@@ -37,6 +37,21 @@ export default function NewsPage() {
     return matchesSearch && matchesCategory;
   });
 
+  const newsFallbacks = [
+    "/attached_assets/enalcaccia-associazione-venatoria.png",
+    "/attached_assets/enalcaccia-cinofilia.jpg",
+    "/attached_assets/enalcaccia-estero.jpg",
+    "/attached_assets/cane-caccia-1.jpg",
+    "/attached_assets/cane-caccia-2.jpg",
+  ];
+
+  const getNewsImage = (article: News, index: number) => {
+    if (article.featuredImage) return article.featuredImage;
+    return newsFallbacks[index % newsFallbacks.length];
+  };
+
+  const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
+
   return (
     <div className="page-shell">{/* Layout now handles min-h-screen */}
       <div className="page-wrap">
@@ -131,14 +146,22 @@ export default function NewsPage() {
           </Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredNews.map((article) => (
+            {filteredNews.map((article, index) => (
               <Card key={article.id} className="hover:shadow-lg transition-shadow">
                 <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
-                  {article.featuredImage && (
-                    <img 
-                      src={article.featuredImage}
+                  {isPdfAsset(getNewsImage(article, index)) ? (
+                    <iframe
+                      src={`${getNewsImage(article, index)}#toolbar=0&navpanes=0&scrollbar=0`}
+                      title={`Locandina ${article.title}`}
+                      className="w-full h-full border-0"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <img
+                      src={getNewsImage(article, index)}
                       alt={article.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
                     />
                   )}
                 </div>

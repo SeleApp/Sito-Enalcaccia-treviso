@@ -4,45 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Fish, Target, Users, MapPin, Calendar, Clock, BookOpen } from "lucide-react";
 
 export default function PescaTiro() {
-  const attivita = [
-    {
-      tipo: "pesca",
-      titolo: "Corso di Pesca a Mosca",
-      descrizione: "Corso base per imparare la tecnica della pesca a mosca, dalla costruzione delle mosche al lancio.",
-      durata: "4 weekend",
-      prossimo: "1 Aprile 2024",
-      prezzo: 120,
-      posti: 15
-    },
-    {
-      tipo: "tiro",
-      titolo: "Corso Tiro a Volo Principianti",
-      descrizione: "Corso introduttivo al tiro a volo con istruttori qualificati e attrezzature fornite.",
-      durata: "6 lezioni",
-      prossimo: "15 Marzo 2024",
-      prezzo: 150,
-      posti: 12
-    },
-    {
-      tipo: "pesca",
-      titolo: "Uscita Pesca in Mare",
-      descrizione: "Giornata di pesca in mare con barca attrezzata partendo dal porto di Jesolo.",
-      durata: "1 giornata",
-      prossimo: "20 Aprile 2024",
-      prezzo: 80,
-      posti: 8
-    },
-    {
-      tipo: "tiro",
-      titolo: "Allenamento Tiro di Precisione",
-      descrizione: "Sedute di allenamento settimanali per migliorare la precisione con carabina.",
-      durata: "Ogni sabato",
-      prossimo: "Ogni settimana",
-      prezzo: 25,
-      posti: 20
-    }
-  ];
-
   const strutture = [
     {
       nome: "Laghetto Pesca Sportiva",
@@ -105,7 +66,7 @@ export default function PescaTiro() {
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  Corsi per principianti e avanzati
+                  Programmazione eventi comunicata con locandina ufficiale
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
@@ -150,72 +111,33 @@ export default function PescaTiro() {
           </Card>
         </div>
 
-        {/* Attività e Corsi */}
+        {/* Attività ed Eventi */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-forest mb-8 text-center">Attività e Corsi</h2>
-          <div className="grid lg:grid-cols-2 gap-6">
-            {attivita.map((attivita, index) => (
-              <Card key={index} className={`hover:shadow-lg transition-shadow border-l-4 ${
-                attivita.tipo === 'pesca' ? 'border-blue-500' : 'border-red-500'
-              }`}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className={`text-lg ${
-                        attivita.tipo === 'pesca' ? 'text-blue-800' : 'text-red-800'
-                      }`}>
-                        {attivita.titolo}
-                      </CardTitle>
-                      <Badge variant="secondary" className="mt-2">
-                        {attivita.tipo === 'pesca' ? 'Pesca' : 'Tiro'}
-                      </Badge>
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-xl font-bold ${
-                        attivita.tipo === 'pesca' ? 'text-blue-600' : 'text-red-600'
-                      }`}>
-                        €{attivita.prezzo}
-                      </div>
-                    </div>
-                  </div>
-                  <CardDescription className="text-gray-600 mt-2">
-                    {attivita.descrizione}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Clock className={`w-4 h-4 mr-2 ${
-                        attivita.tipo === 'pesca' ? 'text-blue-600' : 'text-red-600'
-                      }`} />
-                      <span>{attivita.durata}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Calendar className={`w-4 h-4 mr-2 ${
-                        attivita.tipo === 'pesca' ? 'text-blue-600' : 'text-red-600'
-                      }`} />
-                      <span>{attivita.prossimo}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Users className={`w-4 h-4 mr-2 ${
-                        attivita.tipo === 'pesca' ? 'text-blue-600' : 'text-red-600'
-                      }`} />
-                      <span>{attivita.posti} posti</span>
-                    </div>
-                  </div>
-                  <Button 
-                    className={`w-full mt-4 ${
-                      attivita.tipo === 'pesca' 
-                        ? 'bg-blue-600 hover:bg-blue-700' 
-                        : 'bg-red-600 hover:bg-red-700'
-                    }`}
-                  >
-                    Iscriviti Ora
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <h2 className="text-3xl font-bold text-forest mb-8 text-center">Programmazione Ufficiale</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl text-forest">Nessun corso attivo pubblicato</CardTitle>
+              <CardDescription>
+                Rimane disponibile solo l'evento ufficiale in programma nel prossimo futuro.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Evento confermato: 18/04/2026
+              </p>
+              <div className="flex gap-3 flex-wrap">
+                <Button asChild>
+                  <a href="/attached_assets/Locandina 18-04-26.pdf" target="_blank" rel="noopener noreferrer">
+                    Apri locandina ufficiale
+                  </a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="/contact">Richiedi informazioni</a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Strutture e Impianti */}

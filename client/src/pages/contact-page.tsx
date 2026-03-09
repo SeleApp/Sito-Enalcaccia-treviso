@@ -54,13 +54,20 @@ export default function ContactPage() {
     contactMutation.mutate(data);
   };
 
+  const setSubjectAndFocusForm = (subject: string) => {
+    setSelectedSubject(subject);
+    form.setValue("subject", subject, { shouldValidate: true });
+    const formTop = document.getElementById("contact-form-top");
+    formTop?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const subjectOptions = [
-    { value: "tesseramento", label: "Tesseramento" },
-    { value: "gare", label: "Gare Cinofile" },
-    { value: "corsi", label: "Corsi di Formazione" },
-    { value: "assistenza", label: "Assistenza Legale" },
-    { value: "generale", label: "Informazioni Generali" },
-    { value: "altro", label: "Altro" },
+    { value: "Tesseramento", label: "Tesseramento" },
+    { value: "Eventi e Gare", label: "Eventi e Gare" },
+    { value: "Scuola Venatoria", label: "Scuola Venatoria" },
+    { value: "Area riservata", label: "Area riservata" },
+    { value: "Informazioni Generali", label: "Informazioni Generali" },
+    { value: "Altro", label: "Altro" },
   ];
 
   return (
@@ -77,7 +84,7 @@ export default function ContactPage() {
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <Card>
+          <Card id="contact-form-top">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <MessageSquare className="w-5 h-5 mr-2" />
@@ -190,7 +197,7 @@ export default function ContactPage() {
               <CardHeader>
                 <CardTitle>Informazioni di Contatto</CardTitle>
                 <CardDescription>
-                  Puoi raggiungerci attraverso questi canali
+                  Sezione Provinciale Treviso - Presidente Dr. Franco Ravagnan
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -201,9 +208,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Sede Principale</h3>
                     <p className="text-muted-foreground">
-                      Provincia di Treviso (TV)<br />
-                      Il dettaglio sede e ricevimento è comunicato ai soci<br />
-                      tramite i canali ufficiali della sezione
+                      Via C. Cattaneo, 28<br />
+                      31100 Treviso (TV)
                     </p>
                   </div>
                 </div>
@@ -215,8 +221,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Telefono</h3>
                     <p className="text-muted-foreground">
-                      Per recapiti aggiornati usa il modulo contatti<br />
-                      o consulta i canali ufficiali della sezione
+                      <a href="tel:0422545237" className="hover:underline">0422 545237</a><br />
+                      <a href="tel:3474296905" className="hover:underline">347 4296905</a>
                     </p>
                   </div>
                 </div>
@@ -228,8 +234,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
                     <p className="text-muted-foreground">
-                      Le richieste inviate dal modulo vengono prese in carico<br />
-                      dalla segreteria della sezione provinciale
+                      <a href="mailto:treviso@enalcaccianazionale.it" className="hover:underline">treviso@enalcaccianazionale.it</a><br />
+                      <a href="mailto:f.ravagnan@alice.it" className="hover:underline">f.ravagnan@alice.it</a>
                     </p>
                   </div>
                 </div>
@@ -241,8 +247,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Orari di Apertura</h3>
                     <p className="text-muted-foreground">
-                      Gli orari di sportello possono variare in base alla stagione<br />
-                      e al calendario venatorio
+                      Contattare telefonicamente o via email<br />
+                      per appuntamenti e ricevimento in sede
                     </p>
                   </div>
                 </div>
@@ -258,17 +264,31 @@ export default function ContactPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="rounded-lg border border-forest/20 bg-forest/5 p-3 text-sm text-foreground">
+                  Tempo medio di risposta: <span className="font-semibold">1-3 giorni lavorativi</span>.
+                </div>
+
                 <div className="grid grid-cols-1 gap-3">
-                  <Button variant="outline" className="justify-start h-auto p-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="justify-start h-auto p-4"
+                      onClick={() => setSubjectAndFocusForm("Informazioni Generali")}
+                    >
                     <div className="text-left">
-                      <div className="font-semibold">Emergenze Caccia</div>
+                        <div className="font-semibold">Informazioni Generali</div>
                       <div className="text-sm text-muted-foreground">
-                        Per problemi urgenti durante la stagione venatoria
+                          Domande su sedi, orari e servizi disponibili
                       </div>
                     </div>
                   </Button>
 
-                  <Button variant="outline" className="justify-start h-auto p-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="justify-start h-auto p-4"
+                      onClick={() => setSubjectAndFocusForm("Tesseramento")}
+                    >
                     <div className="text-left">
                       <div className="font-semibold">Supporto Tesseramenti</div>
                       <div className="text-sm text-muted-foreground">
@@ -277,11 +297,16 @@ export default function ContactPage() {
                     </div>
                   </Button>
 
-                  <Button variant="outline" className="justify-start h-auto p-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="justify-start h-auto p-4"
+                      onClick={() => setSubjectAndFocusForm("Eventi e Gare")}
+                    >
                     <div className="text-left">
-                      <div className="font-semibold">Gare Cinofile</div>
+                        <div className="font-semibold">Eventi e Gare</div>
                       <div className="text-sm text-muted-foreground">
-                        Informazioni su competizioni e iscrizioni
+                          Informazioni su calendario, bandi e iscrizioni
                       </div>
                     </div>
                   </Button>
@@ -289,27 +314,28 @@ export default function ContactPage() {
               </CardContent>
             </Card>
 
-            {/* Map Placeholder */}
+            {/* Come Raggiungerci */}
             <Card>
               <CardHeader>
                 <CardTitle>Come Raggiungerci</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <MapPin className="w-12 h-12 mx-auto mb-2" />
-                    <p className="text-sm">Mappa interattiva</p>
-                    <p className="text-xs">
-                      Provincia di Treviso (TV)
-                    </p>
+                <div className="rounded-lg border bg-muted/30 p-5">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 mt-0.5 text-forest" />
+                    <div>
+                      <p className="font-semibold text-foreground">Sezione Provinciale Treviso</p>
+                      <p className="text-sm text-muted-foreground">Via C. Cattaneo, 28 - 31100 Treviso (TV)</p>
+                      <p className="text-xs text-muted-foreground mt-1">Ricevimento su appuntamento</p>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-4 text-sm text-muted-foreground">
                   <p>
-                    <strong>In auto:</strong> indicazioni dettagliate fornite al momento dell'appuntamento.
+                    <strong>In auto:</strong> imposta il navigatore su Via C. Cattaneo 28, Treviso.
                   </p>
                   <p className="mt-1">
-                    <strong>Trasporto pubblico:</strong> disponibilità e fermate variano in base all'area.
+                    <strong>Trasporto pubblico:</strong> verificare linee urbane con fermata in zona centro Treviso.
                   </p>
                 </div>
               </CardContent>

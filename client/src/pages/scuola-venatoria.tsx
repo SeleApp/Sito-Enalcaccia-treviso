@@ -1,41 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Users, BookOpen } from "lucide-react";
+import { Calendar, BookOpen } from "lucide-react";
 
 export default function ScuolaVenatoria() {
-  const corsi = [
-    {
-      id: 1,
-      titolo: "Percorso Base di Formazione Venatoria",
-      descrizione: "Modulo introduttivo su sicurezza, etica venatoria, normativa e comportamento sul territorio.",
-      durata: "Calendario modulare",
-      frequenza: "Lezioni teorico-pratiche",
-      prossimo: "In programmazione",
-      posti: 25,
-      prezzo: "Quote comunicate dalla segreteria"
-    },
-    {
-      id: 2,
-      titolo: "Percorso Cinofilo Specialistico",
-      descrizione: "Approfondimenti su conduzione, gestione in prova e preparazione dei cani da lavoro.",
-      durata: "Calendario modulare",
-      frequenza: "Sessioni pratiche guidate",
-      prossimo: "In programmazione",
-      posti: 18,
-      prezzo: "Quote comunicate dalla segreteria"
-    },
-    {
-      id: 3,
-      titolo: "Supporto alla Preparazione Abilitazioni",
-      descrizione: "Incontri orientativi su iter, documentazione e studio per le prove di abilitazione.",
-      durata: "Ciclo di incontri",
-      frequenza: "Programmazione periodica",
-      prossimo: "In programmazione",
-      posti: 30,
-      prezzo: "Quote comunicate dalla segreteria"
-    }
-  ];
-
   return (
     <div className="page-shell min-h-screen">
       <div className="page-wrap">
@@ -74,41 +41,32 @@ export default function ScuolaVenatoria() {
 
         {/* Corsi Disponibili */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-forest mb-8 text-center">Corsi Disponibili</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {corsi.map((corso) => (
-              <Card key={corso.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl text-forest">{corso.titolo}</CardTitle>
-                  <CardDescription className="text-gray-600">
-                    {corso.descrizione}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Clock className="w-4 h-4 mr-2" />
-                    <span>{corso.durata} - {corso.frequenza}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>Prossimo: {corso.prossimo}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Users className="w-4 h-4 mr-2" />
-                    <span>{corso.posti} posti disponibili</span>
-                  </div>
-                  <div className="flex justify-between items-center pt-4">
-                    <Badge variant="secondary" className="text-lg px-3 py-1">
-                      {corso.prezzo}
-                    </Badge>
-                    <div className="text-sm text-gray-500">
-                      ID Corso: {corso.id}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <h2 className="text-3xl font-bold text-forest mb-8 text-center">Programmazione Corsi</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl text-forest">Corsi in aggiornamento</CardTitle>
+              <CardDescription>
+                Al momento non sono pubblicati corsi attivi. E disponibile un solo evento ufficiale confermato.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Evento confermato: 18/04/2026
+              </p>
+              <Badge variant="secondary">Locandina ufficiale disponibile</Badge>
+              <div>
+                <a
+                  href="/attached_assets/Locandina 18-04-26.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-forest hover:underline"
+                >
+                  Apri locandina evento
+                </a>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Informazioni Aggiuntive */}

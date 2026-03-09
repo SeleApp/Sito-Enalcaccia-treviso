@@ -87,9 +87,9 @@ export default function CookiePolicy() {
               </p>
               <div className="bg-green-50 p-3 rounded-lg">
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li><strong>auth_session:</strong> Gestione autenticazione utente (durata: sessione)</li>
-                  <li><strong>csrf_token:</strong> Protezione da attacchi CSRF (durata: sessione)</li>
-                  <li><strong>navigation_state:</strong> Stato della navigazione (durata: sessione)</li>
+                  <li><strong>connect.sid:</strong> Cookie di sessione per autenticazione (durata: sessione)</li>
+                  <li><strong>cookie_consent (localStorage):</strong> Preferenze consenso cookie (durata: 12 mesi)</li>
+                  <li><strong>cookie_consent_date (localStorage):</strong> Data del consenso (durata: 12 mesi)</li>
                 </ul>
               </div>
             </div>
@@ -129,9 +129,9 @@ export default function CookiePolicy() {
               </p>
               <div className="bg-yellow-50 p-3 rounded-lg">
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li><strong>_ga:</strong> Google Analytics - identificatore utente (durata: 2 anni)</li>
-                  <li><strong>_ga_*:</strong> Google Analytics - sessione e campagne (durata: 2 anni)</li>
-                  <li><strong>_gid:</strong> Google Analytics - identificatore giornaliero (durata: 24 ore)</li>
+                  <li><strong>_ga:</strong> Google Analytics (durata tipica: 2 anni, solo se attivato)</li>
+                  <li><strong>_ga_*:</strong> Google Analytics sessione/campagne (solo se attivato)</li>
+                  <li><strong>_gid:</strong> Google Analytics identificatore giornaliero (solo se attivato)</li>
                 </ul>
               </div>
             </div>
@@ -150,8 +150,8 @@ export default function CookiePolicy() {
               </p>
               <div className="bg-red-50 p-3 rounded-lg">
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li><strong>_fbp:</strong> Facebook Pixel - tracciamento conversioni (durata: 3 mesi)</li>
-                  <li><strong>ads_prefs:</strong> Preferenze pubblicitarie (durata: 1 anno)</li>
+                  <li><strong>_fbp:</strong> Meta Pixel tracciamento conversioni (durata tipica: 3 mesi, solo se attivato)</li>
+                  <li><strong>ads_prefs:</strong> Preferenze pubblicitarie (solo se attivato)</li>
                 </ul>
               </div>
             </div>
@@ -168,7 +168,8 @@ export default function CookiePolicy() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-700">
-              Alcuni cookie sono impostati da servizi di terze parti che appaiono sulle nostre pagine:
+              Eventuali cookie di terze parti vengono installati solo dopo consenso esplicito.
+              Al momento non vengono attivati automaticamente strumenti di tracciamento non necessari.
             </p>
             
             <div className="grid md:grid-cols-2 gap-4">
@@ -290,9 +291,9 @@ export default function CookiePolicy() {
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-700">
                 <strong>ENAL Caccia - Sezione Provinciale di Treviso</strong><br/>
-                Email: privacy@enalcacciatreviso.it<br/>
-                Telefono: 0422 123456<br/>
-                Indirizzo: Via Roma, 123 - 31100 Treviso (TV)
+                Tramite modulo contatti del sito<br/>
+                Oggetto consigliato: "Richiesta Cookie Policy"<br/>
+                Le risposte sono fornite nei tempi previsti dalla normativa applicabile
               </p>
             </div>
           </CardContent>

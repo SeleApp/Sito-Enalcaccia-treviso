@@ -4,10 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 import { useAuth } from "@/hooks/use-auth";
 import { Trophy, Users, GraduationCap, Shield, Leaf, Calendar, MapPin, Euro, ExternalLink } from "lucide-react";
-import type { News, Competition, Membership } from "@shared/schema";
+import type { News, Competition } from "@shared/schema";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -22,15 +23,96 @@ export default function HomePage() {
     queryKey: ["/api/competitions"],
   });
 
-  const { data: memberships = [] } = useQuery<Membership[]>({
-    queryKey: ["/api/memberships"],
-  });
-
   const latestNews = [...news]
     .filter((article) => article.published)
     .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
     .slice(0, 3);
   const upcomingCompetitions = competitions.slice(0, 3);
+
+  const getCompetitionImage = (discipline: string) => {
+    const normalized = discipline.toLowerCase();
+    if (normalized.includes("pesca")) return "/attached_assets/enalpesca.png";
+    if (normalized.includes("cin") || normalized.includes("cani")) return "/attached_assets/enalcaccia-cinofilia.jpg";
+    if (normalized.includes("tiro")) return "/attached_assets/cane-caccia-2.jpg";
+    return "/attached_assets/cane-caccia-1.jpg";
+  };
+
+  const newsFallbacks = [
+    "/attached_assets/enalcaccia-associazione-venatoria.png",
+    "/attached_assets/enalcaccia-cinofilia.jpg",
+    "/attached_assets/enalcaccia-estero.jpg",
+    "/attached_assets/cane-caccia-1.jpg",
+    "/attached_assets/cane-caccia-2.jpg",
+  ];
+
+  const getNewsImage = (article: News, index: number) => {
+    if (article.featuredImage) return article.featuredImage;
+    return newsFallbacks[index % newsFallbacks.length];
+  };
+
+  const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
+
+  const institutionalPartners = [
+    {
+      name: "ENALCACCIA Nazionale",
+      description: "Associazione venatoria di riferimento a livello nazionale.",
+      url: "https://www.enalcaccianazionale.it",
+      logoPath: "/attached_assets/logo-enal-caccia.svg",
+    },
+    {
+      name: "ENALPESCA",
+      description: "Settore pesca sportiva e iniziative dedicate agli associati.",
+      url: "https://www.enalpesca.it",
+      logoPath: "/attached_assets/enalpesca.png",
+    },
+    {
+      name: "ENCI",
+      description: "Ente Nazionale della Cinofilia Italiana.",
+      url: "https://www.enci.it",
+      logoPath: "/attached_assets/enci-1882-logo-definitivo.png",
+    },
+    {
+      name: "Regione del Veneto",
+      description: "Normativa, calendari e adempimenti regionali.",
+      url: "https://www.regione.veneto.it/web/agricoltura-e-foreste/treviso",
+      logoPath: "/attached_assets/logo regione veneto.jpg",
+    },
+    {
+      name: "MASAF",
+      description: "Ministero dell'Agricoltura, della Sovranita alimentare e delle Foreste.",
+      url: "https://www.masaf.gov.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/202",
+      logoPath: "/attached_assets/logo.masaf.svg",
+    },
+    {
+      name: "Provincia di Treviso",
+      description: "Servizi provinciali e informazioni territoriali.",
+      url: "https://www.provincia.treviso.it",
+      logoPath: "/attached_assets/logo_provincia_sito_desktop.svg",
+    },
+    {
+      name: "ISPRA",
+      description: "Istituto Superiore per la Protezione e la Ricerca Ambientale.",
+      url: "https://www.isprambiente.gov.it",
+      logoPath: "/attached_assets/ispra-logo-bianco.svg",
+    },
+  ];
+
+  const getPartnerLogoContainerClass = (partnerName: string) => {
+    if (partnerName === "Provincia di Treviso") {
+      return "w-full max-w-[220px] h-16 rounded-md bg-white border border-slate-200 mx-auto mb-4 px-3 flex items-center justify-center overflow-hidden";
+    }
+    if (partnerName === "MASAF" || partnerName === "ISPRA") {
+      return "w-20 h-20 rounded-full bg-slate-800 mx-auto mb-4 flex items-center justify-center overflow-hidden";
+    }
+    return "w-20 h-20 rounded-full bg-forest/10 mx-auto mb-4 flex items-center justify-center overflow-hidden";
+  };
+
+  const getPartnerLogoImageClass = (partnerName: string) => {
+    if (partnerName === "Provincia di Treviso") {
+      return "w-full h-full object-contain";
+    }
+    return "w-16 h-16 object-contain";
+  };
 
   return (
     <div className="bg-background">{/* Layout now handles min-h-screen */}
@@ -39,7 +121,7 @@ export default function HomePage() {
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=600')"
+            backgroundImage: "url('/attached_assets/Panorama-Bosco.JPG')"
           }}
         />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
@@ -97,15 +179,15 @@ export default function HomePage() {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-primary" />
+                  <Calendar className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle>Tesseramenti</CardTitle>
+                <CardTitle>Notizie e Comunicati</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground mb-4">
-                  Rinnova o ottieni la tua tessera venatoria con procedure semplificate e pagamenti sicuri online.
+                  Aggiornamenti ufficiali su eventi, circolari e attivita della sezione provinciale.
                 </p>
-                <Link href="/membership">
+                <Link href="/news">
                   <Button variant="link" className="p-0">Scopri di più →</Button>
                 </Link>
               </CardContent>
@@ -158,9 +240,9 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <img 
-                src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600"
-                alt="Sede dell'associazione" 
-                className="rounded-lg shadow-lg w-full h-auto"
+                src="/attached_assets/logo-enalcaccia-treviso.png"
+                alt="Logo Enalcaccia Treviso"
+                className="rounded-lg shadow-lg w-full max-w-md mx-auto h-auto"
               />
             </div>
             <div className="space-y-6">
@@ -217,44 +299,48 @@ export default function HomePage() {
             <p className="text-muted-foreground">In collaborazione con le principali istituzioni del settore venatorio</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* ENALCACCIA Nazionale */}
-            <a 
-              href="https://www.enalcaccianazionale.it" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group"
+          <div className="max-w-6xl mx-auto px-12 sm:px-14">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
             >
-              <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
-                <h3 className="text-2xl font-semibold text-forest mb-3">ENALCACCIA Nazionale</h3>
-                <p className="text-muted-foreground mb-4">
-                  Associazione venatoria di riferimento a livello nazionale
-                </p>
-                <div className="flex items-center justify-center text-forest group-hover:text-forest/80">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  <span className="text-sm font-medium">Visita il sito ufficiale</span>
-                </div>
-              </Card>
-            </a>
-
-            {/* Regione Veneto */}
-            <a 
-              href="https://www.regione.veneto.it/web/agricoltura-e-foreste/treviso" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group"
-            >
-              <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
-                <h3 className="text-2xl font-semibold text-red-600 mb-3">Regione Veneto</h3>
-                <p className="text-muted-foreground mb-4">
-                  Portale istituzionale regionale con informazioni normative e amministrative
-                </p>
-                <div className="flex items-center justify-center text-red-600 group-hover:text-red-500">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  <span className="text-sm font-medium">Visita il sito ufficiale</span>
-                </div>
-              </Card>
-            </a>
+              <CarouselContent>
+                {institutionalPartners.map((partner) => (
+                  <CarouselItem key={partner.name} className="md:basis-1/2 lg:basis-1/3">
+                    <a
+                      href={partner.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block h-full"
+                    >
+                      <Card className="h-full p-6 text-center hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1 bg-white border-forest/10">
+                        <div className={getPartnerLogoContainerClass(partner.name)}>
+                          {partner.logoPath ? (
+                            <img
+                              src={partner.logoPath}
+                              alt={`Logo ${partner.name}`}
+                              className={getPartnerLogoImageClass(partner.name)}
+                            />
+                          ) : (
+                            <span className="text-forest font-semibold text-sm px-2">{partner.name.slice(0, 3).toUpperCase()}</span>
+                          )}
+                        </div>
+                        <h3 className="text-lg font-semibold text-foreground mb-2 leading-tight">{partner.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-4 min-h-12">{partner.description}</p>
+                        <div className="flex items-center justify-center text-forest group-hover:text-forest/80">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          <span className="text-sm font-medium">Visita il sito</span>
+                        </div>
+                      </Card>
+                    </a>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="-left-4 sm:-left-6" />
+              <CarouselNext className="-right-4 sm:-right-6" />
+            </Carousel>
           </div>
         </div>
       </section>
@@ -273,14 +359,22 @@ export default function HomePage() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {latestNews.map((article) => (
+            {latestNews.map((article, index) => (
               <Card key={article.id} className="hover:shadow-lg transition-shadow">
                 <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
-                  {article.featuredImage && (
-                    <img 
-                      src={article.featuredImage}
+                  {isPdfAsset(getNewsImage(article, index)) ? (
+                    <iframe
+                      src={`${getNewsImage(article, index)}#toolbar=0&navpanes=0&scrollbar=0`}
+                      title={`Locandina ${article.title}`}
+                      className="w-full h-full border-0"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <img
+                      src={getNewsImage(article, index)}
                       alt={article.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   )}
                 </div>
@@ -316,6 +410,13 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8">
             {upcomingCompetitions.map((competition) => (
               <Card key={competition.id} className="hover:shadow-lg transition-shadow">
+                <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
+                  <img
+                    src={getCompetitionImage(competition.discipline)}
+                    alt={competition.discipline}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <CardHeader>
                   <div className="flex items-center justify-between mb-4">
                     <Badge>{competition.discipline}</Badge>
@@ -357,54 +458,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      {/* Membership Tiers */}
-      <section className="py-16 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif font-bold text-foreground mb-4">Tesseramento 2025</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Diventa socio Enal Caccia e accedi a tutti i nostri servizi
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {memberships.map((membership, index) => (
-              <Card 
-                key={membership.id} 
-                className={`hover:shadow-lg transition-shadow ${index === 1 ? 'border-accent scale-105' : ''}`}
-              >
-                {index === 1 && (
-                  <div className="text-center">
-                    <Badge className="bg-accent text-white -mt-3">PIÙ POPOLARE</Badge>
-                  </div>
-                )}
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl">{membership.name}</CardTitle>
-                  <div className="text-4xl font-bold text-primary">
-                    €{(membership.price / 100).toFixed(0)}
-                    <span className="text-lg font-normal text-muted-foreground">/anno</span>
-                  </div>
-                  <p className="text-muted-foreground">{membership.description}</p>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-8">
-                    {membership.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center">
-                        <div className="w-2 h-2 bg-primary rounded-full mr-3" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link href="/membership">
-                    <Button className="w-full">Scegli {membership.name.split(' ')[1]}</Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 }

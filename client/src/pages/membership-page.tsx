@@ -18,6 +18,23 @@ if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY ? 
   loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY) : null;
 
+const membershipCatalog = [
+  { title: "Tessera Caccia Base Nazionale", image: "/attached_assets/Tessera-caccia-base-nazionale.jpg", category: "Caccia" },
+  { title: "Tessera Caccia Base Nazionale di Benvenuto", image: "/attached_assets/Tessera-caccia-base-nazionale-di-benvenuto.jpg", category: "Caccia" },
+  { title: "Tessera Caccia Semplice", image: "/attached_assets/Tessera-caccia-semplice.jpg", category: "Caccia" },
+  { title: "Tessera Caccia Semplice di Benvenuto", image: "/attached_assets/Tessera-caccia-semplice-di-benvenuto.jpg", category: "Caccia" },
+  { title: "Tessera Caccia Super", image: "/attached_assets/Tessera-caccia-super.jpg", category: "Caccia" },
+  { title: "Tessera Caccia Super di Benvenuto", image: "/attached_assets/Tessera-caccia-super-di-benvenuto.jpg", category: "Caccia" },
+  { title: "Tessera Caccia Super 1 Cane", image: "/attached_assets/Tessera-caccia-super-1-cane.jpg", category: "Cinofilia" },
+  { title: "Tessera Caccia Super 1 Cane di Benvenuto", image: "/attached_assets/Tessera-caccia-super-1-cane-di-bemvenuto.jpg", category: "Cinofilia" },
+  { title: "Tessera Caccia Super 2 Cani", image: "/attached_assets/Tessera-caccia-super-2-cani.jpg", category: "Cinofilia" },
+  { title: "Tessera Caccia Super 2 Cani di Benvenuto", image: "/attached_assets/Tessera-caccia-super-2-cani-di-benvenuto.jpg", category: "Cinofilia" },
+  { title: "Tessera Pesca Standard", image: "/attached_assets/Tessera-pesca-stamdard.jpg", category: "Pesca" },
+  { title: "Tessera Pesca Lago", image: "/attached_assets/Tessera-pesca-lago.jpg", category: "Pesca" },
+  { title: "Tesseramento Amatoriale", image: "/attached_assets/Tesseramento-amatoriale.jpg", category: "Amatoriale" },
+  { title: "Tesseramento Tiravolisti", image: "/attached_assets/Tesseramento-tiravolisti.jpg", category: "Tiro" },
+];
+
 export default function MembershipPage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -99,20 +116,61 @@ export default function MembershipPage() {
 
   const isMostPopular = (name: string) => name.includes("Super") && !name.includes("2 Cani");
 
+  const getMembershipImage = (name: string) => {
+    const n = name.toLowerCase();
+    if (n.includes("2 cani")) return "/attached_assets/Tessera-caccia-super-2-cani.jpg";
+    if (n.includes("super")) return "/attached_assets/Tessera-caccia-super.jpg";
+    if (n.includes("base nazionale")) return "/attached_assets/Tessera-caccia-base-nazionale.jpg";
+    if (n.includes("pesca") && n.includes("10")) return "/attached_assets/Tessera-pesca-stamdard.jpg";
+    if (n.includes("pesca")) return "/attached_assets/Tessera-pesca-lago.jpg";
+    return "/attached_assets/Tessera-caccia-semplice.jpg";
+  };
+
   return (
     <div className="page-shell">{/* Layout now handles min-h-screen */}
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">
-          <h1 className="page-title">Tessere ENALCACCIA 2025</h1>
+          <h1 className="page-title">Tessere ENALCACCIA 2026</h1>
           <p className="page-subtitle">
             Tessere ufficiali ENALCACCIA con coperture assicurative complete per caccia, pesca e attività sportive. 
             Scegli la tessera più adatta alle tue esigenze e attività venatorie.
           </p>
           <div className="mt-6 bg-forest/10 border border-forest/20 rounded-lg p-4">
-            <p className="text-forest font-semibold">✓ Prezzi ufficiali ENALCACCIA 2025</p>
+            <p className="text-forest font-semibold">✓ Prezzi ufficiali ENALCACCIA 2026</p>
             <p className="text-sm text-muted-foreground mt-1">Coperture assicurative complete incluse in ogni tessera</p>
           </div>
+        </div>
+
+        <div className="mb-12">
+          <Card className="border-forest/20">
+            <CardHeader>
+              <CardTitle>Catalogo Completo Tessere Associazione</CardTitle>
+              <CardDescription>
+                Panoramica delle tessere disponibili per caccia, cinofilia, pesca, tiro e formule di benvenuto.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {membershipCatalog.map((item) => (
+                  <div key={item.title} className="rounded-lg border bg-white overflow-hidden">
+                    <div className="aspect-[16/10] bg-muted flex items-center justify-center p-2">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="max-h-full max-w-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-3">
+                      <p className="text-sm font-medium leading-snug">{item.title}</p>
+                      <Badge variant="outline" className="mt-2 text-xs">{item.category}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* User Status Alert */}
@@ -177,6 +235,14 @@ export default function MembershipPage() {
                   )}
                   
                   <CardHeader className="text-center">
+                    <div className="aspect-video bg-muted rounded-lg overflow-hidden mb-4 p-2 flex items-center justify-center">
+                      <img
+                        src={getMembershipImage(membership.name)}
+                        alt={membership.name}
+                        className="max-h-full max-w-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
                     <div className="flex justify-center mb-4">
                       <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
                         isPopular ? 'bg-forest' : 'bg-muted'
