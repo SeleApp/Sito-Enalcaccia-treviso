@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 const eventPosters = [
   {
@@ -117,34 +117,6 @@ export default function EventsPage() {
                 <CarouselPrevious className="-left-2 sm:-left-4" />
                 <CarouselNext className="-right-2 sm:-right-4" />
               </Carousel>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-forest" />
-              Evento confermato: 18/04/2026
-            </CardTitle>
-            <CardDescription>
-              Consulta la locandina ufficiale per programma e modalita di partecipazione.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              Provincia di Treviso
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button asChild>
-                <a href="/attached_assets/Locandina 18-04-26.pdf" target="_blank" rel="noopener noreferrer">
-                  Apri locandina ufficiale
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="/contact">Richiedi informazioni</a>
-              </Button>
             </div>
           </CardContent>
         </Card>

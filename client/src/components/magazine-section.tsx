@@ -20,8 +20,13 @@ type MagazineIssue = {
 function IssueCard({ issue, onPreview }: { issue: MagazineIssue; onPreview: (issue: MagazineIssue) => void }) {
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
-      <div className="aspect-[4/3] bg-muted overflow-hidden rounded-t-lg">
-        <img src={issue.cover} alt={`${issue.magazine} ${issue.monthLabel}`} className="w-full h-full object-cover" loading="lazy" />
+      <div className="aspect-[4/3] bg-muted overflow-hidden rounded-t-lg border-b border-border/60">
+        <iframe
+          src={`${issue.file}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
+          title={`Anteprima ${issue.magazine} ${issue.monthLabel}`}
+          className="w-full h-full"
+          loading="lazy"
+        />
       </div>
       <CardHeader>
         <div className="flex items-center justify-between gap-3">

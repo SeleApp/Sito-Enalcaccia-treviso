@@ -58,11 +58,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .filter((fileName) => fileName.toLowerCase().endsWith(".pdf"))
         .map((fileName) => {
           const lower = fileName.toLowerCase();
+          const normalized = lower.replace(/[_.-]+/g, " ");
 
           let magazine: "Caccia e Natura" | "Il Beccaccino" | null = null;
-          if (lower.includes("beccaccino")) {
+
+          const isBeccaccino =
+            normalized.includes("beccaccino") ||
+            normalized.includes("foglio notizie") ||
+            /^enalcaccia-n\d+-anno\d{4}-rivista\.pdf$/.test(lower);
+
+          const isCacciaENatura =
+            normalized.includes("caccia e natura") ||
+            /^37310-caccia-e-natura/.test(lower) ||
+            /^rivista-caccia-e-natura/.test(lower);
+
+          if (isBeccaccino) {
             magazine = "Il Beccaccino";
-          } else if (lower.includes("caccia e natura") || lower.includes("caccia") || lower.includes("enalcaccia") || lower.includes("natura")) {
+          } else if (isCacciaENatura) {
             magazine = "Caccia e Natura";
           }
 
