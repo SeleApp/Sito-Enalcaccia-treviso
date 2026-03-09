@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 export default function ScuolaVenatoria() {
   return (
@@ -46,25 +46,14 @@ export default function ScuolaVenatoria() {
             <CardHeader>
               <CardTitle className="text-xl text-forest">Corsi in aggiornamento</CardTitle>
               <CardDescription>
-                Al momento non sono pubblicati corsi attivi. E disponibile un solo evento ufficiale confermato.
+                Al momento non sono pubblicati corsi attivi. La programmazione formativa verra aggiornata appena disponibile.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Evento confermato: 18/04/2026
+              <Badge variant="secondary">In aggiornamento</Badge>
+              <p className="text-sm text-muted-foreground">
+                Nessun evento formativo confermato al momento.
               </p>
-              <Badge variant="secondary">Locandina ufficiale disponibile</Badge>
-              <div>
-                <a
-                  href="/attached_assets/Locandina 18-04-26.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-forest hover:underline"
-                >
-                  Apri locandina evento
-                </a>
-              </div>
             </CardContent>
           </Card>
         </div>

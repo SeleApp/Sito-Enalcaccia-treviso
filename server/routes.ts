@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import fs from "fs/promises";
+import path from "path";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertContactSchema, insertNewsletterSchema, insertNewsSchema, insertCompetitionSchema } from "@shared/schema";
@@ -31,6 +33,93 @@ function requireAdmin(req: any, res: any, next: any) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+
+  app.get("/api/magazines", async (_req, res) => {
+    try {
+      const assetsDir = path.resolve(process.cwd(), "attached_assets", "Magazine");
+      const fileNames = await fs.readdir(assetsDir);
+
+      const monthMap: Record<string, string> = {
+        gennaio: "01",
+        febbraio: "02",
+        marzo: "03",
+        aprile: "04",
+        maggio: "05",
+        giugno: "06",
+        luglio: "07",
+        agosto: "08",
+        settembre: "09",
+        ottobre: "10",
+        novembre: "11",
+        dicembre: "12",
+      };
+
+      const parsed = fileNames
+        .filter((fileName) => fileName.toLowerCase().endsWith(".pdf"))
+        .map((fileName) => {
+          const lower = fileName.toLowerCase();
+
+          let magazine: "Caccia e Natura" | "Il Beccaccino" | null = null;
+          if (lower.includes("beccaccino")) {
+            magazine = "Il Beccaccino";
+          } else if (lower.includes("caccia e natura") || lower.includes("caccia") || lower.includes("enalcaccia") || lower.includes("natura")) {
+            magazine = "Caccia e Natura";
+          }
+
+          if (!magazine) return null;
+
+          const yearMatch = lower.match(/20\d{2}/);
+          const monthNumMatch = lower.match(/(?:^|[^0-9])(0[1-9]|1[0-2])(?:[^0-9]|$)/);
+          const monthNameEntry = Object.entries(monthMap).find(([name]) => lower.includes(name));
+
+          const year = yearMatch?.[0];
+          const month = monthNumMatch?.[1] ?? monthNameEntry?.[1];
+          const monthLabel = year && month ? `${month}/${year}` : year ? `Anno ${year}` : "Edizione corrente";
+
+          const issueNumberMatch = lower.match(/(?:n\.?|numero)[-_ ]?(\d{1,2})/);
+          const issueNumber = issueNumberMatch ? `n. ${issueNumberMatch[1]}` : "";
+          const displayLabel = issueNumber ? `${issueNumber} - ${monthLabel}` : monthLabel;
+
+          return {
+            id: fileName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+            magazine,
+            monthLabel: displayLabel,
+            file: `/attached_assets/Magazine/${encodeURIComponent(fileName)}`,
+            cover:
+              magazine === "Caccia e Natura"
+                ? "/attached_assets/enalcaccia-associazione-venatoria.png"
+                : "/attached_assets/enalcaccia-cinofilia.jpg",
+            note: "Numero mensile digitale in formato PDF.",
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null);
+
+      if (parsed.length > 0) {
+        return res.json(parsed);
+      }
+
+      return res.json([
+        {
+          id: "caccia-e-natura-edizione-corrente",
+          magazine: "Caccia e Natura",
+          monthLabel: "Edizione corrente",
+          file: "/attached_assets/tessera nazionale Enalcaccia _1751923500470.pdf",
+          cover: "/attached_assets/enalcaccia-associazione-venatoria.png",
+          note: "Numero mensile digitale in formato PDF.",
+        },
+        {
+          id: "il-beccaccino-edizione-corrente",
+          magazine: "Il Beccaccino",
+          monthLabel: "Edizione corrente",
+          file: "/attached_assets/Locandina 18-04-26.pdf",
+          cover: "/attached_assets/enalcaccia-cinofilia.jpg",
+          note: "Numero mensile digitale in formato PDF.",
+        },
+      ]);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch magazines" });
+    }
+  });
 
   // Public routes
   app.get("/api/news", async (req, res) => {

@@ -195,6 +195,18 @@ export class MemStorage implements IStorage {
     const sampleNews: News[] = [
       {
         id: this.currentNewsId++,
+        title: "Trofeo Prealpi FIBE: pubblicata la comunicazione ufficiale",
+        slug: "trofeo-prealpi-fibe-comunicazione-ufficiale",
+        content: "La sezione comunica la pubblicazione del Trofeo Prealpi FIBE con materiale informativo ufficiale aggiornato.\n\nPer tutti i dettagli organizzativi, consultare la locandina e gli allegati dedicati:\n- Locandina: /attached_assets/Locandina Fibec.jpg\n- Calendario: /attached_assets/Calendario fibec .jpg\n- Quota partecipazione: /attached_assets/Quota partecipazione fibec.jpg\n\nPer chiarimenti operativi e adesioni, utilizzare la pagina contatti del sito.",
+        excerpt: "Disponibile la comunicazione ufficiale del Trofeo Prealpi FIBE con locandina, calendario e quota partecipazione.",
+        featuredImage: "/attached_assets/Locandina Fibec.jpg",
+        category: "Gare Cinofile",
+        published: true,
+        createdAt: new Date("2026-03-09"),
+        updatedAt: new Date("2026-03-09"),
+      },
+      {
+        id: this.currentNewsId++,
         title: "Gara cinofila provinciale 18 aprile 2026: locandina ufficiale",
         slug: "gara-cinofila-provinciale-18-aprile-2026-locandina-ufficiale",
         content: "E' online la locandina ufficiale della gara cinofila provinciale in programma sabato 18 aprile 2026.\n\nL'evento e' dedicato alle razze da ferma, con ritrovo alle ore 7:00 e inizio prove alle ore 8:00.\n\nConsulta la locandina completa per regolamento, iscrizioni e indicazioni organizzative.",
@@ -664,6 +676,15 @@ export class DatabaseStorage implements IStorage {
       }
 
       const curatedNews: InsertNews[] = [
+        {
+          title: "Trofeo Prealpi FIBE: pubblicata la comunicazione ufficiale",
+          content: "La sezione comunica la pubblicazione del Trofeo Prealpi FIBE con materiale informativo ufficiale aggiornato.\n\nPer tutti i dettagli organizzativi, consultare la locandina e gli allegati dedicati:\n- Locandina: /attached_assets/Locandina Fibec.jpg\n- Calendario: /attached_assets/Calendario fibec .jpg\n- Quota partecipazione: /attached_assets/Quota partecipazione fibec.jpg\n\nPer chiarimenti operativi e adesioni, utilizzare la pagina contatti del sito.",
+          slug: "trofeo-prealpi-fibe-comunicazione-ufficiale",
+          excerpt: "Disponibile la comunicazione ufficiale del Trofeo Prealpi FIBE con locandina, calendario e quota partecipazione.",
+          category: "Gare Cinofile",
+          published: true,
+          featuredImage: "/attached_assets/Locandina Fibec.jpg",
+        },
         {
           title: "Riforma della legge sulla caccia: aggiornamento sul calendario parlamentare",
           content: "Nel dibattito nazionale sulla riforma della normativa venatoria si registra una fase di attesa sui passaggi in calendario. La sezione provinciale raccomanda ai soci di seguire gli sviluppi istituzionali con attenzione, evitando interpretazioni non ufficiali e verificando sempre le fonti primarie. Per approfondire il tema, è disponibile un monitoraggio periodico nella rassegna stampa dedicata alle principali testate di settore.",

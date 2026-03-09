@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Fish, Target, Users, MapPin, Calendar, Clock, BookOpen } from "lucide-react";
+import { Fish, Target, Users, MapPin, Clock, BookOpen } from "lucide-react";
 
 export default function PescaTiro() {
   const strutture = [
@@ -116,22 +116,14 @@ export default function PescaTiro() {
           <h2 className="text-3xl font-bold text-forest mb-8 text-center">Programmazione Ufficiale</h2>
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-forest">Nessun corso attivo pubblicato</CardTitle>
+              <CardTitle className="text-xl text-forest">Programmazione in aggiornamento</CardTitle>
               <CardDescription>
-                Rimane disponibile solo l'evento ufficiale in programma nel prossimo futuro.
+                Calendario e comunicazioni ufficiali delle sezioni Pesca e Tiro verranno pubblicati in questa area.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Evento confermato: 18/04/2026
-              </p>
+              <Badge variant="secondary">In aggiornamento</Badge>
               <div className="flex gap-3 flex-wrap">
-                <Button asChild>
-                  <a href="/attached_assets/Locandina 18-04-26.pdf" target="_blank" rel="noopener noreferrer">
-                    Apri locandina ufficiale
-                  </a>
-                </Button>
                 <Button variant="outline" asChild>
                   <a href="/contact">Richiedi informazioni</a>
                 </Button>

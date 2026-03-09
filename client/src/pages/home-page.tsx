@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 import { useAuth } from "@/hooks/use-auth";
-import { Trophy, Users, GraduationCap, Shield, Leaf, Calendar, MapPin, Euro, ExternalLink } from "lucide-react";
-import type { News, Competition } from "@shared/schema";
+import { Trophy, Users, GraduationCap, Shield, Leaf, Calendar, ExternalLink } from "lucide-react";
+import type { News } from "@shared/schema";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -19,23 +19,10 @@ export default function HomePage() {
     refetchOnMount: "always",
   });
 
-  const { data: competitions = [] } = useQuery<Competition[]>({
-    queryKey: ["/api/competitions"],
-  });
-
   const latestNews = [...news]
     .filter((article) => article.published)
     .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
-    .slice(0, 3);
-  const upcomingCompetitions = competitions.slice(0, 3);
-
-  const getCompetitionImage = (discipline: string) => {
-    const normalized = discipline.toLowerCase();
-    if (normalized.includes("pesca")) return "/attached_assets/enalpesca.png";
-    if (normalized.includes("cin") || normalized.includes("cani")) return "/attached_assets/enalcaccia-cinofilia.jpg";
-    if (normalized.includes("tiro")) return "/attached_assets/cane-caccia-2.jpg";
-    return "/attached_assets/cane-caccia-1.jpg";
-  };
+    .slice(0, 6);
 
   const newsFallbacks = [
     "/attached_assets/enalcaccia-associazione-venatoria.png",
@@ -229,6 +216,116 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      {/* News Section */}
+      <section className="py-16 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-12">
+            <div>
+              <h2 className="text-3xl font-serif font-bold text-foreground mb-4">Ultime Notizie</h2>
+              <p className="text-muted-foreground">Rimani aggiornato sulle novità del mondo venatorio</p>
+            </div>
+            <Link href="/news">
+              <Button variant="outline">Vedi tutte le news</Button>
+            </Link>
+          </div>
+          
+          <div className="max-w-6xl mx-auto px-10 sm:px-12">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: latestNews.length > 3,
+              }}
+            >
+              <CarouselContent>
+                {latestNews.map((article, index) => (
+                  <CarouselItem key={article.id} className="md:basis-1/2 lg:basis-1/3">
+                    <Card className="hover:shadow-lg transition-shadow h-full">
+                      <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
+                        {isPdfAsset(getNewsImage(article, index)) ? (
+                          <iframe
+                            src={`${getNewsImage(article, index)}#toolbar=0&navpanes=0&scrollbar=0`}
+                            title={`Locandina ${article.title}`}
+                            className="w-full h-full border-0"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <img
+                            src={getNewsImage(article, index)}
+                            alt={article.title}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        )}
+                      </div>
+                      <CardHeader>
+                        <div className="flex items-center text-sm text-muted-foreground mb-2">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          <span>{article.createdAt ? new Date(article.createdAt).toLocaleDateString('it-IT') : '-'}</span>
+                          <Badge variant="secondary" className="ml-2">
+                            {article.category}
+                          </Badge>
+                        </div>
+                        <CardTitle className="line-clamp-2">{article.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4 line-clamp-3">{article.excerpt?.trim() || `${article.content.slice(0, 160)}...`}</p>
+                        <Link href="/news">
+                          <Button variant="link" className="p-0">Vai alle notizie →</Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="-left-2 sm:-left-4" />
+              <CarouselNext className="-right-2 sm:-right-4" />
+            </Carousel>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mt-10">
+            <Card className="hover:shadow-lg transition-shadow border-forest/20">
+              <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-4">
+                <div className="w-24 h-24 rounded-xl border bg-white p-2 flex items-center justify-center">
+                  <img
+                    src="/attached_assets/Logo Beccacino.jpg"
+                    alt="Logo Il Beccaccino"
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-xl font-semibold">Il Beccaccino</h3>
+                  <p className="text-sm text-muted-foreground mb-3">Accedi direttamente ai numeri PDF de Il Beccaccino.</p>
+                  <Button asChild size="sm">
+                    <a href="/magazine#il-beccaccino">Apri sezione Il Beccaccino</a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow border-forest/20">
+              <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-4">
+                <div className="w-24 h-24 rounded-xl border bg-white p-2 flex items-center justify-center">
+                  <img
+                    src="/attached_assets/logo caccia e natura.jpg"
+                    alt="Logo Caccia e Natura"
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-xl font-semibold">Caccia e Natura</h3>
+                  <p className="text-sm text-muted-foreground mb-3">Accedi direttamente ai numeri PDF di Caccia e Natura.</p>
+                  <Button asChild size="sm">
+                    <a href="/magazine#caccia-e-natura">Apri sezione Caccia e Natura</a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* About Section */}
       <section className="py-16 bg-muted/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -291,6 +388,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
       {/* Partner Istituzionali */}
       <section className="py-16 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -345,119 +443,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* News Section */}
-      <section className="py-16 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-12">
-            <div>
-              <h2 className="text-3xl font-serif font-bold text-foreground mb-4">Ultime Notizie</h2>
-              <p className="text-muted-foreground">Rimani aggiornato sulle novità del mondo venatorio</p>
-            </div>
-            <Link href="/news">
-              <Button variant="outline">Vedi tutte le news</Button>
-            </Link>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {latestNews.map((article, index) => (
-              <Card key={article.id} className="hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
-                  {isPdfAsset(getNewsImage(article, index)) ? (
-                    <iframe
-                      src={`${getNewsImage(article, index)}#toolbar=0&navpanes=0&scrollbar=0`}
-                      title={`Locandina ${article.title}`}
-                      className="w-full h-full border-0"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <img
-                      src={getNewsImage(article, index)}
-                      alt={article.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  )}
-                </div>
-                <CardHeader>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>{article.createdAt ? new Date(article.createdAt).toLocaleDateString('it-IT') : '-'}</span>
-                    <Badge variant="secondary" className="ml-2">
-                      {article.category}
-                    </Badge>
-                  </div>
-                  <CardTitle className="line-clamp-2">{article.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">{article.excerpt?.trim() || `${article.content.slice(0, 160)}...`}</p>
-                  <Link href="/news">
-                    <Button variant="link" className="p-0">Vai alle notizie →</Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-      {/* Competitions Section */}
-      <section className="py-16 bg-muted/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif font-bold text-foreground mb-4">Gare Cinofile</h2>
-            <p className="text-muted-foreground">Prossimi eventi e competizioni per cani da caccia</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {upcomingCompetitions.map((competition) => (
-              <Card key={competition.id} className="hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
-                  <img
-                    src={getCompetitionImage(competition.discipline)}
-                    alt={competition.discipline}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-4">
-                    <Badge>{competition.discipline}</Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(competition.eventDate).toLocaleDateString('it-IT')}
-                    </span>
-                  </div>
-                  <CardTitle className="line-clamp-2">{competition.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-muted-foreground">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      <span className="text-sm">{competition.location}</span>
-                    </div>
-                    <div className="flex items-center text-muted-foreground">
-                      <Euro className="w-4 h-4 mr-2" />
-                      <span className="text-sm">€{(competition.cost / 100).toFixed(2)}</span>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">{competition.description}</p>
-                  <div className="flex space-x-3">
-                    <Button size="sm" className="flex-1">Dettagli</Button>
-                    {competition.bandoUrl && (
-                      <Button size="sm" variant="outline" className="flex-1">
-                        Bando
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          
-          <div className="text-center mt-12">
-            <Link href="/gare-cinofile">
-              <Button>Vedi tutte le gare</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
