@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,8 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { SEOHead } from "@/components/seo-head";
-import { insertUserSchema } from "@shared/schema";
-import { Shield, Users, Trophy } from "lucide-react";
+import { getReadableAuthError, RegisterPayload } from "@/lib/supabase-auth";
+import { Shield, Users, Trophy, CheckCircle2 } from "lucide-react";
 
 const DOG_PHOTO_1 = "/attached_assets/cane-caccia-1.jpg";
 
@@ -21,20 +21,45 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password richiesta"),
 });
 
+const registerSchema = z
+  .object({
+    name: z.string().min(2, "Nome richiesto"),
+    surname: z.string().min(2, "Cognome richiesto"),
+    birthDate: z.string().min(1, "Data di nascita richiesta"),
+    birthPlace: z.string().min(2, "Luogo di nascita richiesto"),
+    taxCode: z
+      .string()
+      .min(16, "Codice fiscale non valido")
+      .max(16, "Codice fiscale non valido")
+      .regex(/^[A-Za-z0-9]+$/, "Usa solo lettere e numeri"),
+    licenseNumber: z.string().min(3, "Numero licenza richiesto"),
+    email: z.string().email("Email non valida"),
+    password: z
+      .string()
+      .min(8, "Minimo 8 caratteri")
+      .regex(/[A-Za-z]/, "Inserisci almeno una lettera")
+      .regex(/[0-9]/, "Inserisci almeno un numero"),
+    passwordConfirm: z.string().min(8, "Conferma password richiesta"),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Le password non corrispondono",
+    path: ["passwordConfirm"],
+  });
+
 type LoginForm = z.infer<typeof loginSchema>;
-type RegisterForm = z.infer<typeof insertUserSchema>;
+type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("login");
+  const [registrationMessage, setRegistrationMessage] = useState<string | null>(null);
 
-  // Redirect if already logged in
-  if (user) {
-    setLocation("/");
-    return null;
-  }
+  useEffect(() => {
+    if (!user) return;
+    setLocation("/dashboard");
+  }, [user, setLocation]);
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -45,33 +70,41 @@ export default function AuthPage() {
   });
 
   const registerForm = useForm<RegisterForm>({
-    resolver: zodResolver(insertUserSchema),
+    resolver: zodResolver(registerSchema),
     defaultValues: {
-      nome: "",
-      cognome: "",
-      dataNascita: "",
-      luogoNascita: "",
-      codiceFiscale: "",
-      numeroLicenza: "",
+      name: "",
+      surname: "",
+      birthDate: "",
+      birthPlace: "",
+      taxCode: "",
+      licenseNumber: "",
       email: "",
       password: "",
       passwordConfirm: "",
-      role: "utente",
     },
   });
 
   const onLogin = async (data: LoginForm) => {
     try {
-      await loginMutation.mutateAsync(data);
-      toast({
-        title: "Accesso effettuato",
-        description: "Benvenuto in Enal Caccia!",
-      });
+      const resolvedUser = await loginMutation.mutateAsync(data);
+
+      if (resolvedUser.status === "approved") {
+        toast({
+          title: "Accesso effettuato",
+          description: "Benvenuto nell'area soci.",
+        });
+      } else {
+        toast({
+          title: "Accesso effettuato",
+          description: "Il tuo account e' in attesa di approvazione.",
+        });
+      }
+
       setLocation("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Errore di accesso",
-        description: error.message,
+        description: getReadableAuthError(error),
         variant: "destructive",
       });
     }
@@ -79,17 +112,29 @@ export default function AuthPage() {
 
   const onRegister = async (data: RegisterForm) => {
     try {
-      await registerMutation.mutateAsync(data);
+      const payload: RegisterPayload = {
+        name: data.name.trim(),
+        surname: data.surname.trim(),
+        birthDate: data.birthDate,
+        birthPlace: data.birthPlace.trim(),
+        taxCode: data.taxCode.trim().toUpperCase(),
+        licenseNumber: data.licenseNumber.trim(),
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+      };
+
+      const result = await registerMutation.mutateAsync(payload);
+      setRegistrationMessage(result.message);
       toast({
         title: "Registrazione inviata",
-        description: "La tua richiesta è in attesa di approvazione da parte degli amministratori.",
+        description: result.message,
       });
       setActiveTab("login");
       registerForm.reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Errore nella registrazione",
-        description: error.message,
+        description: getReadableAuthError(error),
         variant: "destructive",
       });
     }
@@ -129,6 +174,12 @@ export default function AuthPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
+                    {registrationMessage && (
+                      <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 mt-0.5" />
+                        <span>{registrationMessage}</span>
+                      </div>
+                    )}
                     <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="login-email">Email</Label>
@@ -187,11 +238,11 @@ export default function AuthPage() {
                           <Input
                             id="nome"
                             placeholder="Mario"
-                            {...registerForm.register("nome")}
+                            {...registerForm.register("name")}
                           />
-                          {registerForm.formState.errors.nome && (
+                          {registerForm.formState.errors.name && (
                             <p className="text-sm text-destructive">
-                              {registerForm.formState.errors.nome.message}
+                              {registerForm.formState.errors.name.message}
                             </p>
                           )}
                         </div>
@@ -201,11 +252,11 @@ export default function AuthPage() {
                           <Input
                             id="cognome"
                             placeholder="Rossi"
-                            {...registerForm.register("cognome")}
+                            {...registerForm.register("surname")}
                           />
-                          {registerForm.formState.errors.cognome && (
+                          {registerForm.formState.errors.surname && (
                             <p className="text-sm text-destructive">
-                              {registerForm.formState.errors.cognome.message}
+                              {registerForm.formState.errors.surname.message}
                             </p>
                           )}
                         </div>
@@ -217,11 +268,11 @@ export default function AuthPage() {
                           <Input
                             id="dataNascita"
                             type="date"
-                            {...registerForm.register("dataNascita")}
+                            {...registerForm.register("birthDate")}
                           />
-                          {registerForm.formState.errors.dataNascita && (
+                          {registerForm.formState.errors.birthDate && (
                             <p className="text-sm text-destructive">
-                              {registerForm.formState.errors.dataNascita.message}
+                              {registerForm.formState.errors.birthDate.message}
                             </p>
                           )}
                         </div>
@@ -231,11 +282,11 @@ export default function AuthPage() {
                           <Input
                             id="luogoNascita"
                             placeholder="Roma"
-                            {...registerForm.register("luogoNascita")}
+                            {...registerForm.register("birthPlace")}
                           />
-                          {registerForm.formState.errors.luogoNascita && (
+                          {registerForm.formState.errors.birthPlace && (
                             <p className="text-sm text-destructive">
-                              {registerForm.formState.errors.luogoNascita.message}
+                              {registerForm.formState.errors.birthPlace.message}
                             </p>
                           )}
                         </div>
@@ -248,11 +299,11 @@ export default function AuthPage() {
                             id="codiceFiscale"
                             placeholder="RSSMRA80A01H501Z"
                             className="uppercase"
-                            {...registerForm.register("codiceFiscale")}
+                            {...registerForm.register("taxCode")}
                           />
-                          {registerForm.formState.errors.codiceFiscale && (
+                          {registerForm.formState.errors.taxCode && (
                             <p className="text-sm text-destructive">
-                              {registerForm.formState.errors.codiceFiscale.message}
+                              {registerForm.formState.errors.taxCode.message}
                             </p>
                           )}
                         </div>
@@ -262,11 +313,11 @@ export default function AuthPage() {
                           <Input
                             id="numeroLicenza"
                             placeholder="123456789"
-                            {...registerForm.register("numeroLicenza")}
+                            {...registerForm.register("licenseNumber")}
                           />
-                          {registerForm.formState.errors.numeroLicenza && (
+                          {registerForm.formState.errors.licenseNumber && (
                             <p className="text-sm text-destructive">
-                              {registerForm.formState.errors.numeroLicenza.message}
+                              {registerForm.formState.errors.licenseNumber.message}
                             </p>
                           )}
                         </div>

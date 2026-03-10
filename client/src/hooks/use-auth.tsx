@@ -1,20 +1,44 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
 import {
   useQuery,
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User as SelectUser, InsertUser } from "@shared/schema";
-import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
+import { queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import {
+  getReadableAuthError,
+  getSessionUser,
+  MemberRow,
+  PublicUserRow,
+  registerWithSupabase,
+  RegisterPayload,
+  signInWithSupabase,
+  signOutSupabase,
+} from "@/lib/supabase-auth";
+import { supabase } from "@/lib/supabase";
+
+export type AuthenticatedUser = {
+  id: string;
+  email: string;
+  role: string;
+  status: MemberRow["status"];
+  name: string;
+  surname: string;
+  nome: string;
+  cognome: string;
+  fullName: string;
+  profile: PublicUserRow;
+  member: MemberRow;
+};
 
 type AuthContextType = {
-  user: SelectUser | null;
+  user: AuthenticatedUser | null;
   isLoading: boolean;
   error: Error | null;
-  loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
+  loginMutation: UseMutationResult<AuthenticatedUser, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
-  registerMutation: UseMutationResult<{ message: string }, Error, InsertUser>;
+  registerMutation: UseMutationResult<{ message: string }, Error, RegisterPayload>;
 };
 
 type LoginData = {
@@ -23,60 +47,77 @@ type LoginData = {
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
+
+function buildAuthenticatedUser(publicUser: PublicUserRow, member: MemberRow): AuthenticatedUser {
+  return {
+    id: publicUser.id,
+    email: publicUser.email,
+    role: publicUser.role,
+    status: member.status,
+    name: member.name,
+    surname: member.surname,
+    nome: member.name,
+    cognome: member.surname,
+    fullName: `${member.name} ${member.surname}`.trim(),
+    profile: publicUser,
+    member,
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const {
     data: user,
     error,
     isLoading,
-  } = useQuery<SelectUser | undefined, Error>({
-    queryKey: ["/api/user"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+  } = useQuery<AuthenticatedUser | null, Error>({
+    queryKey: ["auth-user"],
+    queryFn: async () => {
+      const sessionProfile = await getSessionUser();
+      if (!sessionProfile) return null;
+
+      return buildAuthenticatedUser(sessionProfile.publicUser, sessionProfile.member);
+    },
   });
+
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange(() => {
+      queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+    });
+
+    return () => {
+      data.subscription.unsubscribe();
+    };
+  }, []);
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
-      return await res.json();
+      const resolved = await signInWithSupabase(credentials.email, credentials.password);
+      return buildAuthenticatedUser(resolved.publicUser, resolved.member);
     },
-    onSuccess: (user: SelectUser) => {
-      queryClient.setQueryData(["/api/user"], user);
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Login failed",
-        description: error.message,
-        variant: "destructive",
-      });
+    onSuccess: (currentUser: AuthenticatedUser) => {
+      queryClient.setQueryData(["auth-user"], currentUser);
     },
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (credentials: InsertUser) => {
-      const res = await apiRequest("POST", "/api/register", credentials);
-      return await res.json();
+    mutationFn: async (payload: RegisterPayload) => {
+      return registerWithSupabase(payload);
     },
     onSuccess: () => {},
-    onError: (error: Error) => {
-      toast({
-        title: "Registration failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
   });
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
+      await signOutSupabase();
     },
     onSuccess: () => {
-      queryClient.setQueryData(["/api/user"], null);
+      queryClient.setQueryData(["auth-user"], null);
     },
     onError: (error: Error) => {
       toast({
-        title: "Logout failed",
-        description: error.message,
+        title: "Logout non riuscito",
+        description: getReadableAuthError(error),
         variant: "destructive",
       });
     },
