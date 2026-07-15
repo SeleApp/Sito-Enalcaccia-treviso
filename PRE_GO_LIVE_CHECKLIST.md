@@ -18,7 +18,7 @@ Date: 2026-03-09
 - [ ] Set `SESSION_SECRET` (required, startup fails without it)
 - [ ] Set `DATABASE_URL` (otherwise app falls back to in-memory storage)
 - [ ] Set `STRIPE_SECRET_KEY` only when payment flow is enabled
-- [ ] Set `BASE_URL` to public HTTPS domain for canonical URLs, sitemap, RSS links, and SEO ping
+- [ ] Set `PUBLIC_SITE_URL` to public HTTPS domain for canonical URLs, sitemap, RSS links, and SEO ping
 
 ## Final Launch Gates
 - [ ] Configure reverse proxy / hosting with HTTPS and correct domain
