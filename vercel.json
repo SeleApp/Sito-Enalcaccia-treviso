@@ -4,26 +4,26 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "functions": {
-    "api/index.ts": {
+    "api/router.ts": {
       "maxDuration": 15
     }
   },
   "routes": [
     {
       "src": "/api(?:/(.*))?",
-      "dest": "/api?path=$1"
+      "dest": "/api/router?path=$1"
     },
     {
       "src": "/sitemap.xml",
-      "dest": "/api?route=sitemap"
+      "dest": "/api/router?route=sitemap"
     },
     {
       "src": "/feed.xml",
-      "dest": "/api?route=feed"
+      "dest": "/api/router?route=feed"
     },
     {
       "src": "/rss.xml",
-      "dest": "/api?route=rss"
+      "dest": "/api/router?route=rss"
     },
     {
       "handle": "filesystem"
