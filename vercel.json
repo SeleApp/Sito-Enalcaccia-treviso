@@ -4,26 +4,40 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "functions": {
-    "api/router.ts": {
+    "api/router-v2.ts": {
       "maxDuration": 15
+    },
+    "api/system-health.ts": {
+      "maxDuration": 10
+    },
+    "api/db-health.ts": {
+      "maxDuration": 10
     }
   },
   "routes": [
     {
+      "src": "/api/health",
+      "dest": "/api/system-health"
+    },
+    {
+      "src": "/api/db-health",
+      "dest": "/api/db-health"
+    },
+    {
       "src": "/api(?:/(.*))?",
-      "dest": "/api/router?path=$1"
+      "dest": "/api/router-v2?path=$1"
     },
     {
       "src": "/sitemap.xml",
-      "dest": "/api/router?route=sitemap"
+      "dest": "/api/router-v2?route=sitemap"
     },
     {
       "src": "/feed.xml",
-      "dest": "/api/router?route=feed"
+      "dest": "/api/router-v2?route=feed"
     },
     {
       "src": "/rss.xml",
-      "dest": "/api/router?route=rss"
+      "dest": "/api/router-v2?route=rss"
     },
     {
       "handle": "filesystem"
