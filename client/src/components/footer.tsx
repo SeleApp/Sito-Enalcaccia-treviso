@@ -199,8 +199,7 @@ export function Footer() {
               <div>
                 <h4 className="font-semibold mb-1">Telefono</h4>
                 <p className="text-gray-300 text-sm">
-                  <a href="tel:0422545237" className="hover:text-white transition-colors">0422 545237</a><br />
-                  <a href="tel:3474296905" className="hover:text-white transition-colors">347 4296905</a>
+                  <a href="tel:0422545237" className="hover:text-white transition-colors">0422 545237</a>
                 </p>
               </div>
             </div>
