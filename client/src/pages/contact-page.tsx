@@ -227,8 +227,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Telefono</h3>
                     <p className="text-muted-foreground">
-                      <a href="tel:0422545237" className="hover:underline">0422 545237</a><br />
-                      <a href="tel:3474296905" className="hover:underline">347 4296905</a>
+                      <a href="tel:0422545237" className="hover:underline">0422 545237</a>
                     </p>
                   </div>
                 </div>
