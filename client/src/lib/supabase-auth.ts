@@ -44,57 +44,39 @@ function normalizeAuthError(error: unknown): Error {
   return new Error("Si e' verificato un errore imprevisto.");
 }
 
+const sleep = (milliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 export async function signOutSupabase(): Promise<void> {
   const { error } = await supabase.auth.signOut();
   if (error) throw normalizeAuthError(error);
 }
 
 export async function registerWithSupabase(payload: RegisterPayload): Promise<{ message: string }> {
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: payload.email,
     password: payload.password,
+    options: {
+      data: {
+        name: payload.name,
+        surname: payload.surname,
+        birth_date: payload.birthDate,
+        birth_place: payload.birthPlace,
+        tax_code: payload.taxCode.trim().toUpperCase(),
+        license_number: payload.licenseNumber,
+      },
+    },
   });
 
-  if (authError) {
-    throw normalizeAuthError(authError);
-  }
-
-  const authUserId = authData.user?.id;
-  if (!authUserId) {
+  if (error) throw normalizeAuthError(error);
+  if (!data.user) {
     throw new Error("Impossibile completare la registrazione in questo momento.");
   }
 
-  const { error: userInsertError } = await supabase.from("users").upsert(
-    {
-      id: authUserId,
-      email: payload.email,
-      role: "member",
-    },
-    { onConflict: "id" },
-  );
-
-  if (userInsertError) {
-    throw normalizeAuthError(userInsertError);
-  }
-
-  const { error: memberInsertError } = await supabase.from("members").insert({
-    user_id: authUserId,
-    name: payload.name,
-    surname: payload.surname,
-    birth_date: payload.birthDate,
-    birth_place: payload.birthPlace,
-    tax_code: payload.taxCode,
-    license_number: payload.licenseNumber,
-    status: "pending",
-  });
-
-  if (memberInsertError) {
-    throw normalizeAuthError(memberInsertError);
-  }
-
   return {
-    message:
-      "Registrazione inviata con successo. La tua richiesta e' in attesa di approvazione da parte dell'amministrazione.",
+    message: data.session
+      ? "Registrazione completata. La richiesta e' in attesa di approvazione."
+      : "Registrazione ricevuta. Controlla la posta elettronica per confermare l'indirizzo, poi attendi l'approvazione dell'amministrazione.",
   };
 }
 
@@ -125,41 +107,45 @@ export async function getSessionUser(): Promise<ResolvedAuthProfile | null> {
 export async function resolveUserProfile(authUser: User): Promise<ResolvedAuthProfile> {
   const userId = authUser.id;
 
-  const [{ data: publicUser, error: userError }, { data: member, error: memberError }] = await Promise.all([
-    supabase
-      .from("users")
-      .select("id,email,role,created_at")
-      .eq("id", userId)
-      .maybeSingle<PublicUserRow>(),
-    supabase
-      .from("members")
-      .select("user_id,name,surname,birth_date,birth_place,tax_code,license_number,status,created_at")
-      .eq("user_id", userId)
-      .maybeSingle<MemberRow>(),
-  ]);
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const [{ data: publicUser, error: userError }, { data: member, error: memberError }] = await Promise.all([
+      supabase
+        .from("users")
+        .select("id,email,role,created_at")
+        .eq("id", userId)
+        .maybeSingle<PublicUserRow>(),
+      supabase
+        .from("members")
+        .select("user_id,name,surname,birth_date,birth_place,tax_code,license_number,status,created_at")
+        .eq("user_id", userId)
+        .maybeSingle<MemberRow>(),
+    ]);
 
-  if (userError) throw normalizeAuthError(userError);
-  if (memberError) throw normalizeAuthError(memberError);
+    if (userError) throw normalizeAuthError(userError);
+    if (memberError) throw normalizeAuthError(memberError);
 
-  if (!publicUser) {
-    throw new Error("Profilo utente non trovato in public.users.");
+    if (publicUser && member) {
+      return {
+        authUser,
+        publicUser,
+        member,
+      };
+    }
+
+    if (attempt < 4) await sleep(250);
   }
 
-  if (!member) {
-    throw new Error("Record socio non trovato in public.members. Contatta l'amministrazione.");
-  }
-
-  return {
-    authUser,
-    publicUser,
-    member,
-  };
+  throw new Error("Profilo socio non ancora disponibile. Esci e riprova tra qualche secondo.");
 }
 
 export function getReadableAuthError(error: unknown): string {
   if (error instanceof AuthError) {
-    if (error.message.toLowerCase().includes("invalid login credentials")) {
+    const message = error.message.toLowerCase();
+    if (message.includes("invalid login credentials")) {
       return "Email o password non corretti.";
+    }
+    if (message.includes("email not confirmed")) {
+      return "Conferma prima il tuo indirizzo email tramite il messaggio ricevuto.";
     }
     return error.message;
   }
