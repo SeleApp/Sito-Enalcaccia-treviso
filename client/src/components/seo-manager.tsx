@@ -39,7 +39,7 @@ const seoByPath: Record<string, SeoConfig> = {
   "/contact": {
     title: "Contatti e sede | ENAL Caccia Treviso",
     description:
-      "Contatta ENAL Caccia Treviso. Sede in Via Cattaneo 28, Treviso. Ricevimento martedì e giovedì dalle 08:00 alle 11:30.",
+      "Contatta ENAL Caccia Treviso. Sede in Via Cattaneo 28, Treviso. Ricevimento martedì e giovedì dalle 08:00 alle 12:00.",
   },
   "/scuola-venatoria": {
     title: "Scuola venatoria | ENAL Caccia Treviso",
