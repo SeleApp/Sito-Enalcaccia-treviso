@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 import { CookieBanner } from "@/components/cookie-banner";
 import { Layout } from "@/components/layout";
 import { SeoManager } from "@/components/seo-manager";
+import { ContactHoursNotice } from "@/components/contact-hours-notice";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
@@ -41,7 +42,14 @@ function Router() {
         <Route path="/news/:slug" component={NewsDetailPage} />
         <Route path="/competitions" component={CompetitionsPage} />
         <Route path="/membership" component={MembershipPage} />
-        <Route path="/contact" component={ContactPage} />
+        <Route path="/contact">
+          {() => (
+            <>
+              <ContactHoursNotice />
+              <ContactPage />
+            </>
+          )}
+        </Route>
         <Route path="/scuola-venatoria" component={ScuolaVenatoria} />
         <Route path="/direttivo" component={Direttivo} />
         <Route path="/gare-cinofile" component={GareCinofile} />
