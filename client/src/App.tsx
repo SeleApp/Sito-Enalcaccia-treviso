@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import { CookieBanner } from "@/components/cookie-banner";
 import { Layout } from "@/components/layout";
+import { SeoManager } from "@/components/seo-manager";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
@@ -31,6 +32,7 @@ import CookiePolicy from "@/pages/cookie-policy";
 function Router() {
   return (
     <Layout>
+      <SeoManager />
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/auth" component={AuthPage} />
