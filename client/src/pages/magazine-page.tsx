@@ -13,13 +13,13 @@ export default function MagazinePage() {
       <SEOHead
         title="Magazine"
         description="Archivio magazine ENAL Caccia Treviso: Caccia e Natura e Il Beccaccino in formato PDF."
-        url="https://enalcaccia-treviso.replit.app/magazine"
+        url="https://www.enalcacciatv.it/magazine"
       />
       <div className="page-wrap">
         <div className="page-header">
           <h1 className="page-title">Magazine</h1>
           <p className="page-subtitle max-w-2xl">
-            Pubblicazioni mensili dell'associazione in formato PDF: Caccia e Natura e Il Beccaccino.
+            Sfoglia le ultime cinque edizioni ufficiali di Caccia e Natura e Il Beccaccino, con copertine e PDF consultabili online.
           </p>
         </div>
 
