@@ -77,7 +77,7 @@ function MobileHome() {
 
   return (
     <div className="ec-mobile-page mx-auto max-w-5xl p-4 sm:px-7 sm:py-7">
-      <section className="rounded-[20px] bg-[#193219] px-5 py-6 text-white sm:px-8 sm:py-9">
+      <section className="rounded-[20px] bg-[#193219] bg-cover bg-center px-5 py-6 text-white sm:px-8 sm:py-9" style={{ backgroundImage: "linear-gradient(90deg, rgba(25,50,25,0.96), rgba(25,50,25,0.80)), url('/attached_assets/Panorama-Bosco.JPG')" }}>
         <p className="text-xs font-bold uppercase tracking-wider text-[#DDE6D3]">ENALCACCIA · Provincia di Treviso</p>
         <h1 className="mt-4 max-w-xl font-serif text-[36px] font-bold leading-[1.15] sm:text-[44px]">Tradizione, territorio, futuro.</h1>
         <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#E6EADD]">
@@ -159,7 +159,17 @@ function MobileNews() {
       {isError && <p role="alert" className="mt-4 rounded-xl bg-white p-5">Non è stato possibile caricare le notizie. Riprova più tardi.</p>}
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {found.map(article => (
-          <Link key={article.id} href={`/news/${article.slug}`} className="flex flex-col rounded-2xl border border-[#DFE5DA] bg-white p-4 sm:p-5">
+          <Link key={article.id} href={`/news/${article.slug}`} className="flex flex-col overflow-hidden rounded-2xl border border-[#DFE5DA] bg-white p-4 sm:p-5">
+            {article.featuredImage && !article.featuredImage.toLowerCase().endsWith(".pdf") && (
+              <div className="mb-4 overflow-hidden rounded-xl bg-[#EDF2E8]">
+                <img
+                  src={article.featuredImage}
+                  alt={article.title}
+                  loading="lazy"
+                  className={`h-44 w-full ${article.featuredImage.startsWith("/images/notizie/") ? "object-contain bg-white" : "object-cover"}`}
+                />
+              </div>
+            )}
             <div><span className="inline-flex max-w-full rounded-lg bg-[#DDE6D3] px-3 py-2 text-xs font-bold uppercase text-[#2D5016]">{article.category}</span></div>
             <h2 className="mt-3 font-serif text-[21px] font-bold leading-[1.28] text-[#193024]">{article.title}</h2>
             <p className="mt-2 text-[13px] text-[#617062]">{dateString(article.createdAt)}</p>
