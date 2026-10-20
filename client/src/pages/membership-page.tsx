@@ -6,27 +6,7 @@ import { SEOHead } from "@/components/seo-head";
 import { useAuth } from "@/hooks/use-auth";
 import { Shield, CreditCard, Award } from "lucide-react";
 
-export const membershipCatalog = [
-  { title: "Tessera Caccia Base Nazionale", image: "/attached_assets/Tessera-caccia-base-nazionale.jpg", category: "Caccia", priceLabel: "€85,00" },
-  { title: "Tessera Caccia Base Nazionale di Benvenuto", image: "/attached_assets/Tessera-caccia-base-nazionale-di-benvenuto.jpg", category: "Caccia" },
-  { title: "Tessera Caccia Semplice", image: "/attached_assets/Tessera-caccia-semplice.jpg", category: "Caccia", priceLabel: "€65,00" },
-  { title: "Tessera Caccia Semplice di Benvenuto", image: "/attached_assets/Tessera-caccia-semplice-di-benvenuto.jpg", category: "Caccia" },
-  { title: "Tessera Caccia Super", image: "/attached_assets/Tessera-caccia-super.jpg", category: "Caccia", priceLabel: "€110,00" },
-  { title: "Tessera Caccia Super di Benvenuto", image: "/attached_assets/Tessera-caccia-super-di-benvenuto.jpg", category: "Caccia" },
-  { title: "Tessera Caccia Super 1 Cane", image: "/attached_assets/Tessera-caccia-super-1-cane.jpg", category: "Cinofilia", priceLabel: "€140,00" },
-  { title: "Tessera Caccia Super 1 Cane di Benvenuto", image: "/attached_assets/Tessera-caccia-super-1-cane-di-bemvenuto.jpg", category: "Cinofilia" },
-  { title: "Tessera Caccia Super 2 Cani", image: "/attached_assets/Tessera-caccia-super-2-cani.jpg", category: "Cinofilia", priceLabel: "€165,00" },
-  { title: "Tessera Caccia Super 2 Cani di Benvenuto", image: "/attached_assets/Tessera-caccia-super-2-cani-di-benvenuto.jpg", category: "Cinofilia" },
-  { title: "Tessera Pesca Standard", image: "/attached_assets/Tessera-pesca-stamdard.jpg", category: "Pesca", priceLabel: "€80,00" },
-  { title: "Tessera Pesca Super 1 Cane", image: "/attached_assets/Tessera-caccia-super-1-cane.jpg", category: "Pesca", priceLabel: "€155,00" },
-  { title: "Tessera Pesca", image: "/attached_assets/Tessera-pesca-stamdard.jpg", category: "Pesca", priceLabel: "€20,00" },
-  { title: "Tessera Pesca Lago", image: "/attached_assets/Tessera-pesca-lago.jpg", category: "Pesca", priceLabel: "€10,00" },
-  { title: "Tessera Pesca Ragazzi 7-14 Anni", image: "/attached_assets/Tessera-pesca-lago.jpg", category: "Pesca", priceLabel: "€6,00" },
-  { title: "Tesseramento Amatoriale", image: "/attached_assets/Tesseramento-amatoriale.jpg", category: "Amatoriale", priceLabel: "€30,00" },
-  { title: "Capanno Richiami Vivi", image: "/attached_assets/Tessera-caccia-semplice.jpg", category: "Opzioni", priceLabel: "€10,00" },
-  { title: "Morte del Cane (Opzione Assicurativa)", image: "/attached_assets/Tessera-caccia-super.jpg", category: "Opzioni", priceLabel: "€30,00" },
-  { title: "Tesseramento Tiravolisti", image: "/attached_assets/Tesseramento-tiravolisti.jpg", category: "Tiro" },
-];
+import { membershipCatalog } from "@/lib/membership-catalog";
 
 export default function MembershipPage() {
   const { user } = useAuth();
