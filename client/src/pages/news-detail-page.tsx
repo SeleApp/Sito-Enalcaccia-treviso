@@ -105,7 +105,7 @@ export default function NewsDetailPage() {
   }
 
   const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
-  const isEnalcacciaPoster = article.featuredImage?.includes("/wp-content/uploads/2026/10/") ?? false;
+  const isEnalcacciaPoster = (article.featuredImage?.startsWith("/images/notizie/") || article.featuredImage?.includes("/wp-content/uploads/2026/10/")) ?? false;
 
   return (
     <div className="page-shell">
