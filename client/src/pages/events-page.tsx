@@ -4,117 +4,147 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { SEOHead } from "@/components/seo-head";
-import { Calendar } from "lucide-react";
+import { Calendar, ExternalLink } from "lucide-react";
 
-const eventPosters = [
+type EventPoster = {
+  id: string;
+  title: string;
+  dateLabel: string;
+  image: string;
+  article?: string;
+  document?: string;
+};
+
+/**
+ * Locandine di iniziative documentate nell'archivio Notizie.
+ * Le cinque immagini in /images/notizie/ sono esattamente le locandine originali
+ * già associate alle rispettive notizie; non sono copertine generiche.
+ *
+ * Il Trofeo Prealpi Venete (FIBEC) è stato rimosso su richiesta.
+ */
+const eventPosters: EventPoster[] = [
   {
-    id: "locandina-fibec",
-    title: "Evento FIBEC",
-    dateLabel: "Date da calendario FIBEC",
-    image: "/attached_assets/Locandina Fibec.jpg",
-    calendarImage: "/attached_assets/Calendario fibec .jpg",
-    feeImage: "/attached_assets/Quota partecipazione fibec.jpg",
+    id: "prova-enci-san-boldo-2026",
+    title: "Prova Nazionale ENCI – Passo San Boldo",
+    dateLabel: "30 agosto 2026",
+    image: "/images/notizie/PHOTO-2026-10-20-09-02-59.jpg",
+    article: "/news/prova-nazionale-enci-san-boldo-30-agosto-2026",
   },
   {
-    id: "locandina-lupo",
-    title: "Evento Lupo",
-    dateLabel: "Programmazione dedicata",
+    id: "tiro-altivole-luglio-2026",
+    title: "Gara di tiro al piattello – Altivole",
+    dateLabel: "11–12 luglio 2026",
+    image: "/images/notizie/PHOTO-2026-10-20-09-07-14.jpg",
+    article: "/news/gara-tiro-piattello-altivole-11-12-luglio-2026",
+  },
+  {
+    id: "biodiversita-avifauna-2026",
+    title: "Biodiversità e conservazione dell’avifauna",
+    dateLabel: "28 maggio 2026",
+    image: "/images/notizie/PHOTO-2026-10-20-09-03-51.jpg",
+    article: "/news/conferenza-biodiversita-avifauna-28-maggio-2026",
+  },
+  {
+    id: "prova-cinofila-aprile-2026",
+    title: "Prova cinofila – Treviso",
+    dateLabel: "18 aprile 2026",
+    image: "/attached_assets/Locandina 18-04-26.png",
+    article: "/news/gara-cinofila-provinciale-18-aprile-2026-locandina-ufficiale",
+    document: "/attached_assets/Locandina 18-04-26.pdf",
+  },
+  {
+    id: "lupo-conoscere-per-capire-2025",
+    title: "Il lupo: conoscere per capire – Pederobba",
+    dateLabel: "27 novembre 2025",
     image: "/attached_assets/Locandina Lupo.jpg",
   },
   {
-    id: "locandina-180426",
-    title: "Evento ufficiale ENAL Caccia Treviso",
-    dateLabel: "18 aprile 2026",
-    image: "/attached_assets/Locandina 18-04-26.png",
-    pdf: "/attached_assets/Locandina 18-04-26.pdf",
+    id: "gestione-lepre-miane-2025",
+    title: "Gestione della lepre nei Comprensori Alpini",
+    dateLabel: "9 ottobre 2025",
+    image: "/images/notizie/PHOTO-2026-10-20-09-05-25.jpg",
+    article: "/news/gestione-lepre-comprensori-pedemontana-9-ottobre-2025",
+  },
+  {
+    id: "tiro-altivole-luglio-2025",
+    title: "Gara di tiro al piattello – Altivole",
+    dateLabel: "19–20 luglio 2025",
+    image: "/images/notizie/PHOTO-2026-10-20-09-06-15.jpg",
+    article: "/news/gara-tiro-piattello-altivole-19-20-luglio-2025",
   },
 ];
 
 export default function EventsPage() {
   return (
-    <div className="page-shell">{/* Layout now handles min-h-screen */}
+    <div className="page-shell">
       <SEOHead
         title="Eventi"
-        description="Calendario eventi ufficiali ENAL Caccia Treviso con locandine, date e aggiornamenti organizzativi."
-        url="https://enalcaccia-treviso.replit.app/eventi"
+        description="Locandine ufficiali e calendario delle iniziative di Enalcaccia Treviso e delle realtà venatorie del territorio, con date e articoli di approfondimento."
+        url="https://www.enalcacciatv.it/eventi"
       />
       <div className="page-wrap">
-        {/* Header */}
         <div className="page-header">
-          <h1 className="page-title">
-            Calendario Eventi
-          </h1>
+          <h1 className="page-title">Calendario Eventi</h1>
           <p className="page-subtitle">
-            Calendario ufficiale aggiornato con il prossimo evento confermato dalla sezione.
+            Le iniziative del territorio, le locandine originali e gli approfondimenti pubblicati
+            nelle Notizie. Gli appuntamenti già trascorsi rimangono consultabili nell’archivio.
           </p>
         </div>
 
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-forest" />
+              <Calendar className="h-5 w-5 text-forest" />
               Locandine eventi
             </CardTitle>
             <CardDescription>
-              Sfoglia le locandine degli eventi pubblicati dalla sezione. Il calendario completo si trova subito sotto.
+              Una raccolta delle locandine delle iniziative documentate: apri il manifesto
+              originale oppure leggi l’articolo collegato. Le date indicate si riferiscono
+              agli eventi, non al giorno di caricamento delle immagini.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="max-w-5xl mx-auto px-8 sm:px-10">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-              >
-                <CarouselContent>
+            <div className="mx-auto max-w-6xl px-7 sm:px-10">
+              <Carousel opts={{ align: "start", loop: false }}>
+                <CarouselContent className="py-1">
                   {eventPosters.map((poster) => (
-                    <CarouselItem key={poster.id} className="md:basis-1/2 lg:basis-1/2">
-                      <Card className="overflow-hidden h-full border-forest/20">
-                        <div className="aspect-[4/5] bg-muted">
+                    <CarouselItem
+                      key={poster.id}
+                      className="basis-full md:basis-1/2 lg:basis-1/3"
+                    >
+                      <Card className="flex h-full flex-col overflow-hidden border-forest/20">
+                        <a
+                          href={poster.image}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Apri la locandina: ${poster.title}`}
+                          className="flex aspect-[4/5] items-center justify-center bg-white p-3"
+                        >
                           <img
                             src={poster.image}
-                            alt={poster.title}
-                            className="w-full h-full object-cover"
+                            alt={`Locandina: ${poster.title}, ${poster.dateLabel}`}
+                            className="h-full w-full object-contain"
                             loading="lazy"
                           />
-                        </div>
-                        <CardContent className="p-4 space-y-3">
-                          <div className="flex items-center justify-between gap-3">
-                            <h3 className="font-semibold leading-tight">{poster.title}</h3>
-                            <Badge variant="outline" className="whitespace-nowrap">
-                              {poster.dateLabel}
-                            </Badge>
+                        </a>
+                        <CardContent className="flex flex-1 flex-col gap-3 p-4">
+                          <div className="space-y-2">
+                            <Badge variant="secondary">{poster.dateLabel}</Badge>
+                            <h3 className="font-semibold leading-snug">{poster.title}</h3>
                           </div>
-                          {poster.id === "locandina-fibec" ? (
-                            <div className="grid gap-2">
-                              <Button asChild size="sm" className="w-full">
-                                <a href={poster.image} target="_blank" rel="noopener noreferrer">
-                                  Apri locandina FIBEC
-                                </a>
-                              </Button>
-                              <Button asChild size="sm" variant="outline" className="w-full">
-                                <a href={poster.calendarImage} target="_blank" rel="noopener noreferrer">
-                                  Apri calendario FIBEC
-                                </a>
-                              </Button>
-                              <Button asChild size="sm" variant="outline" className="w-full">
-                                <a href={poster.feeImage} target="_blank" rel="noopener noreferrer">
-                                  Apri quota iscrizione
-                                </a>
-                              </Button>
-                            </div>
-                          ) : poster.pdf ? (
-                            <Button asChild size="sm" className="w-full">
-                              <a href={poster.pdf} target="_blank" rel="noopener noreferrer">
+                          <div className="mt-auto flex flex-wrap gap-2 pt-2">
+                            <Button asChild size="sm" variant="outline">
+                              <a href={poster.document || poster.image} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="mr-2 h-4 w-4" />
                                 Apri locandina
                               </a>
                             </Button>
-                          ) : (
-                            <Button asChild size="sm" variant="outline" className="w-full">
-                              <a href="/contact">Ricevi aggiornamenti</a>
-                            </Button>
-                          )}
+                            {poster.article && (
+                              <Button asChild size="sm">
+                                <a href={poster.article}>Leggi la notizia</a>
+                              </Button>
+                            )}
+                          </div>
                         </CardContent>
                       </Card>
                     </CarouselItem>
@@ -127,9 +157,7 @@ export default function EventsPage() {
           </CardContent>
         </Card>
 
-        {/* Main Calendar */}
         <EventsCalendar />
-
       </div>
     </div>
   );
