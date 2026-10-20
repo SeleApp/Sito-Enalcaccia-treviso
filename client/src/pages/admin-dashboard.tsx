@@ -35,6 +35,7 @@ export default function AdminDashboard() {
   const [competitionDialogOpen, setCompetitionDialogOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<News | null>(null);
   const [editingCompetition, setEditingCompetition] = useState<Competition | null>(null);
+  const [activeAdminTab, setActiveAdminTab] = useState("pending-users");
 
   // Forms
   const newsForm = useForm<InsertNews>({
@@ -402,8 +403,30 @@ export default function AdminDashboard() {
         </div>
 
         {/* Management Tabs */}
-        <Tabs defaultValue="pending-users" className="space-y-4">
-          <TabsList className="flex h-auto flex-wrap justify-start gap-1 p-1">
+        <Tabs value={activeAdminTab} onValueChange={setActiveAdminTab} className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2 xl:hidden" aria-label="Operazioni amministrative">
+            {[
+              { value: "members", title: "Soci registrati", description: "Cerca gli utenti e scarica il CSV" },
+              { value: "pending-users", title: "Richieste di accesso", description: "Approva o rifiuta le registrazioni" },
+              { value: "news", title: "Gestione notizie", description: "Pubblica e modifica gli articoli" },
+              { value: "contacts", title: "Messaggi e contatti", description: "Consulta i messaggi ricevuti" },
+              { value: "competitions", title: "Gare cinofile", description: "Organizza gli appuntamenti" },
+            ].map(item => (
+              <button
+                key={item.value}
+                type="button"
+                aria-pressed={activeAdminTab === item.value}
+                onClick={() => setActiveAdminTab(item.value)}
+                className={`flex min-h-[104px] flex-col items-start justify-between rounded-2xl border p-4 text-left transition-colors ${activeAdminTab === item.value
+                  ? "border-[#2D5016] bg-[#DDE6D3]"
+                  : "border-[#DFE5DA] bg-white"}`}
+              >
+                <span className="text-[18px] font-semibold text-[#193024]">{item.title}</span>
+                <span className="mt-2 text-[14px] leading-5 text-[#617062]">{item.description}</span>
+              </button>
+            ))}
+          </div>
+          <TabsList className="hidden h-auto flex-wrap justify-start gap-1 p-1 xl:flex">
             <TabsTrigger value="pending-users">Richieste Utenti</TabsTrigger>
             <TabsTrigger value="members">Soci registrati</TabsTrigger>
             <TabsTrigger value="contacts">Contatti</TabsTrigger>
