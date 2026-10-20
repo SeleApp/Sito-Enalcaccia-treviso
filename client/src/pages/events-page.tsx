@@ -6,7 +6,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { SEOHead } from "@/components/seo-head";
 import { Calendar, ExternalLink } from "lucide-react";
 
-type EventPoster = {
+export type EventPoster = {
   id: string;
   title: string;
   dateLabel: string;
