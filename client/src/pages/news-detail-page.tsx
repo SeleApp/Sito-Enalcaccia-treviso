@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { SEOHead } from "@/components/seo-head";
 import { Calendar, ArrowLeft } from "lucide-react";
 import type { News } from "@shared/schema";
+import { ArticleRichContent } from "@/components/article-rich-content";
 
 export default function NewsDetailPage() {
   const [match, params] = useRoute<{ slug: string }>("/news/:slug");
@@ -16,7 +17,7 @@ export default function NewsDetailPage() {
     enabled: Boolean(slug),
   });
 
-  const pageUrl = slug ? `https://enalcaccia-treviso.replit.app/news/${slug}` : "https://enalcaccia-treviso.replit.app/news";
+  const pageUrl = slug ? `https://www.enalcacciatv.it/news/${slug}` : "https://www.enalcacciatv.it/news";
   const pageTitle = article?.title || "Dettaglio Notizia";
   const pageDescription = article?.excerpt || "Approfondimento su notizie e comunicati di ENAL Caccia Treviso.";
   const pageImage = article?.featuredImage || "/attached_assets/enalcaccia-associazione-venatoria.png";
@@ -29,7 +30,7 @@ export default function NewsDetailPage() {
         "image": [
           pageImage.startsWith("http")
             ? pageImage
-            : `https://enalcaccia-treviso.replit.app${pageImage.startsWith("/") ? pageImage : `/${pageImage}`}`,
+            : `https://www.enalcacciatv.it${pageImage.startsWith("/") ? pageImage : `/${pageImage}`}`,
         ],
         "datePublished": article.createdAt ? new Date(article.createdAt).toISOString() : undefined,
         "dateModified": (article.updatedAt || article.createdAt)
@@ -45,7 +46,7 @@ export default function NewsDetailPage() {
           "name": "ENAL Caccia Treviso",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://enalcaccia-treviso.replit.app/attached_assets/logo-enalcaccia-treviso.png?v=20260307",
+            "url": "https://www.enalcacciatv.it/attached_assets/logo-enalcaccia-treviso.png?v=20260307",
           },
         },
       }
@@ -143,7 +144,7 @@ export default function NewsDetailPage() {
           <p className="text-lg text-muted-foreground mb-8">{article.excerpt}</p>
 
           <div className="prose prose-neutral max-w-none">
-            <p className="whitespace-pre-line text-foreground leading-8">{article.content}</p>
+            <ArticleRichContent content={article.content} />
           </div>
         </article>
       </div>
