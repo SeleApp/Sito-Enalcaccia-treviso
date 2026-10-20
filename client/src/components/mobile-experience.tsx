@@ -105,9 +105,19 @@ function MobileHome() {
         {!isLoading && current.length === 0 && <p className="mt-3 text-[#617062]">Nessuna notizia disponibile al momento.</p>}
         <div className="mt-3 divide-y divide-[#DFE5DA]">
           {current.map(n => (
-            <Link key={n.id} href={`/news/${n.slug}`} className="block py-3 focus-visible:outline-2 focus-visible:outline-[#2D5016]">
-              <span className="text-xs font-medium text-[#617062]">{dateString(n.createdAt)} · {n.category}</span>
-              <span className="mt-1 flex items-start justify-between gap-3 text-[16px] font-semibold leading-snug text-[#193024]">{n.title}<ChevronRight className="h-5 w-5 shrink-0 text-[#2D5016]" aria-hidden="true" /></span>
+            <Link key={n.id} href={`/news/${n.slug}`} className="flex items-center gap-3 py-3 focus-visible:outline-2 focus-visible:outline-[#2D5016]">
+              {n.featuredImage && !n.featuredImage.toLowerCase().endsWith(".pdf") && (
+                <img
+                  src={n.featuredImage}
+                  alt=""
+                  loading="lazy"
+                  className="h-16 w-16 shrink-0 rounded-lg bg-[#EDF2E8] object-contain"
+                />
+              )}
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-medium text-[#617062]">{dateString(n.createdAt)} · {n.category}</span>
+                <span className="mt-1 flex items-start justify-between gap-3 text-[16px] font-semibold leading-snug text-[#193024]">{n.title}<ChevronRight className="h-5 w-5 shrink-0 text-[#2D5016]" aria-hidden="true" /></span>
+              </span>
             </Link>
           ))}
         </div>
