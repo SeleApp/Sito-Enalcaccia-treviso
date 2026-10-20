@@ -22,7 +22,7 @@ export type EventPoster = {
  *
  * Il Trofeo Prealpi Venete (FIBEC) è stato rimosso su richiesta.
  */
-const eventPosters: EventPoster[] = [
+export const eventPosters: EventPoster[] = [
   {
     id: "prova-enci-san-boldo-2026",
     title: "Prova Nazionale ENCI – Passo San Boldo",
