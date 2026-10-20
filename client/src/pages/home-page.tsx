@@ -40,7 +40,7 @@ export default function HomePage() {
 
   const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
   const isEnalcacciaPoster = (article: News) =>
-    article.featuredImage?.includes("/wp-content/uploads/2026/10/") ?? false;
+    (article.featuredImage?.startsWith("/images/notizie/") || article.featuredImage?.includes("/wp-content/uploads/2026/10/")) ?? false;
 
   const institutionalPartners = [
     {
