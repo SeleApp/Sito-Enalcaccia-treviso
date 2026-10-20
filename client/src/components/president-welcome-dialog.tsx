@@ -55,7 +55,8 @@ export function PresidentWelcomeDialog() {
             Messaggio di benvenuto del Presidente Franco Ravagnan per il nuovo sito dell'Associazione.
           </DialogDescription>
 
-          <div className="hidden space-y-4 rounded-lg border-l-4 border-forest bg-forest/5 px-5 py-5 text-[15px] leading-7 text-foreground sm:block sm:px-6 sm:text-base">
+          {/* Testo integrale, identico su desktop, tablet e smartphone. */}
+          <div className="space-y-2 rounded-lg border-l-4 border-forest bg-forest/5 px-3 py-3 text-[15px] leading-[1.45] text-foreground sm:space-y-4 sm:px-6 sm:py-5 sm:text-base sm:leading-7">
             <p className="font-semibold">Cari Soci,</p>
             <p>abbiamo creato il sito della nostra Associazione.</p>
             <p>
@@ -65,14 +66,6 @@ export function PresidentWelcomeDialog() {
             <p>
               Inoltre la speranza è che con questo sistema di comunicazione si possa
               contribuire maggiormente nel coinvolgere i giovani.
-            </p>
-          </div>
-
-          <div className="rounded-lg border-l-4 border-forest bg-forest/5 px-3 py-3 text-[15px] leading-[1.5] text-foreground sm:hidden">
-            <p className="font-semibold">Cari Soci,</p>
-            <p className="mt-2">
-              abbiamo creato il sito della nostra Associazione per restare più uniti e informati,
-              condividere la nostra passione e coinvolgere anche i giovani.
             </p>
           </div>
 
