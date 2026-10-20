@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Mail, Phone, MapPin, ExternalLink, Send } from "lucide-react";
+import { Mail, Phone, MapPin, ExternalLink, Send, Clock, FileText, Smartphone } from "lucide-react";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -176,6 +176,97 @@ export function Footer() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+
+
+        {/* Orari e risorse venatorie - collegamenti ufficiali */}
+        <div className="mt-10 border-t border-gray-800 pt-8">
+          <h3 className="mb-5 font-serif text-xl font-semibold text-white">Informazioni utili per i soci</h3>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <section className="rounded-lg border border-gray-700 bg-gray-800/50 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Clock className="h-5 w-5 text-green-400" aria-hidden="true" />
+                <h4 className="font-semibold text-white">Orari di ricevimento</h4>
+              </div>
+              <p className="text-sm leading-6 text-gray-200">
+                <strong>Martedì e giovedì</strong>
+                <span className="block text-lg font-semibold text-white">08:00 – 11:30</span>
+              </p>
+              <Link href="/contact" className="mt-3 inline-block text-sm text-green-300 underline underline-offset-2 hover:text-white">
+                Contatti e sede
+              </Link>
+            </section>
+
+            <section className="rounded-lg border border-gray-700 bg-gray-800/50 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <FileText className="h-5 w-5 text-green-400" aria-hidden="true" />
+                <h4 className="font-semibold text-white">Vigilanza e cani da traccia</h4>
+              </div>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <a
+                    href="https://www.riservaalpinapederobba.it/wp-content/uploads/2025/05/2284_001.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-start gap-2 text-gray-200 underline underline-offset-2 hover:text-white"
+                  >
+                    <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    Mappa vigilanza (PDF)
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.riservaalpinapederobba.it/wp-content/uploads/2025/01/ALBO-PROVINCIALE-CANI-DA-TRACCIA-TREVISO-gennaio-2025-TEL.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-start gap-2 text-gray-200 underline underline-offset-2 hover:text-white"
+                  >
+                    <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    Albo provinciale conduttori cani da traccia — Treviso, gennaio 2025 (PDF)
+                  </a>
+                </li>
+              </ul>
+              <p className="mt-3 text-xs text-gray-400">
+                Fonte: Riserva Alpina di Pederobba. Consulta sempre gli elenchi ufficiali per eventuali aggiornamenti.
+              </p>
+            </section>
+
+            <section className="rounded-lg border border-gray-700 bg-gray-800/50 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Smartphone className="h-5 w-5 text-green-400" aria-hidden="true" />
+                <h4 className="font-semibold text-white">App VenetoCaccia</h4>
+              </div>
+              <p className="mb-3 text-sm leading-6 text-gray-200">
+                Il tesserino venatorio digitale della Regione del Veneto, disponibile per smartphone.
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                <a
+                  href="https://play.google.com/store/apps/details?id=it.exetesis.tesserinovenatorioveneto"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-300 underline underline-offset-2 hover:text-white"
+                >
+                  Google Play
+                </a>
+                <a
+                  href="https://apps.apple.com/it/app/venetocaccia/id6590635232"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-300 underline underline-offset-2 hover:text-white"
+                >
+                  App Store
+                </a>
+                <a
+                  href="https://www.regione.veneto.it/web/agricoltura-e-foreste/app-venetocaccia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-300 underline underline-offset-2 hover:text-white"
+                >
+                  Regione del Veneto
+                </a>
+              </div>
+            </section>
           </div>
         </div>
 
