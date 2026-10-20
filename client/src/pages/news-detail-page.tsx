@@ -24,6 +24,9 @@ export default function NewsDetailPage() {
   const { data: article, isLoading, isError } = useQuery<News>({
     queryKey: [`/api/news/${slug}`],
     enabled: Boolean(slug),
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const pageUrl = slug ? `https://www.enalcacciatv.it/news/${slug}` : "https://www.enalcacciatv.it/news";
@@ -143,9 +146,15 @@ export default function NewsDetailPage() {
             <Badge variant="secondary">{article.category}</Badge>
             <div className="flex items-center text-sm text-muted-foreground">
               <Calendar className="w-4 h-4 mr-2" />
-              <span>{article.createdAt ? new Date(article.createdAt).toLocaleDateString("it-IT") : "-"}</span>
+              <span>Pubblicato il {article.createdAt ? new Date(article.createdAt).toLocaleDateString("it-IT") : "-"}</span>
             </div>
           </div>
+          {article.updatedAt && article.createdAt &&
+            new Date(article.updatedAt).toLocaleDateString("it-IT") !== new Date(article.createdAt).toLocaleDateString("it-IT") && (
+            <p className="mb-4 text-sm text-muted-foreground">
+              Testo aggiornato il {new Date(article.updatedAt).toLocaleDateString("it-IT")}
+            </p>
+          )}
 
           <h1 className="page-title">
             {article.title}
@@ -158,14 +167,14 @@ export default function NewsDetailPage() {
           </div>
           {originalSources[article.slug] && (
             <p className="mt-9 border-t border-border pt-5 text-sm text-muted-foreground">
-              Fonte:{" "}
+              Per approfondire:{" "}
               <a
                 href={originalSources[article.slug]}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-forest underline underline-offset-2"
               >
-                Riserva Alpina di Pederobba — articolo originale
+                Pubblicazione e materiali originali della Riserva Alpina di Pederobba
               </a>
             </p>
           )}
