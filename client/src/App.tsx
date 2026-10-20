@@ -9,6 +9,7 @@ import { CookieBanner } from "@/components/cookie-banner";
 import { Layout } from "@/components/layout";
 import { SeoManager } from "@/components/seo-manager";
 import { ContactHoursNotice } from "@/components/contact-hours-notice";
+import { PresidentWelcomeDialog } from "@/components/president-welcome-dialog";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
@@ -75,6 +76,7 @@ function App() {
           <Toaster />
           <Router />
           <CookieBanner />
+          <PresidentWelcomeDialog />
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>
