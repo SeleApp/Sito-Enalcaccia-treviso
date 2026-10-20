@@ -448,7 +448,7 @@ export default async function handler(req: any, res: any) {
         client.from("members").select("id", { count: "exact", head: true }).eq("status", "approved"),
         client.from("members").select("id", { count: "exact", head: true }).eq("status", "pending"),
         client.from("contacts").select("id", { count: "exact", head: true }),
-        client.from("memberships").select("id", { count: "exact", head: true }).eq("active", true),
+        client.from("user_memberships").select("id", { count: "exact", head: true }),
       ]);
       [approved.error, pending.error, contacts.error, memberships.error].forEach(assertNoError);
       return sendJson(res, 200, {
