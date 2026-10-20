@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
+import { AdminMembersRegistry } from "@/components/admin-members-registry";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -108,6 +109,7 @@ export default function AdminDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/members"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       toast({
         title: "Utente approvato",
@@ -399,12 +401,17 @@ export default function AdminDashboard() {
 
         {/* Management Tabs */}
         <Tabs defaultValue="pending-users" className="space-y-4">
-          <TabsList>
+          <TabsList className="flex h-auto flex-wrap justify-start gap-1 p-1">
             <TabsTrigger value="pending-users">Richieste Utenti</TabsTrigger>
+            <TabsTrigger value="members">Soci registrati</TabsTrigger>
             <TabsTrigger value="contacts">Contatti</TabsTrigger>
             <TabsTrigger value="news">Gestione News</TabsTrigger>
             <TabsTrigger value="competitions">Gare Cinofile</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="members" className="space-y-4">
+            <AdminMembersRegistry />
+          </TabsContent>
 
           <TabsContent value="pending-users" className="space-y-4">
             <Card>
