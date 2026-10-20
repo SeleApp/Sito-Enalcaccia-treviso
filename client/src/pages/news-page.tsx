@@ -51,6 +51,8 @@ export default function NewsPage() {
   };
 
   const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
+  const isEnalcacciaPoster = (article: News) =>
+    article.featuredImage?.includes("/wp-content/uploads/2026/10/") ?? false;
 
   return (
     <div className="page-shell">{/* Layout now handles min-h-screen */}
@@ -154,7 +156,7 @@ export default function NewsPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredNews.map((article, index) => (
               <Card key={article.id} className="hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
+                <div className={isEnalcacciaPoster(article) ? "aspect-[4/3] bg-white overflow-hidden rounded-t-lg p-2" : "aspect-video bg-muted overflow-hidden rounded-t-lg"}>
                   {isPdfAsset(getNewsImage(article, index)) ? (
                     <iframe
                       src={`${getNewsImage(article, index)}#toolbar=0&navpanes=0&scrollbar=0`}
@@ -166,7 +168,7 @@ export default function NewsPage() {
                     <img
                       src={getNewsImage(article, index)}
                       alt={article.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className={isEnalcacciaPoster(article) ? "w-full h-full object-contain transition-transform duration-300" : "w-full h-full object-cover hover:scale-105 transition-transform duration-300"}
                       loading="lazy"
                     />
                   )}
