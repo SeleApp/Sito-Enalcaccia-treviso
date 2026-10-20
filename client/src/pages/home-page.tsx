@@ -39,6 +39,8 @@ export default function HomePage() {
   };
 
   const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
+  const isEnalcacciaPoster = (article: News) =>
+    article.featuredImage?.includes("/wp-content/uploads/2026/10/") ?? false;
 
   const institutionalPartners = [
     {
@@ -246,7 +248,7 @@ export default function HomePage() {
                 {latestNews.map((article, index) => (
                   <CarouselItem key={article.id} className="md:basis-1/2 lg:basis-1/3">
                     <Card className="hover:shadow-lg transition-shadow h-full">
-                      <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
+                      <div className={isEnalcacciaPoster(article) ? "aspect-[4/3] bg-white overflow-hidden rounded-t-lg p-2" : "aspect-video bg-muted overflow-hidden rounded-t-lg"}>
                         {isPdfAsset(getNewsImage(article, index)) ? (
                           <iframe
                             src={`${getNewsImage(article, index)}#toolbar=0&navpanes=0&scrollbar=0`}
@@ -258,7 +260,7 @@ export default function HomePage() {
                           <img
                             src={getNewsImage(article, index)}
                             alt={article.title}
-                            className="w-full h-full object-cover"
+                            className={isEnalcacciaPoster(article) ? "w-full h-full object-contain" : "w-full h-full object-cover"}
                             loading="lazy"
                           />
                         )}
