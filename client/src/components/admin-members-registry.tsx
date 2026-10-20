@@ -199,7 +199,35 @@ export function AdminMembersRegistry() {
             <p className="text-sm text-muted-foreground" aria-live="polite">
               {filtered.length} risultati. Il file CSV contiene gli stessi utenti visibili con i filtri attuali e tutti i dati disponibili.
             </p>
-            <div className="overflow-x-auto rounded-lg border">
+            <div className="grid gap-3 xl:hidden">
+              {filtered.map((person) => (
+                <div key={person.id} className="rounded-2xl border border-[#DFE5DA] bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-[18px] font-semibold leading-snug text-[#193024]">
+                        {`${person.name} ${person.surname}`.trim() || "Dati non compilati"}
+                      </h3>
+                      <p className="mt-1 break-words text-[15px] text-[#617062]">{person.email}</p>
+                    </div>
+                    <Badge variant={person.status === "approved" ? "default" : "secondary"}>
+                      {statusText[person.status]}
+                    </Badge>
+                  </div>
+                  <p className="mt-3 text-sm text-[#617062]">Registrato il {displayDate(person.createdAt)}</p>
+                  {person.role === "admin" && <p className="mt-1 text-sm font-semibold text-[#2D5016]">Amministratore</p>}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-4 min-h-12 w-full text-base"
+                    onClick={() => setSelected(person)}
+                  >
+                    <Eye className="mr-2 h-5 w-5" aria-hidden="true" />
+                    Apri la scheda completa
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto rounded-lg border xl:block">
               <Table>
                 <TableHeader>
                   <TableRow>
