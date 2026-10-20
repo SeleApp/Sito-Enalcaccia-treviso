@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Navbar } from "./navbar";
 import { Footer } from "./footer";
@@ -8,31 +8,46 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-/**
- * Desktop >= 1280px: keep the original layout and navigation unchanged.
- * Below 1280px: dedicated Figma mobile/tablet shell.
- * Unmigrated routes continue to use their original components, restyled
- * only inside .ec-mobile-fallback; no database or authentication is replaced.
- */
+const MOBILE_TABLET_QUERY = "(max-width: 1279px)";
+
+function useMobileOrTablet() {
+  const [compact, setCompact] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia(MOBILE_TABLET_QUERY).matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_TABLET_QUERY);
+    const update = () => setCompact(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return compact;
+}
+
+/** Original desktop stays identical at 1280px and above. */
 export function Layout({ children }: LayoutProps) {
   const [path] = useLocation();
-  const redesigned = hasMobileExperience(path);
-  return (
-    <>
-      <div className="hidden min-h-screen flex-col bg-background xl:flex">
+  const compact = useMobileOrTablet();
+
+  if (!compact) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
       </div>
-      <div className="ec-mobile-shell flex min-h-screen flex-col bg-[#F8F7F1] xl:hidden">
-        <MobileHeader />
-        <main className="min-w-0 flex-1 pb-20 sm:pb-0">
-          {redesigned
-            ? <MobileExperience path={path} />
-            : <div className="ec-mobile-fallback">{children}</div>}
-        </main>
-        <MobileFooter />
-      </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="ec-mobile-shell flex min-h-screen flex-col bg-[#F8F7F1]">
+      <MobileHeader />
+      <main className="min-w-0 flex-1 pb-20 sm:pb-0">
+        {hasMobileExperience(path)
+          ? <MobileExperience path={path} />
+          : <div className="ec-mobile-fallback">{children}</div>}
+      </main>
+      <MobileFooter />
+    </div>
   );
 }
