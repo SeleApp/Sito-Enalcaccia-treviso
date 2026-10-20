@@ -105,6 +105,7 @@ export default function NewsDetailPage() {
   }
 
   const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
+  const isEnalcacciaPoster = article.featuredImage?.includes("/wp-content/uploads/2026/10/") ?? false;
 
   return (
     <div className="page-shell">
@@ -121,7 +122,7 @@ export default function NewsDetailPage() {
 
         <article>
           {article.featuredImage && (
-            <div className="aspect-video bg-muted overflow-hidden rounded-lg mb-6">
+            <div className={isEnalcacciaPoster ? "mb-6 flex justify-center rounded-lg bg-white p-5" : "aspect-video bg-muted overflow-hidden rounded-lg mb-6"}>
               {isPdfAsset(article.featuredImage) ? (
                 <iframe
                   src={`${article.featuredImage}#toolbar=1&navpanes=0`}
@@ -132,7 +133,7 @@ export default function NewsDetailPage() {
                 <img
                   src={article.featuredImage}
                   alt={article.title}
-                  className="w-full h-full object-cover"
+                  className={isEnalcacciaPoster ? "block max-h-[75vh] w-auto max-w-full object-contain" : "w-full h-full object-cover"}
                 />
               )}
             </div>
