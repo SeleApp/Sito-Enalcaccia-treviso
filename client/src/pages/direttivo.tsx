@@ -180,7 +180,7 @@ export default function Direttivo() {
               <div>
                 <h4 className="font-semibold text-forest mb-2">Orari di Ricevimento</h4>
                 <div className="text-gray-600 space-y-1">
-                  <p><strong>Sportello:</strong> su appuntamento</p>
+                  <p><strong>Ricevimento:</strong> martedì e giovedì, 08:00 – 11:30</p>
                   <p><strong>Comunicazioni:</strong> tramite modulo contatti</p>
                   <p><strong>Aggiornamenti:</strong> pubblicati sui canali ufficiali</p>
                 </div>
