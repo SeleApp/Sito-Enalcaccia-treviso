@@ -461,7 +461,7 @@ export default async function handler(req: any, res: any) {
       const [membersResult, contactsResult, membershipsResult] = await Promise.all([
         client.from("members").select("status"),
         client.from("contacts").select("id"),
-        client.from("memberships").select("id"),
+        client.from("user_memberships").select("id"),
       ]);
       assertNoError(membersResult.error);
       assertNoError(contactsResult.error);
