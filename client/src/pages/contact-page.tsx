@@ -252,8 +252,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Orari di Apertura</h3>
                     <p className="text-muted-foreground">
-                      Contattare telefonicamente o via email<br />
-                      per appuntamenti e ricevimento in sede
+                      <strong>Martedì e giovedì, 08:00 – 11:30</strong><br />
+                      Per informazioni e appuntamenti, contattare la segreteria.
                     </p>
                   </div>
                 </div>
