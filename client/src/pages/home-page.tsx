@@ -15,9 +15,10 @@ export default function HomePage() {
   const { user } = useAuth();
   
   const { data: news = [] } = useQuery<News[]>({
-    queryKey: ["/api/news?v=20260307"],
+    queryKey: ["/api/news?v=20261020-editoriale"],
     staleTime: 0,
     refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const latestNews = [...news]
