@@ -8,7 +8,7 @@ export function ContactHoursNotice() {
         <div>
           <p className="font-semibold text-foreground">Orari di apertura della sede</p>
           <p className="text-sm text-muted-foreground">
-            Martedì e giovedì, dalle 08:00 alle 12:00.
+            Martedì e giovedì, dalle 08:00 alle 11:30.
           </p>
         </div>
       </div>
