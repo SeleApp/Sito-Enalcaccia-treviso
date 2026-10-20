@@ -10,8 +10,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { ArticleRichContent } from "@/components/article-rich-content";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { eventPosters } from "@/pages/events-page";
-import { membershipCatalog } from "@/pages/membership-page";
+import { eventPosters } from "@/lib/event-posters";
+import { membershipCatalog } from "@/lib/membership-catalog";
 import type { News } from "@shared/schema";
 
 const NEWS_KEY = "/api/news?v=20261020-editoriale";
