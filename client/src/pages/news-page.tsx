@@ -15,9 +15,10 @@ export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const { data: news = [], isLoading } = useQuery<News[]>({
-    queryKey: ["/api/news?v=20260307"],
+    queryKey: ["/api/news?v=20261020-editoriale"],
     staleTime: 0,
     refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const publishedNews = news.filter((article) => article.published);
@@ -47,14 +48,14 @@ export default function NewsPage() {
         title="Notizie"
         description="Ultime notizie e comunicati ENAL Caccia Treviso: aggiornamenti su attivita, eventi, normativa e iniziative associative."
         type="website"
-        url="https://enalcaccia-treviso.replit.app/news"
+        url="https://www.enalcacciatv.it/news"
       />
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header">
           <h1 className="page-title">Notizie</h1>
           <p className="page-subtitle max-w-2xl">
-            Rimani aggiornato sulle ultime novità del mondo venatorio e delle attività di Enal Caccia
+            Notizie dalle sezioni Enalcaccia, appuntamenti sul territorio, cinofilia e aggiornamenti utili a chi pratica la caccia in provincia di Treviso.
           </p>
         </div>
 
@@ -170,6 +171,12 @@ export default function NewsPage() {
                     </div>
                     <Badge variant="secondary">{article.category}</Badge>
                   </div>
+                  {article.updatedAt && article.createdAt &&
+                    new Date(article.updatedAt).toLocaleDateString("it-IT") !== new Date(article.createdAt).toLocaleDateString("it-IT") && (
+                    <p className="text-xs text-muted-foreground">
+                      Articolo aggiornato il {new Date(article.updatedAt).toLocaleDateString("it-IT")}
+                    </p>
+                  )}
                   <CardTitle className="line-clamp-2 hover:text-primary transition-colors">
                     <Link href={`/news/${article.slug}`}>
                       {article.title}
