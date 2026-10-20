@@ -390,11 +390,12 @@ export default function AdminDashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tesseramenti</CardTitle>
+              <CardTitle className="text-sm font-medium">Tesseramenti online</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.totalMemberships || 0}</div>
+              <p className="mt-1 text-xs text-muted-foreground">Pratiche registrate sul sito; non comprende i tesseramenti presso le sezioni.</p>
             </CardContent>
           </Card>
         </div>
