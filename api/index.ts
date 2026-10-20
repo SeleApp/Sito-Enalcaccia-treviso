@@ -396,6 +396,53 @@ export default async function handler(req: any, res: any) {
 
     if (path.startsWith("/admin/")) await requireAdmin(client);
 
+    if (method === "GET" && path === "/admin/members") {
+      // L'endpoint restituisce dati personali: accesso già verificato da requireAdmin().
+      // Le pagine evitano il limite predefinito di 1.000 righe dell'API Supabase.
+      const fetchAll = async (table: "users" | "members", columns: string) => {
+        const collected: any[] = [];
+        const batchSize = 500;
+        for (let offset = 0; offset < 50000; offset += batchSize) {
+          const { data, error } = await client
+            .from(table)
+            .select(columns)
+            .order("created_at", { ascending: false })
+            .range(offset, offset + batchSize - 1);
+          assertNoError(error);
+          const rows = data || [];
+          collected.push(...rows);
+          if (rows.length < batchSize) return collected;
+        }
+        throw new ApiError(503, "Anagrafica troppo estesa: contattare l'amministratore.");
+      };
+
+      const [profiles, memberRows] = await Promise.all([
+        fetchAll("users", "id,email,role,created_at"),
+        fetchAll("members", "user_id,name,surname,birth_date,birth_place,tax_code,license_number,status,created_at,updated_at"),
+      ]);
+      const membersByUserId = new Map(memberRows.map((member) => [member.user_id, member]));
+      const registry = profiles.map((profile) => {
+        const member = membersByUserId.get(profile.id);
+        const status = member?.status;
+        return {
+          id: profile.id,
+          email: profile.email || "",
+          role: profile.role || "member",
+          name: member?.name || "",
+          surname: member?.surname || "",
+          birthDate: member?.birth_date || null,
+          birthPlace: member?.birth_place || null,
+          taxCode: member?.tax_code || null,
+          licenseNumber: member?.license_number || null,
+          status: status === "approved" || status === "pending" || status === "rejected" ? status : "unknown",
+          createdAt: profile.created_at || member?.created_at || null,
+          updatedAt: member?.updated_at || null,
+        };
+      });
+      res.setHeader("Cache-Control", "private, no-store, max-age=0");
+      return sendJson(res, 200, registry);
+    }
+
     if (method === "GET" && path === "/admin/stats") {
       const [approved, pending, contacts, memberships] = await Promise.all([
         client.from("members").select("id", { count: "exact", head: true }).eq("status", "approved"),
