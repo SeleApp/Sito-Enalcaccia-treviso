@@ -25,19 +25,6 @@ export default function HomePage() {
     .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
     .slice(0, 6);
 
-  const newsFallbacks = [
-    "/attached_assets/enalcaccia-associazione-venatoria.png",
-    "/attached_assets/enalcaccia-cinofilia.jpg",
-    "/attached_assets/enalcaccia-estero.jpg",
-    "/attached_assets/cane-caccia-1.jpg",
-    "/attached_assets/cane-caccia-2.jpg",
-  ];
-
-  const getNewsImage = (article: News, index: number) => {
-    if (article.featuredImage) return article.featuredImage;
-    return newsFallbacks[index % newsFallbacks.length];
-  };
-
   const isPdfAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".pdf");
   const isEnalcacciaPoster = (article: News) =>
     (article.featuredImage?.startsWith("/images/notizie/") || article.featuredImage?.includes("/wp-content/uploads/2026/10/")) ?? false;
@@ -248,23 +235,25 @@ export default function HomePage() {
                 {latestNews.map((article, index) => (
                   <CarouselItem key={article.id} className="md:basis-1/2 lg:basis-1/3">
                     <Card className="hover:shadow-lg transition-shadow h-full">
-                      <div className={isEnalcacciaPoster(article) ? "aspect-[4/3] bg-white overflow-hidden rounded-t-lg p-2" : "aspect-video bg-muted overflow-hidden rounded-t-lg"}>
-                        {isPdfAsset(getNewsImage(article, index)) ? (
+                      {article.featuredImage && (
+<div className={isEnalcacciaPoster(article) ? "aspect-[4/3] bg-white overflow-hidden rounded-t-lg p-2" : "aspect-video bg-muted overflow-hidden rounded-t-lg"}>
+                        {isPdfAsset(article.featuredImage) ? (
                           <iframe
-                            src={`${getNewsImage(article, index)}#toolbar=0&navpanes=0&scrollbar=0`}
+                            src={`${article.featuredImage}#toolbar=0&navpanes=0&scrollbar=0`}
                             title={`Locandina ${article.title}`}
                             className="w-full h-full border-0"
                             loading="lazy"
                           />
                         ) : (
                           <img
-                            src={getNewsImage(article, index)}
+                            src={article.featuredImage}
                             alt={article.title}
                             className={isEnalcacciaPoster(article) ? "w-full h-full object-contain" : "w-full h-full object-cover"}
                             loading="lazy"
                           />
                         )}
                       </div>
+                )}
                       <CardHeader>
                         <div className="flex items-center text-sm text-muted-foreground mb-2">
                           <Calendar className="w-4 h-4 mr-2" />
