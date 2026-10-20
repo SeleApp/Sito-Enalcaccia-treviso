@@ -399,3 +399,127 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary) / 0.8);
 }
+
+/*
+ * ENALCACCIA TREVISO — Figma mobile & tablet design.
+ * Changes are strictly scoped to the mobile shell (<=1279px).
+ * All existing desktop styles and components stay unchanged.
+ */
+@media (max-width: 1279px) {
+  .ec-mobile-shell,
+  .ec-mobile-fallback,
+  .ec-mobile-page { color: #193024; }
+
+  .ec-mobile-shell a:focus-visible,
+  .ec-mobile-shell button:focus-visible,
+  .ec-mobile-shell input:focus-visible,
+  .ec-mobile-shell select:focus-visible {
+    outline: 3px solid #B28D5A;
+    outline-offset: 3px;
+  }
+
+  .ec-mobile-fallback .page-shell { background: #F8F7F1; }
+  .ec-mobile-fallback .page-wrap {
+    width: 100%;
+    max-width: 1080px;
+    padding: 26px 20px 45px;
+  }
+
+  .ec-mobile-fallback .page-header {
+    margin-bottom: 24px;
+    text-align: left;
+  }
+
+  .ec-mobile-fallback .page-title {
+    font-size: clamp(29px, 4vw, 38px);
+    line-height: 1.2;
+    color: #193024;
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+  }
+  .ec-mobile-fallback .page-subtitle {
+    margin-left: 0;
+    font-size: 16px;
+    line-height: 1.65;
+    color: #617062;
+  }
+  .ec-mobile-fallback .section-subtitle { font-size: 16px; }
+
+  .ec-mobile-fallback input,
+  .ec-mobile-fallback select,
+  .ec-mobile-fallback textarea {
+    font-size: 16px;
+    min-height: 48px;
+  }
+  .ec-mobile-fallback button:not([role="checkbox"]),
+  .ec-mobile-fallback [role="tab"] {
+    min-height: 46px;
+  }
+  .ec-mobile-fallback [role="tablist"] {
+    height: auto;
+    max-width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+    background: transparent;
+  }
+  .ec-mobile-fallback [role="tab"] {
+    white-space: normal;
+    border: 1px solid #DFE5DA;
+    border-radius: 12px;
+    padding: 10px 13px;
+    background: white;
+    color: #193024;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .ec-mobile-fallback [role="tab"][data-state="active"] {
+    background: #2D5016;
+    color: white;
+  }
+
+  .ec-mobile-fallback [role="tabpanel"] {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .ec-mobile-fallback [role="dialog"] {
+    max-height: 88dvh;
+    overflow-y: auto;
+  }
+  .ec-mobile-fallback .grid { min-width: 0; }
+  .ec-mobile-fallback table { font-size: 14px; }
+  .ec-mobile-fallback th,
+  .ec-mobile-fallback td { padding: 12px; }
+  .ec-mobile-fallback a,
+  .ec-mobile-fallback button { touch-action: manipulation; }
+}
+
+@media (max-width: 639px) {
+  .ec-mobile-fallback .page-wrap { padding: 22px 16px 36px; }
+
+  .ec-mobile-fallback [role="tablist"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ec-mobile-fallback [role="tab"] {
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .ec-mobile-fallback form label,
+  .ec-mobile-fallback label {
+    font-size: 16px;
+  }
+  .ec-mobile-article .prose {
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .ec-mobile-article .prose img {
+    max-width: 100%;
+    height: auto;
+  }
+  .ec-mobile-article .prose iframe {
+    width: 100%;
+    max-width: 100%;
+  }
+}
