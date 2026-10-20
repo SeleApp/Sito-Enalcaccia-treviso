@@ -33,9 +33,10 @@ import CookiePolicy from "@/pages/cookie-policy";
 
 function Router() {
   return (
-    <Layout>
+    <>
       <SeoManager />
-      <Switch>
+      <Layout>
+        <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/auth" component={AuthPage} />
         <Route path="/news" component={NewsPage} />
@@ -63,8 +64,9 @@ function Router() {
         <Route path="/dashboard">{() => <ProtectedRoute path="/dashboard" component={UserDashboard} />}</Route>
         <Route path="/admin">{() => <ProtectedRoute path="/admin" component={AdminDashboard} />}</Route>
         <Route component={NotFound} />
-      </Switch>
-    </Layout>
+        </Switch>
+      </Layout>
+    </>
   );
 }
 
