@@ -6,7 +6,7 @@ import { SEOHead } from "@/components/seo-head";
 import { useAuth } from "@/hooks/use-auth";
 import { Shield, CreditCard, Award } from "lucide-react";
 
-const membershipCatalog = [
+export const membershipCatalog = [
   { title: "Tessera Caccia Base Nazionale", image: "/attached_assets/Tessera-caccia-base-nazionale.jpg", category: "Caccia", priceLabel: "€85,00" },
   { title: "Tessera Caccia Base Nazionale di Benvenuto", image: "/attached_assets/Tessera-caccia-base-nazionale-di-benvenuto.jpg", category: "Caccia" },
   { title: "Tessera Caccia Semplice", image: "/attached_assets/Tessera-caccia-semplice.jpg", category: "Caccia", priceLabel: "€65,00" },
