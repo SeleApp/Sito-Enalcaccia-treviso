@@ -83,7 +83,7 @@ export function PresidentWelcomeDialog() {
 
           <Button
             type="button"
-            className="mt-4 h-12 w-full bg-forest text-base font-semibold text-white hover:bg-forest/90 sm:mt-6"
+            className="mt-4 h-12 w-full bg-forest text-base font-semibold text-white hover:bg-forest/90 sm:mt-6 sm:h-10"
             onClick={() => handleOpenChange(false)}
           >
             Entra nel sito
