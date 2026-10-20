@@ -8,6 +8,15 @@ import { Calendar, ArrowLeft } from "lucide-react";
 import type { News } from "@shared/schema";
 import { ArticleRichContent } from "@/components/article-rich-content";
 
+const originalSources: Record<string, string> = {
+  "le-associazioni-venatorie-scrivono-al-presidente-mattarella-rispetto-e-dignita-per-il-mondo-rurale": "https://www.riservaalpinapederobba.it/2026/08/04/le-associazioni-venatorie-scrivono-al-presidente-mattarella-rispetto-e-dignita-per-il-mondo-rurale/",
+  "1-trofeo-pedemontana-del-grappa-grande-successo-per-la-prova-nazionale-enci": "https://www.riservaalpinapederobba.it/2026/04/21/1-trofeo-pedemontana-del-grappa-grande-successo-per-la-prova-nazionale-enci/",
+  "autoconsumo-carni-di-cinghiale-quali-tesserini-non-valgono-piu": "https://www.riservaalpinapederobba.it/2026/02/03/autoconsumo-carni-di-cinghiale-quali-tesserini-non-valgono-piu/",
+  "peste-suina-africana-psa": "https://www.riservaalpinapederobba.it/2026/01/22/peste-suina-africana-psa/",
+  "lo-sapevate-che": "https://www.riservaalpinapederobba.it/2026/01/09/lo-sapevate-che/",
+  "appostamenti-di-caccia-le-norme-aggiornate-in-veneto": "https://www.riservaalpinapederobba.it/2025/10/17/appostamenti-di-caccia-le-norme-aggiornate-in-veneto/",
+};
+
 export default function NewsDetailPage() {
   const [match, params] = useRoute<{ slug: string }>("/news/:slug");
   const slug = match ? params.slug : "";
@@ -146,6 +155,19 @@ export default function NewsDetailPage() {
           <div className="prose prose-neutral max-w-none">
             <ArticleRichContent content={article.content} />
           </div>
+          {originalSources[article.slug] && (
+            <p className="mt-9 border-t border-border pt-5 text-sm text-muted-foreground">
+              Fonte:{" "}
+              <a
+                href={originalSources[article.slug]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-forest underline underline-offset-2"
+              >
+                Riserva Alpina di Pederobba — articolo originale
+              </a>
+            </p>
+          )}
         </article>
       </div>
     </div>
