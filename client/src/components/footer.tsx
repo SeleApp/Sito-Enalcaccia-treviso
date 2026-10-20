@@ -206,30 +206,38 @@ export function Footer() {
               <ul className="space-y-3 text-sm">
                 <li>
                   <a
-                    href="https://www.riservaalpinapederobba.it/wp-content/uploads/2025/05/2284_001.pdf"
+                    href="https://www.riservaalpinapederobba.it/wp-content/uploads/2026/08/Numeri-Telefono-0826.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-start gap-2 text-gray-200 underline underline-offset-2 hover:text-white"
                   >
                     <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                    Mappa vigilanza (PDF)
+                    Vigilanza — numeri di telefono, agosto 2026 (PDF)
                   </a>
                 </li>
                 <li>
                   <a
-                    href="https://www.riservaalpinapederobba.it/wp-content/uploads/2025/01/ALBO-PROVINCIALE-CANI-DA-TRACCIA-TREVISO-gennaio-2025-TEL.pdf"
+                    href="https://www.riservaalpinapederobba.it/wp-content/uploads/2026/08/PHOTO-2026-07-30-10-30-57.jpg"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-start gap-2 text-gray-200 underline underline-offset-2 hover:text-white"
                   >
                     <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                    Albo provinciale conduttori cani da traccia — Treviso, gennaio 2025 (PDF)
+                    Schema della vigilanza — aggiornamento 2026 (immagine)
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.riservaalpinapederobba.it/wp-content/uploads/2025/12/ALBO-PROVINCIALE-CANI-DA-TRACCIA-TREVISO-dicembre-2025-TEL.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-start gap-2 text-gray-200 underline underline-offset-2 hover:text-white"
+                  >
+                    <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    Albo provinciale cani da traccia — Treviso, dicembre 2025 (PDF)
                   </a>
                 </li>
               </ul>
-              <p className="mt-3 text-xs text-gray-400">
-                Fonte: Riserva Alpina di Pederobba. Consulta sempre gli elenchi ufficiali per eventuali aggiornamenti.
-              </p>
             </section>
 
             <section className="rounded-lg border border-gray-700 bg-gray-800/50 p-5">
