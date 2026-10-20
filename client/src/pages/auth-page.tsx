@@ -145,15 +145,15 @@ export default function AuthPage() {
       <SEOHead
         title="Area Riservata"
         description="Accedi o registrati all'area riservata ENAL Caccia Treviso."
-        url="https://enalcaccia-treviso.replit.app/auth"
+        url="https://www.enalcacciatv.it/auth"
         noIndex
       />
-      <div className="grid lg:grid-cols-2 min-h-screen">
+      <div className="grid min-h-screen xl:grid-cols-2">
         {/* Left side - Forms */}
-        <div className="flex items-center justify-center p-8">
+        <div className="flex items-center justify-center p-4 sm:p-8">
           <div className="w-full max-w-md space-y-6">
             <div className="text-center space-y-2">
-              <h1 className="text-3xl font-serif font-bold">Enal Caccia</h1>
+              <h1 className="text-3xl font-serif font-bold"><span className="xl:hidden">Benvenuto nell’Area Soci</span><span className="hidden xl:inline">Enal Caccia</span></h1>
               <p className="text-muted-foreground">
                 Accedi al tuo account o crea un nuovo profilo
               </p>
@@ -232,7 +232,7 @@ export default function AuthPage() {
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="nome">Nome *</Label>
                           <Input
@@ -262,7 +262,7 @@ export default function AuthPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="dataNascita">Data di Nascita *</Label>
                           <Input
@@ -292,7 +292,7 @@ export default function AuthPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="codiceFiscale">Codice Fiscale *</Label>
                           <Input
@@ -338,7 +338,7 @@ export default function AuthPage() {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="password">Password *</Label>
                           <Input
@@ -402,7 +402,7 @@ export default function AuthPage() {
         </div>
 
         {/* Right side - Hero */}
-        <div className="hidden lg:block relative overflow-hidden">
+        <div className="relative hidden overflow-hidden xl:block">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
