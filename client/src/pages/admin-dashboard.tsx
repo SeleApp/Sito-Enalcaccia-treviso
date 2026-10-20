@@ -132,6 +132,7 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/members"] });
       toast({
         title: "Richiesta rifiutata",
         description: "La richiesta di registrazione è stata rifiutata",
@@ -352,12 +353,12 @@ export default function AdminDashboard() {
       <div className="page-wrap">
         {/* Header */}
         <div className="page-header text-left mb-8">
-          <h1 className="page-title mb-2">Dashboard Amministrativa</h1>
+          <h1 className="page-title mb-2"><span className="xl:hidden">Pannello di gestione</span><span className="hidden xl:inline">Dashboard Amministrativa</span></h1>
           <p className="section-subtitle">Benvenuto, {user.nome} {user.cognome}</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Utenti Approvati</CardTitle>
@@ -428,10 +429,30 @@ export default function AdminDashboard() {
                     Nessuna richiesta in attesa
                   </p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nome</TableHead>
+                  <>
+                    <div className="grid gap-3 xl:hidden">
+                      {pendingUsers.map((pending) => (
+                        <div key={pending.id} className="rounded-2xl border border-[#DFE5DA] bg-white p-4">
+                          <h3 className="text-[18px] font-semibold text-[#193024]">{pending.firstName} {pending.lastName}</h3>
+                          <p className="mt-1 break-words text-base text-[#617062]">{pending.email}</p>
+                          <p className="mt-2 text-sm text-[#617062]">Codice fiscale: {pending.fiscalCode || "Non indicato"}</p>
+                          <p className="mt-1 text-sm text-[#617062]">Richiesta del {pending.createdAt ? new Date(pending.createdAt).toLocaleDateString("it-IT") : "—"}</p>
+                          <div className="mt-4 grid grid-cols-2 gap-2">
+                            <Button className="min-h-12" onClick={() => approveUserMutation.mutate(pending.id)} disabled={approveUserMutation.isPending}>
+                              <CheckCircle className="mr-2 h-4 w-4" /> Approva
+                            </Button>
+                            <Button className="min-h-12" variant="destructive" onClick={() => rejectUserMutation.mutate(pending.id)} disabled={rejectUserMutation.isPending}>
+                              <XCircle className="mr-2 h-4 w-4" /> Rifiuta
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="hidden xl:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Nome</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Codice Fiscale</TableHead>
                         <TableHead>Data Richiesta</TableHead>
@@ -474,6 +495,8 @@ export default function AdminDashboard() {
                       ))}
                     </TableBody>
                   </Table>
+                    </div>
+                  </>
                 )}
               </CardContent>
             </Card>
