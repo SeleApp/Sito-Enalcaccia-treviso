@@ -188,6 +188,40 @@ function MobileArticle({ slug }: { slug: string }) {
     queryKey: [`/api/news/${slug}`],
     enabled: Boolean(slug), staleTime: 0, refetchOnMount: "always",
   });
+
+  useEffect(() => {
+    if (!article) return;
+    document.title = `${article.title} | ENAL Caccia Treviso`;
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (meta) meta.content = article.excerpt || article.title;
+    const ogTitle = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
+    if (ogTitle) ogTitle.content = article.title;
+    const ogDescription = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
+    if (ogDescription) ogDescription.content = article.excerpt || article.title;
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.dataset.ecMobileArticle = slug;
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      headline: article.title,
+      description: article.excerpt,
+      datePublished: article.createdAt || undefined,
+      dateModified: article.updatedAt || article.createdAt || undefined,
+      mainEntityOfPage: `https://www.enalcacciatv.it/news/${slug}`,
+      publisher: {
+        "@type": "Organization",
+        name: "ENAL Caccia Treviso",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://www.enalcacciatv.it/attached_assets/logo-enalcaccia-treviso.png?v=20260307",
+        },
+      },
+    });
+    document.head.appendChild(script);
+    return () => { script.remove(); };
+  }, [article, slug]);
+
   return (
     <div className="ec-mobile-page ec-mobile-article mx-auto max-w-3xl px-5 pb-10 pt-6 sm:px-8">
       <Link href="/news" className="mb-5 inline-flex min-h-11 items-center gap-2 font-semibold text-[#2D5016]"><ArrowLeft className="h-5 w-5" /> Tutte le notizie</Link>
